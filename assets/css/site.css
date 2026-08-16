@@ -1,0 +1,853 @@
+/* ==========================================================================
+   Onyx Home Improvement LLC
+   Single stylesheet. No framework, no build step, no JavaScript.
+   ========================================================================== */
+
+/* --- Fonts: self-hosted, latin subset, variable ------------------------- */
+@font-face {
+  font-family: 'Fraunces';
+  src: url('../fonts/fraunces-latin.woff2') format('woff2-variations');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+  /* Fraunces ships opsz/SOFT/WONK axes; we only vary weight. */
+}
+@font-face {
+  font-family: 'DM Sans';
+  src: url('../fonts/dm-sans-latin.woff2') format('woff2-variations');
+  font-weight: 100 1000;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* --- Tokens ------------------------------------------------------------- */
+:root {
+  /* Onyx is a black stone: a warm near-black carries the name, and the
+     stone-white ground keeps long pages from feeling like a slab. */
+  --bg:        #f6f4f1;
+  --bg-sunk:   #eae5de;
+  --bg-card:   #fffefc;
+  --ink:       #14120f;
+  --ink-mid:   #4a443d;
+  /* Darkened from #6f675d: the old value cleared 4.5:1 on --bg but only made
+     4.44:1 on --bg-sunk, where most eyebrows and captions actually sit. */
+  --ink-dim:   #665e54;
+  --line:      #ddd7cd;
+  --line-soft: #e8e3da;
+  --dark:      #14120f;
+  --on-dark:   #f6f4f1;
+  --on-dark-dim: #a9a29a;
+  --clay:      #8c5a3c;
+
+  --font-display: 'Fraunces', Georgia, 'Times New Roman', serif;
+  --font-body: 'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+
+  --wrap: 1180px;
+  --gutter: clamp(1.25rem, 4vw, 2.5rem);
+  --radius: 4px;
+
+  /* Section rhythm: one knob drives vertical pace across the whole site. */
+  --section-y: clamp(4rem, 9vw, 7.5rem);
+}
+
+/* --- Reset -------------------------------------------------------------- */
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-synthesis-weight: none;
+  overflow-wrap: break-word;
+}
+
+img, picture, svg { display: block; max-width: 100%; }
+img { height: auto; background: var(--bg-sunk); }
+
+/* <picture> is only a wrapper, but a percentage height on the inner <img>
+   resolves against it — so it has to carry the container's box, not shrink
+   to the image. Any element that crops with object-fit needs this. */
+.hero__media > picture,
+.card__media > picture,
+.split__media > picture { display: block; width: 100%; height: 100%; }
+
+/* A hairline inside the edge of every photo. Pure black at low alpha, never a
+   tinted neutral — a tinted outline picks up the surface behind it and reads
+   as grime along the image edge. Skipped on the hero, which is full-bleed. */
+.card__media img,
+.split__media img,
+.mosaic img,
+.quote-feature__media img,
+.prose img,
+.wrap > picture img {
+  outline: 1px solid rgba(0, 0, 0, 0.1);
+  outline-offset: -1px;
+  border-radius: var(--radius);
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+  margin: 0;
+  text-wrap: balance;
+}
+p { margin: 0; text-wrap: pretty; }
+ul, ol { margin: 0; padding: 0; }
+
+a { color: inherit; }
+
+:where(a, button, summary, input, textarea, select):focus-visible {
+  outline: 2px solid var(--clay);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* Phone numbers read as one unit and must not reflow between pages. */
+.tel { font-variant-numeric: tabular-nums; letter-spacing: 0.01em; white-space: nowrap; }
+
+/* --- Layout primitives -------------------------------------------------- */
+.wrap {
+  width: 100%;
+  max-width: var(--wrap);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+.section { padding-block: var(--section-y); }
+.section--sunk { background: var(--bg-sunk); }
+.section--dark { background: var(--dark); color: var(--on-dark); }
+.section--tight { padding-block: clamp(2.5rem, 5vw, 4rem); }
+
+.eyebrow {
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+  margin: 0 0 1.25rem;
+}
+.section--dark .eyebrow { color: var(--on-dark-dim); }
+
+/* Rule-and-label eyebrow used on the closing CTA. */
+.eyebrow--ruled { display: flex; align-items: center; gap: 0.9rem; }
+.eyebrow--ruled::before {
+  content: '';
+  width: 3rem;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.5;
+}
+
+.h-display { font-size: clamp(2.25rem, 6.2vw, 4.4rem); }
+.h-section  { font-size: clamp(1.85rem, 4.2vw, 3rem); }
+.h-sub      { font-size: clamp(1.35rem, 2.6vw, 1.85rem); }
+
+.lede {
+  font-size: clamp(1.02rem, 1.5vw, 1.15rem);
+  color: var(--ink-mid);
+  max-width: 62ch;
+}
+.section--dark .lede { color: var(--on-dark-dim); }
+
+.prose > * + * { margin-top: 1.15em; }
+.prose p { color: var(--ink-mid); max-width: 68ch; }
+.prose h2 { margin-top: 2.2em; }
+.prose h3 { margin-top: 1.8em; font-size: 1.2rem; letter-spacing: -0.01em; }
+
+/* --- Buttons ------------------------------------------------------------ */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.85rem 1.5rem;
+  font-family: var(--font-body);
+  font-size: 0.925rem;
+  font-weight: 700;
+  line-height: 1;
+  text-decoration: none;
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: background-color .18s ease, color .18s ease, border-color .18s ease, scale .12s ease;
+}
+/* Tactile press. 0.96 is the floor — anything smaller reads as exaggerated. */
+.btn:active { scale: 0.96; }
+@media (prefers-reduced-motion: reduce) { .btn:active { scale: 1; } }
+
+.btn--solid { background: var(--ink); color: var(--bg); }
+.btn--solid:hover { background: #2c2721; }
+
+.btn--ghost { border-color: currentColor; color: inherit; }
+.btn--ghost:hover { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+
+.btn--on-photo { border-color: rgba(255,255,255,.65); color: #fff; backdrop-filter: blur(2px); }
+.btn--on-photo:hover { background: #fff; color: var(--ink); border-color: #fff; }
+
+/* Text link that reads as a destination, not a button. */
+.link-arrow {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-decoration: none;
+  padding-bottom: 0.35rem;
+  border-bottom: 1px solid currentColor;
+}
+/* Extend the tap target to 40px with a pseudo-element rather than min-height —
+   a taller box would centre the text and leave the underline floating below it. */
+.link-arrow::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 40px;
+  transform: translateY(-50%);
+}
+.link-arrow svg { transition: transform .2s ease; flex: none; }
+.link-arrow:hover svg { transform: translateX(4px); }
+
+/* --- Header ------------------------------------------------------------- */
+.masthead {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  backdrop-filter: saturate(1.4) blur(12px);
+  border-bottom: 1px solid var(--line-soft);
+}
+.masthead__inner {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  min-height: 68px;
+}
+
+.wordmark {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-decoration: none;
+  line-height: 1;
+  flex: none;
+  margin-right: auto;
+  min-height: 44px;
+}
+.wordmark__name {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.28rem;
+  letter-spacing: 0.01em;
+}
+.wordmark__sub {
+  font-size: 0.6rem;
+  font-weight: 500;
+  letter-spacing: 0.19em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+  margin-top: 0.32rem;
+}
+
+.nav { display: flex; align-items: center; gap: 1.6rem; list-style: none; }
+.nav a {
+  display: block;
+  /* Padding lifts the hit area to 40px tall; the negative margin keeps the
+     bar visually the same height it was. */
+  padding-block: 0.66rem;
+  margin-block: -0.66rem;
+  font-size: 0.925rem;
+  text-decoration: none;
+  color: var(--ink-mid);
+  transition: color .15s ease;
+}
+.nav a:hover, .nav a[aria-current='page'] { color: var(--ink); }
+.nav a[aria-current='page'] { font-weight: 500; }
+
+.masthead__cta { display: flex; align-items: center; gap: 1.1rem; flex: none; }
+.callout {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: right;
+  text-decoration: none;
+  line-height: 1.2;
+  min-height: 42px;
+}
+.callout__label {
+  display: block;
+  font-size: 0.6rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+}
+.callout__num { font-weight: 700; font-size: 0.95rem; }
+
+/* Mobile disclosure nav — native <details>, so it needs no JavaScript. */
+.mobile-nav { display: none; margin-left: auto; }
+.mobile-nav > summary {
+  list-style: none;
+  cursor: pointer;
+  /* 22px of bars + 11px padding each side = a 44px square target. */
+  padding: 0.7rem;
+  margin: -0.7rem;
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: 5px;
+  min-width: 44px;
+  min-height: 44px;
+}
+.mobile-nav > summary::-webkit-details-marker { display: none; }
+.mobile-nav > summary span {
+  display: block;
+  width: 22px;
+  height: 1.5px;
+  background: var(--ink);
+  transition: transform .2s ease, opacity .2s ease;
+}
+.mobile-nav[open] > summary span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+.mobile-nav[open] > summary span:nth-child(2) { opacity: 0; }
+.mobile-nav[open] > summary span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+
+.mobile-nav__panel {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 100%;
+  background: var(--bg);
+  border-bottom: 1px solid var(--line);
+  padding: 0.5rem var(--gutter) 1.5rem;
+  max-height: calc(100dvh - 68px);
+  overflow-y: auto;
+}
+.mobile-nav__panel ul { list-style: none; }
+.mobile-nav__panel a {
+  display: block;
+  padding: 0.7rem 0;
+  border-bottom: 1px solid var(--line-soft);
+  text-decoration: none;
+  font-size: 1.02rem;
+}
+.mobile-nav__panel .btn { width: 100%; margin-top: 1.25rem; }
+
+@media (max-width: 900px) {
+  .nav, .masthead__cta { display: none; }
+  .mobile-nav { display: block; }
+}
+
+/* --- Hero --------------------------------------------------------------- */
+.hero { position: relative; isolation: isolate; background: var(--dark); }
+.hero__media { position: absolute; inset: 0; z-index: -2; }
+.hero__media img { width: 100%; height: 100%; object-fit: cover; }
+.hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  /* Weighted to the left so the headline holds contrast through the text
+     column, then falls away so the right third of the photograph still reads —
+     the work is the reason people are on the page. */
+  background:
+    linear-gradient(100deg, rgba(10,8,6,.88) 0%, rgba(10,8,6,.74) 38%, rgba(10,8,6,.42) 66%, rgba(10,8,6,.10) 100%),
+    linear-gradient(to top, rgba(10,8,6,.42), transparent 42%);
+}
+/* On narrow screens the text spans the full width, so a horizontal scrim has
+   nowhere to fall off to — go vertical instead. */
+@media (max-width: 760px) {
+  .hero::after {
+    background:
+      linear-gradient(to top, rgba(10,8,6,.90) 12%, rgba(10,8,6,.66) 55%, rgba(10,8,6,.42) 100%);
+  }
+}
+.hero__inner {
+  padding-block: clamp(5.5rem, 15vw, 10.5rem);
+  color: #fff;
+  max-width: 46rem;
+}
+.hero .eyebrow { color: rgba(255,255,255,.72); }
+.hero h1 { color: #fff; }
+.hero__lede {
+  margin-top: 1.5rem;
+  font-size: clamp(1.02rem, 1.6vw, 1.18rem);
+  color: rgba(255,255,255,.86);
+  max-width: 40rem;
+}
+.hero__lede a { color: #fff; text-underline-offset: 3px; }
+/* Reused as a plain action row on interior pages, so the light-on-dark
+   inversion below must stay scoped to the photographic hero. */
+.hero__actions { display: flex; flex-wrap: wrap; gap: 0.85rem; margin-top: 2.25rem; }
+.hero .hero__actions .btn--solid { background: var(--bg); color: var(--ink); }
+.hero .hero__actions .btn--solid:hover { background: #fff; }
+
+/* --- Trust bar ---------------------------------------------------------- */
+.trustbar { background: var(--bg); border-bottom: 1px solid var(--line-soft); }
+.trustbar ul {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem 1.5rem;
+  padding-block: 1.1rem;
+  font-size: 0.875rem;
+  color: var(--ink-mid);
+  text-align: center;
+}
+/* Once the row wraps, the trailing separator lands at the end of a line where
+   it reads as a typo. Hide it on the last item of each visual row instead. */
+@media (max-width: 900px) {
+  .trustbar ul { gap: 0.35rem 1.1rem; }
+  .trustbar li:not(:last-child)::after { margin-left: 1.1rem; }
+}
+/* The separator gets its own margin — a flex `gap` here would also push the
+   <strong> away from the label it belongs to. */
+.trustbar li:not(:last-child)::after { content: '·'; color: var(--line); margin-left: 1.5rem; }
+.trustbar strong { font-weight: 500; color: var(--ink); }
+
+/* --- Section headers ---------------------------------------------------- */
+.section__head { margin-bottom: clamp(2.5rem, 5vw, 3.75rem); }
+.section__head .lede { margin-top: 1.1rem; }
+
+/* --- Card grids --------------------------------------------------------- */
+.grid { display: grid; gap: clamp(1.5rem, 3vw, 2.5rem); }
+.grid--3 { grid-template-columns: repeat(3, 1fr); }
+.grid--2 { grid-template-columns: repeat(2, 1fr); }
+@media (max-width: 900px) { .grid--3 { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 620px) { .grid--3, .grid--2 { grid-template-columns: 1fr; } }
+
+.card { display: flex; flex-direction: column; text-decoration: none; }
+.card__media {
+  overflow: hidden;
+  border-radius: var(--radius);
+  aspect-ratio: 4 / 3;
+  background: var(--bg-sunk);
+}
+.card__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform .5s cubic-bezier(.2,.6,.2,1);
+}
+.card:hover .card__media img { transform: scale(1.035); }
+.card h3 { margin-top: 1.15rem; font-size: 1.22rem; }
+.card p { margin-top: 0.55rem; color: var(--ink-mid); font-size: 0.925rem; }
+.card__more {
+  margin-top: 0.85rem;
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+  transition: color .15s ease;
+}
+.card:hover .card__more { color: var(--clay); }
+
+/* --- Split (text + image) ----------------------------------------------- */
+.split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(2rem, 5vw, 4.5rem);
+  align-items: center;
+}
+.split--reverse .split__media { order: -1; }
+.split__media img { border-radius: var(--radius); width: 100%; }
+@media (max-width: 820px) {
+  .split { grid-template-columns: 1fr; }
+  .split--reverse .split__media { order: 0; }
+}
+
+/* Small stat/feature list used beside body copy. */
+.points { list-style: none; display: grid; gap: 1.35rem; margin-top: 2rem; }
+.points li { padding-left: 1.5rem; position: relative; }
+.points li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.6em;
+  width: 7px;
+  height: 7px;
+  background: var(--clay);
+  border-radius: 50%;
+}
+.points strong { display: block; font-weight: 700; font-size: 0.95rem; }
+.points span { color: var(--ink-mid); font-size: 0.925rem; }
+
+/* --- Portfolio mosaic --------------------------------------------------- */
+/* Column-based masonry keeps the staggered rhythm of the reference layout
+   without needing JS to measure anything. */
+.mosaic { columns: 3; column-gap: clamp(1rem, 2vw, 1.5rem); }
+.mosaic figure { break-inside: avoid; margin: 0 0 clamp(1rem, 2vw, 1.5rem); }
+.mosaic img { width: 100%; border-radius: var(--radius); }
+.mosaic figcaption {
+  margin-top: 0.6rem;
+  font-size: 0.8rem;
+  color: var(--ink-dim);
+}
+@media (max-width: 900px) { .mosaic { columns: 2; } }
+@media (max-width: 560px) { .mosaic { columns: 1; } }
+
+/* --- Reviews ------------------------------------------------------------ */
+/* Lead testimonial paired with a photo of the kind of work it describes. */
+.quote-feature {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(2rem, 5vw, 4.5rem);
+  align-items: center;
+}
+@media (max-width: 820px) { .quote-feature { grid-template-columns: 1fr; } }
+.quote-feature__media { margin: 0; }
+.quote-feature__media img { border-radius: var(--radius); width: 100%; }
+.quote-feature__media figcaption {
+  margin-top: 0.7rem;
+  font-size: 0.8rem;
+  color: var(--ink-dim);
+}
+
+.quote-lead blockquote { margin: 0; }
+.quote-lead p {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(1.6rem, 3.4vw, 2.6rem);
+  line-height: 1.16;
+  letter-spacing: -0.02em;
+  max-width: 20ch;
+}
+.quote-lead cite {
+  display: block;
+  margin-top: 1.75rem;
+  font-style: normal;
+  font-size: 0.9rem;
+}
+.quote-lead cite span { display: block; color: var(--ink-dim); font-size: 0.825rem; }
+
+.quote-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: clamp(1.5rem, 3vw, 2.5rem); margin-top: clamp(2.5rem, 5vw, 4rem); }
+@media (max-width: 720px) { .quote-grid { grid-template-columns: 1fr; } }
+.quote-card {
+  border-top: 1px solid var(--line);
+  padding-top: 1.5rem;
+}
+.quote-card blockquote { margin: 0; color: var(--ink-mid); font-size: 0.95rem; }
+.quote-card cite {
+  display: block;
+  margin-top: 1.1rem;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 0.875rem;
+}
+.quote-card cite span { font-weight: 400; color: var(--ink-dim); }
+
+.stars { color: var(--clay); letter-spacing: 0.12em; font-size: 0.8rem; }
+
+/* Invitation to leave a review. */
+.review-cta {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: clamp(1.75rem, 4vw, 3.5rem);
+  align-items: center;
+  background: var(--bg-sunk);
+  border-radius: var(--radius);
+  padding: clamp(2rem, 4vw, 3rem);
+}
+.review-cta .lede { max-width: 46ch; }
+.review-cta__actions { display: grid; gap: 1rem; justify-items: start; }
+@media (max-width: 760px) { .review-cta { grid-template-columns: 1fr; } }
+
+/* Full review list on the reviews page. */
+.review-list { list-style: none; display: grid; gap: 0; }
+.review-list li { border-top: 1px solid var(--line); padding-block: clamp(1.75rem, 3.5vw, 2.5rem); }
+.review-list li:last-child { border-bottom: 1px solid var(--line); }
+.review__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5rem 1rem;
+  margin-bottom: 0.9rem;
+}
+.review__name { font-weight: 700; font-size: 0.95rem; }
+.review__detail { font-size: 0.8rem; color: var(--ink-dim); }
+.review-list p { color: var(--ink-mid); max-width: 72ch; }
+
+/* --- FAQ ---------------------------------------------------------------- */
+.faq { border-top: 1px solid var(--line); }
+.faq details { border-bottom: 1px solid var(--line); }
+.faq summary {
+  list-style: none;
+  cursor: pointer;
+  padding-block: 1.4rem;
+  padding-right: 2.5rem;
+  position: relative;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.12rem;
+  letter-spacing: -0.01em;
+}
+.faq summary::-webkit-details-marker { display: none; }
+.faq summary::after {
+  content: '';
+  position: absolute;
+  right: 0.35rem;
+  top: 50%;
+  width: 11px;
+  height: 11px;
+  margin-top: -7px;
+  border-right: 1.5px solid var(--ink-dim);
+  border-bottom: 1.5px solid var(--ink-dim);
+  transform: rotate(45deg);
+  transition: transform .2s ease;
+}
+.faq details[open] summary::after { transform: rotate(-135deg); margin-top: -3px; }
+.faq details > div { padding-bottom: 1.6rem; color: var(--ink-mid); max-width: 72ch; }
+.faq details > div > * + * { margin-top: 0.9em; }
+
+/* --- Area chips --------------------------------------------------------- */
+.chips { list-style: none; display: flex; flex-wrap: wrap; gap: 0.6rem; }
+.chips a {
+  display: flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 0.5rem 1.1rem;
+  border: 1px solid var(--line);
+  border-radius: 100px;
+  font-size: 0.875rem;
+  text-decoration: none;
+  color: var(--ink-mid);
+  transition: border-color .15s ease, color .15s ease, background-color .15s ease;
+}
+.chips a:hover { border-color: var(--ink); color: var(--ink); background: var(--bg-card); }
+
+/* --- Service area map ---------------------------------------------------- */
+/* Inline SVG built from Census county boundaries (see tools/map.py). Inlined
+   rather than <img> so it inherits the palette and needs no extra request. */
+.areamap { width: 100%; height: auto; overflow: visible; }
+.areamap__context path {
+  fill: color-mix(in srgb, var(--bg-sunk) 55%, var(--bg));
+  stroke: var(--line);
+  stroke-width: 1.5;
+  stroke-linejoin: round;
+}
+.areamap__served path {
+  fill: color-mix(in srgb, var(--clay) 46%, var(--bg));
+  stroke: var(--ink);
+  stroke-width: 2.5;
+  stroke-linejoin: round;
+}
+.areamap__pins circle { fill: var(--clay); stroke: var(--bg); stroke-width: 3; }
+.areamap__pins text {
+  font-family: var(--font-body);
+  font-size: 23px;          /* viewBox units — scales with the map */
+  font-weight: 500;
+  fill: var(--ink);
+  paint-order: stroke;       /* halo keeps labels legible over any fill */
+  stroke: var(--bg);
+  stroke-width: 4.5;
+  stroke-linejoin: round;
+}
+@media (max-width: 700px) {
+  .areamap__pins text { font-size: 31px; stroke-width: 6; }
+  .areamap__pins circle { r: 8; }
+}
+
+.map-grid {
+  display: grid;
+  /* The map runs tall (Fredericksburg is a long way south of the Beltway), so
+     it takes the narrower column to keep the two sides in proportion. */
+  grid-template-columns: 0.8fr 1.2fr;
+  gap: clamp(2rem, 5vw, 4rem);
+  align-items: center;
+}
+@media (max-width: 860px) { .map-grid { grid-template-columns: 1fr; } }
+
+.map-legend { list-style: none; display: flex; flex-wrap: wrap; gap: 0.6rem 1.5rem; margin-top: 1.75rem; font-size: 0.85rem; color: var(--ink-mid); }
+.map-legend li { display: flex; align-items: center; gap: 0.55rem; }
+.map-legend i {
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  flex: none;
+  background: color-mix(in srgb, var(--clay) 22%, var(--bg));
+  border: 1.5px solid var(--ink);
+}
+.map-legend i.is-pin { width: 11px; height: 11px; border-radius: 50%; background: var(--clay); border: 0; }
+
+/* --- Closing CTA -------------------------------------------------------- */
+.cta-close {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 2.5rem;
+  align-items: center;
+}
+.cta-close h2 { max-width: 16ch; }
+.cta-close__call { margin-top: 1.75rem; font-size: 0.9rem; color: var(--on-dark-dim); }
+.cta-close__call a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  padding-inline: 0.15rem;
+  color: var(--on-dark);
+  font-size: 1.05rem;
+  font-weight: 700;
+  text-underline-offset: 4px;
+}
+@media (max-width: 820px) { .cta-close { grid-template-columns: 1fr; } }
+
+/* --- Form --------------------------------------------------------------- */
+.form { display: grid; gap: 1.35rem; }
+.field { display: grid; gap: 0.45rem; }
+.field label { font-size: 0.85rem; font-weight: 500; }
+.field .hint { font-size: 0.78rem; color: var(--ink-dim); font-weight: 400; }
+.req { color: var(--clay); text-decoration: none; font-weight: 700; }
+.field input, .field select, .field textarea {
+  font: inherit;
+  font-size: 0.95rem;
+  color: var(--ink);
+  background: var(--bg-card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 0.75rem 0.85rem;
+  width: 100%;
+  transition: border-color .15s ease, box-shadow .15s ease;
+}
+.field textarea { resize: vertical; min-height: 7.5rem; }
+.field input:focus, .field select:focus, .field textarea:focus {
+  outline: none;
+  border-color: var(--ink);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--clay) 18%, transparent);
+}
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1.35rem; }
+@media (max-width: 620px) { .field-row { grid-template-columns: 1fr; } }
+.form__note { font-size: 0.82rem; color: var(--ink-dim); }
+/* Honeypot: bots fill it, humans never see it. */
+.hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+
+.contact-grid { display: grid; grid-template-columns: 1.15fr 0.85fr; gap: clamp(2.5rem, 6vw, 5rem); align-items: start; }
+@media (max-width: 900px) { .contact-grid { grid-template-columns: 1fr; } }
+
+.contact-block { display: grid; gap: 1.75rem; }
+.contact-block h2 {
+  font-family: var(--font-body);
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+  margin-bottom: 0.5rem;
+  letter-spacing: 0.16em;
+}
+.contact-block a { text-underline-offset: 3px; }
+
+/* --- Breadcrumb --------------------------------------------------------- */
+.crumbs {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  color: var(--ink-dim);
+  padding-top: 1.75rem;
+}
+.crumbs a { text-decoration: none; }
+.crumbs a:hover { text-decoration: underline; }
+.crumbs li:not(:last-child)::after { content: ' /'; }
+
+/* --- Page header (interior pages) --------------------------------------- */
+.pagehead { padding-block: clamp(3rem, 7vw, 5.5rem) clamp(2.5rem, 5vw, 4rem); }
+.pagehead .lede { margin-top: 1.35rem; }
+/* The page header's bottom padding already separates it from what follows.
+   Without this, a following .section adds its own top padding on top and the
+   two stack into a gap twice the size intended. */
+.pagehead + .section { padding-top: 0; }
+
+/* --- Footer ------------------------------------------------------------- */
+.footer { padding-block: clamp(3.5rem, 7vw, 5.5rem) 2.5rem; border-top: 1px solid var(--line); }
+.footer__cols {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: clamp(2rem, 4vw, 3rem);
+}
+@media (max-width: 760px) { .footer__cols { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 480px) { .footer__cols { grid-template-columns: 1fr; } }
+.footer h2 {
+  font-family: var(--font-body);
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+  margin-bottom: 1rem;
+}
+.footer ul { list-style: none; display: grid; gap: 0.15rem; }
+.footer li { display: flex; }
+.footer a {
+  display: flex;
+  align-items: center;
+  min-height: 40px;
+  text-decoration: none;
+  color: var(--ink-mid);
+  font-size: 0.925rem;
+}
+.footer a:hover { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
+.footer address { font-style: normal; font-size: 0.925rem; color: var(--ink-mid); display: grid; gap: 0.15rem; }
+.footer address > span { padding-block: 0.5rem; }
+.footer__base {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+  margin-top: clamp(2.5rem, 5vw, 4rem);
+  padding-top: 1.75rem;
+  border-top: 1px solid var(--line);
+}
+.footer__base p { font-size: 0.78rem; color: var(--ink-dim); }
+.footer__brand { font-family: var(--font-display); font-weight: 600; font-size: 1.05rem; }
+
+/* --- Skip link ---------------------------------------------------------- */
+.skip {
+  position: absolute;
+  left: -9999px;
+  z-index: 100;
+  padding: 0.75rem 1.25rem;
+  background: var(--ink);
+  color: var(--bg);
+  text-decoration: none;
+}
+.skip:focus { left: 1rem; top: 1rem; }
+
+/* --- Scroll reveal ------------------------------------------------------ */
+/* Progressive enhancement via scroll-driven animations. Browsers without
+   `animation-timeline` support simply render the content in place — there is
+   no JS fallback and nothing is hidden by default. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .reveal {
+      animation: reveal-in linear both;
+      animation-timeline: view();
+      /* Finish while the element is still entering, so nothing that is already
+         on screen sits half-faded waiting for a scroll that may never come. */
+      animation-range: entry 8% entry 78%;
+    }
+    @keyframes reveal-in {
+      from { opacity: 0; transform: translateY(1rem); }
+      to   { opacity: 1; transform: none; }
+    }
+  }
+}
+
+/* --- Print -------------------------------------------------------------- */
+@media print {
+  .masthead, .hero__media, .cta-close, .mobile-nav { display: none; }
+  body { background: #fff; }
+}
