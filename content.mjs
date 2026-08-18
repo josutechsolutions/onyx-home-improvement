@@ -77,6 +77,7 @@ export const NAV = [
 export const SERVICES = [
   {
     slug: 'driveway-paving',
+    warranty: ['asphalt', 'concrete', 'pavers'],
     reviewFrom: 'RJ C.',
     process: [
       ['Site visit and written estimate', 'We walk the driveway with you, look at how water currently leaves it, check access for equipment, and measure. You get an itemized written price before anything is scheduled.'],
@@ -133,6 +134,7 @@ export const SERVICES = [
   },
   {
     slug: 'brickwork',
+    warranty: ['masonry'],
     reviewFrom: 'Patricia W.',
     process: [
       ['Assessment and brick matching', 'We look at what is already there — the brick size, color, texture, and the bond it was laid in — and work out what will blend. On repairs, matching the existing brick matters more than anything else you choose.'],
@@ -186,6 +188,7 @@ export const SERVICES = [
   },
   {
     slug: 'retaining-walls',
+    warranty: ['walls'],
     reviewFrom: 'Nancy P.',
     process: [
       ['Survey the slope and the water', 'We measure the grade, work out how much soil the wall actually has to hold, and trace where water moves across the site. Load and water are what size the wall — the look is chosen afterward.'],
@@ -400,6 +403,7 @@ export const SERVICES = [
   },
   {
     slug: 'patio-design',
+    warranty: ['pavers', 'concrete', 'masonry'],
     reviewFrom: 'Dani S.',
     process: [
       ['How you will actually use it', 'Before any layout, we talk about what the space is for — dining, a fire feature, a route to somewhere else — and how many people at once. Patios that feel wrong are usually the right material at the wrong size.'],
@@ -455,6 +459,7 @@ export const SERVICES = [
   },
   {
     slug: 'stone-veneer',
+    warranty: ['masonry'],
     reviewFrom: 'Gemma V.',
     process: [
       ['Assess the substrate', 'What is behind the stone determines how it has to be installed. We check the existing wall, the sheathing, and how water currently drains down the face of the building before quoting anything.'],
@@ -529,6 +534,7 @@ export const SERVICES = [
   },
   {
     slug: 'outdoor-fireplaces',
+    warranty: ['masonry'],
     reviewFrom: 'Gemma V.',
     process: [
       ['Siting for wind and smoke', 'Where the fireplace goes is decided before what it looks like. We look at prevailing wind, how close the house and any overhang sit, and where people will actually be sitting — a fireplace that pushes smoke into the seating area is a mistake you notice every single evening.'],
@@ -865,6 +871,24 @@ export const FAQ = [
     a: ['Yes, and in most cases we insist on it. Water is the reason most masonry and paving fails early. If your existing drainage is contributing to the problem we are being asked to fix, we will tell you and include the correction in the scope.'],
   },
 ];
+
+/* --- Workmanship warranty -------------------------------------------------
+   These terms are advertised on the warranty page and on each service page.
+   They are contractual promises: change them here only to match what the
+   written contract actually says, never to match what reads well.
+   ------------------------------------------------------------------------ */
+export const WARRANTY = {
+  headline: 'Our Workmanship Warranty',
+  lede: 'Every installation we complete is covered by a written workmanship warranty. The length depends on what was built, and the term is stated in your contract before you sign it.',
+  terms: [
+    { key: 'asphalt',  years: 3, label: 'Asphalt driveways and paving' },
+    { key: 'concrete', years: 5, label: 'Concrete driveways, patios, and walkways' },
+    { key: 'pavers',   years: 5, label: 'Paver patios, driveways, and walkways' },
+    { key: 'masonry',  years: 5, label: 'Masonry, brick, and stonework' },
+    { key: 'walls',    years: 5, label: 'Retaining walls' },
+    { key: 'drainage', years: 3, label: 'Drainage and French drain installations' },
+  ],
+};
 
 /* --- Homepage "why us" points -------------------------------------------- */
 export const POINTS = [

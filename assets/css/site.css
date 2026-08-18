@@ -1069,3 +1069,79 @@ a { color: inherit; }
   .pullquote { padding: 2rem 1.5rem; }
   .pullquote blockquote p { font-size: 1.05rem; }
 }
+
+/* --- Warranty band on service pages --------------------------------------
+   Dark so it reads as a distinct claim rather than as more page copy, and
+   placed directly under the page head so it lands above the fold. */
+.wband { background: var(--dark); color: var(--on-dark); margin-bottom: var(--section-y); }
+.wband__inner {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 1.5rem 3rem;
+  padding-block: 1.6rem;
+}
+.wband__head {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  line-height: 1.2;
+  /* Tabular figures keep the leading numeral aligned with the list below. */
+  font-variant-numeric: tabular-nums;
+}
+.wband__sub { color: var(--on-dark-dim); font-size: 0.8rem; margin-top: 0.25rem; }
+.wband__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 2rem;
+  border-left: 1px solid rgba(255, 255, 255, 0.16);
+  padding-left: 3rem;
+}
+.wband__list li { font-size: 0.85rem; color: var(--on-dark-dim); }
+.wband__list strong {
+  color: var(--on-dark);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+.wband__link {
+  color: var(--on-dark);
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.35);
+  padding-bottom: 0.1rem;
+  white-space: nowrap;
+}
+.wband__link:hover { border-bottom-color: var(--on-dark); }
+
+@media (max-width: 1080px) {
+  .wband__inner { grid-template-columns: 1fr; gap: 1.1rem; }
+  .wband__list { border-left: 0; padding-left: 0; }
+}
+
+/* --- Warranty page term table -------------------------------------------- */
+.wtable { border-top: 1px solid var(--line); }
+.wtable__row {
+  display: grid;
+  grid-template-columns: 7rem 1fr;
+  gap: 2rem;
+  align-items: baseline;
+  padding-block: 1.6rem;
+  border-bottom: 1px solid var(--line);
+}
+.wtable__term {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  font-family: var(--font-display);
+}
+.wtable__term strong { font-size: 2rem; font-weight: 600; font-variant-numeric: tabular-nums; }
+.wtable__term span { font-size: 0.8rem; color: var(--ink-dim); }
+.wtable__row h3 { font-size: 1.1rem; }
+.wtable__svc { margin-top: 0.4rem; font-size: 0.875rem; color: var(--ink-dim); }
+
+@media (max-width: 620px) {
+  .wtable__row { grid-template-columns: 1fr; gap: 0.5rem; }
+}

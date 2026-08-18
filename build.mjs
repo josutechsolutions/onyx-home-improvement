@@ -12,7 +12,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import {
-  BIZ, NAV, SERVICES, REVIEWS, FEATURED_REVIEWS, AREAS,
+  BIZ, NAV, SERVICES, REVIEWS, FEATURED_REVIEWS, AREAS, WARRANTY,
   PORTFOLIO, HOME_PORTFOLIO, FAQ, POINTS, PROJECTS,
 } from './content.mjs';
 
@@ -195,6 +195,7 @@ function footer() {
         <ul>
         ${areas}
         <li><a href="/service-areas/">See all areas</a></li>
+        <li><a href="/warranty/">Our warranty</a></li>
         </ul>
         ${operating ? `<h2 style="margin-top:1.75rem">Operating</h2>
         <ul style="color:var(--ink-mid);font-size:.925rem">
@@ -390,6 +391,39 @@ function serviceReview(name) {
     <p style="text-align:center;margin-top:1.25rem"><a href="/reviews/">Read all ${esc(BIZ.reviewCount)} reviews</a></p>
   </div>
 </section>`;
+}
+
+function warrantyTerms(keys) {
+  return (keys || []).map(k => {
+    const t = WARRANTY.terms.find(x => x.key === k);
+    if (!t) warnings.push(`warranty key "${k}" matches nothing in WARRANTY.terms.`);
+    return t;
+  }).filter(Boolean);
+}
+
+/* Sits directly under the page head on a service page, above the fold on most
+   screens. Where a service spans materials with different terms (a driveway
+   can be asphalt at 3 years or pavers at 5) every applicable term is shown
+   rather than the longest one. */
+function warrantyBand(keys) {
+  const terms = warrantyTerms(keys);
+  if (!terms.length) return '';
+  const span = [...new Set(terms.map(t => t.years))];
+  const head = span.length === 1
+    ? `${span[0]}-year workmanship warranty`
+    : `${Math.min(...span)} to ${Math.max(...span)}-year workmanship warranty`;
+  return `<div class="wband">
+  <div class="wrap wband__inner">
+    <div class="wband__lead">
+      <p class="wband__head">${esc(head)}</p>
+      <p class="wband__sub">In writing, on every job we install.</p>
+    </div>
+    <ul class="wband__list">
+      ${terms.map(t => `<li><strong>${t.years} years</strong> <span>${esc(t.label)}</span></li>`).join('\n      ')}
+    </ul>
+    <a class="wband__link" href="/warranty/">What the warranty covers &rarr;</a>
+  </div>
+</div>`;
 }
 
 function faqSection(items) {
@@ -728,6 +762,8 @@ function buildService(s) {
     </div>
   </div>
 </section>
+
+${warrantyBand(s.warranty)}
 
 <div class="wrap" style="margin-bottom:var(--section-y)">
   ${picture(s.feature, { sizes: '(max-width:1180px) 92vw, 1120px' })}
@@ -1369,6 +1405,95 @@ function build404() {
   }));
 }
 
+
+/* --- Warranty ------------------------------------------------------------
+   The terms here are contractual. Everything on this page comes from
+   WARRANTY in content.mjs, so there is one place to correct if the contract
+   changes — and nothing is written into the template that the contract does
+   not say. */
+function buildWarranty() {
+  const trail = [{ label: 'Home', href: '/' }, { label: 'Warranty' }];
+
+  const rows = WARRANTY.terms.map(t => {
+    const svc = SERVICES.filter(x => (x.warranty || []).includes(t.key));
+    const links = svc.length
+      ? `<p class="wtable__svc">${svc.map(x => `<a href="${x.href}">${esc(x.title)}</a>`).join(', ')}</p>`
+      : '';
+    return `<div class="wtable__row reveal">
+      <p class="wtable__term"><strong>${t.years}</strong><span>year${t.years === 1 ? '' : 's'}</span></p>
+      <div>
+        <h3>${esc(t.label)}</h3>
+        ${links}
+      </div>
+    </div>`;
+  }).join('\n    ');
+
+  const body = `${crumbs(trail)}
+
+<section class="pagehead">
+  <div class="wrap">
+    <p class="eyebrow">Warranty</p>
+    <h1 class="h-display" style="max-width:16ch">${esc(WARRANTY.headline)}</h1>
+    <p class="lede">${esc(smart(WARRANTY.lede))}</p>
+    <div class="hero__actions" style="margin-top:2rem">
+      <a class="btn btn--solid" href="/get-your-free-estimate/">Get a Free Estimate</a>
+      <a class="btn btn--ghost tel" href="${BIZ.phoneHref}">${BIZ.phone}</a>
+    </div>
+  </div>
+</section>
+
+<section class="section section--tight">
+  <div class="wrap">
+    <div class="wtable">
+    ${rows}
+    </div>
+  </div>
+</section>
+
+<section class="section section--sunk">
+  <div class="wrap split">
+    <div>
+      <h2 class="h-section reveal">What a workmanship warranty covers</h2>
+      <div class="prose reveal" style="margin-top:1.25rem">
+        <p>A workmanship warranty covers our installation — the work we did and the way we did it. If something fails because of how it was built, we come back and put it right.</p>
+        <p>That is a different thing from the products themselves. Materials carry whatever terms their manufacturer sets, and those run separately from ours. It is also different from damage caused by something other than the installation.</p>
+        <p>What is and is not covered is set out in full in your written contract. The warranty is part of the agreement you sign rather than a separate certificate that arrives later, so you can read the exact terms before you commit to anything.</p>
+      </div>
+    </div>
+    <div>
+      <h2 class="h-section reveal">Why the terms differ</h2>
+      <div class="prose reveal" style="margin-top:1.25rem">
+        <p>Asphalt and drainage carry three years; concrete, pavers, masonry, and retaining walls carry five. The difference is not a judgment about how carefully each is built — it reflects how each system behaves over time and how much of its performance depends on ground conditions that keep moving after we leave.</p>
+        <p>A driveway can also fall into more than one category. An asphalt driveway carries the three-year term and a paver driveway carries five, so the term that applies to your job depends on what you actually build, and it is stated on your estimate.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap" style="max-width:70ch">
+    <h2 class="h-section reveal">Making a claim</h2>
+    <div class="prose reveal" style="margin-top:1.25rem">
+      <p>Call ${BIZ.phone} or email <a href="mailto:${BIZ.email}">${BIZ.email}</a> and tell us what you are seeing. We come out and look at it — there is no form to complete and no portal to sign into.</p>
+      <p>The same people who quoted and built the job are the ones who come back to it. That is the practical advantage of a family-operated business over a company that may have subcontracted your installation to a crew it no longer works with.</p>
+    </div>
+  </div>
+</section>
+
+${ctaBand()}`;
+
+  write('warranty/index.html', layout({
+    title: `Workmanship Warranty | ${BIZ.legal}`,
+    desc: metaDesc(
+      'Written workmanship warranties on every installation — five years on concrete, pavers, masonry, and retaining walls, three years on asphalt and drainage.',
+      `Free estimates across Northern Virginia and DC. Call ${BIZ.phone}.`),
+    url: '/warranty/',
+    current: '/warranty/',
+    trail,
+    body,
+  }));
+}
+
 /* --- sitemap / robots / misc --------------------------------------------- */
 function buildMeta() {
   const urls = [
@@ -1380,6 +1505,7 @@ function buildMeta() {
     ['/reviews/', '0.7'],
     ['/about-us/', '0.7'],
     ['/get-your-free-estimate/', '0.9'],
+    ['/warranty/', '0.7'],
     ['/service-areas/', '0.6'],
     ...AREAS.map(a => [`/service-areas/${a.toLowerCase().replace(/,/g, '').replace(/\s+/g, '-')}/`, '0.5']),
   ];
@@ -1424,6 +1550,7 @@ buildAbout();
 buildPortfolio();
 buildReviews();
 buildContact();
+buildWarranty();
 buildAreas();
 build404();
 buildMeta();
