@@ -1,3 +1,4 @@
-# Staging preview — not for indexing.
 User-agent: *
-Disallow: /
+Allow: /
+
+Sitemap: https://onyxhomeimprovementllc.com/sitemap.xml
