@@ -164,6 +164,7 @@ function footer() {
     BIZ.hours,
     BIZ.license ? `License ${esc(BIZ.license)}` : '',
     'Free estimates',
+    `<a href="/warranty/">${warrantySpan()}-year workmanship warranty</a>`,
   ].filter(Boolean).map(l => `<li>${l}</li>`).join('\n        ');
 
   return `<footer class="footer">
@@ -195,7 +196,6 @@ function footer() {
         <ul>
         ${areas}
         <li><a href="/service-areas/">See all areas</a></li>
-        <li><a href="/warranty/">Our warranty</a></li>
         </ul>
         ${operating ? `<h2 style="margin-top:1.75rem">Operating</h2>
         <ul style="color:var(--ink-mid);font-size:.925rem">
@@ -311,6 +311,7 @@ function trustbar() {
     `<strong>Free</strong> written estimates`,
     `Open <strong>7 days</strong> a week`,
     BIZ.license ? `Licensed <strong>&amp; insured</strong>` : '',
+    `<a href="/warranty/"><strong>${warrantySpan()}-year</strong> warranty</a>`,
   ].filter(Boolean);
   return `<div class="trustbar">
   <div class="wrap">
@@ -391,6 +392,14 @@ function serviceReview(name) {
     <p style="text-align:center;margin-top:1.25rem"><a href="/reviews/">Read all ${esc(BIZ.reviewCount)} reviews</a></p>
   </div>
 </section>`;
+}
+
+/* "3 to 5" across the advertised terms, so the trust bar and the services
+   index stay correct if a term in content.mjs changes. */
+function warrantySpan() {
+  const y = WARRANTY.terms.map(t => t.years);
+  const lo = Math.min(...y), hi = Math.max(...y);
+  return lo === hi ? `${lo}` : `${lo}\u2013${hi}`;
 }
 
 function warrantyTerms(keys) {
@@ -844,6 +853,8 @@ function buildServicesIndex() {
     <p class="lede">Every job starts underneath — excavation, a compacted base, and a plan for where water goes. What sits on top is the part you see, but the part below it decides how long you get to enjoy it.</p>
   </div>
 </section>
+
+${warrantyBand(WARRANTY.terms.map(t => t.key))}
 
 ${groups.map(g => `<section class="section section--tight">
   <div class="wrap">

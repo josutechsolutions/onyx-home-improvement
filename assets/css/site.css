@@ -402,7 +402,9 @@ a { color: inherit; }
   flex-wrap: wrap;
   align-items: center;
   justify-content: center;
-  gap: 0.6rem 1.5rem;
+  /* Tightened from 1.5rem: five trust items overran the 1180px wrap by 12px,
+     which wrapped the row and left the separator dangling at the line end. */
+  gap: 0.6rem 1.15rem;
   padding-block: 1.1rem;
   font-size: 0.875rem;
   color: var(--ink-mid);
@@ -416,7 +418,7 @@ a { color: inherit; }
 }
 /* The separator gets its own margin — a flex `gap` here would also push the
    <strong> away from the label it belongs to. */
-.trustbar li:not(:last-child)::after { content: '·'; color: var(--line); margin-left: 1.5rem; }
+.trustbar li:not(:last-child)::after { content: '·'; color: var(--line); margin-left: 1.15rem; }
 .trustbar strong { font-weight: 500; color: var(--ink); }
 
 /* --- Section headers ---------------------------------------------------- */
