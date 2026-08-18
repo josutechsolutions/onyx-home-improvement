@@ -357,6 +357,41 @@ function leaveReview() {
 </section>`;
 }
 
+function processSection(steps, title) {
+  if (!steps || !steps.length) return '';
+  return `<section class="section section--sunk">
+  <div class="wrap">
+    <div class="section__head">
+      <p class="eyebrow">How the work runs</p>
+      <h2 class="h-section reveal">${esc(title)}, step by step</h2>
+      <p class="lede reveal">Every job follows the same sequence. You are told which stage you are at and what happens next.</p>
+    </div>
+    <ol class="process">
+${steps.map(([h, d], i) => `      <li class="reveal"><span class="process__n" aria-hidden="true">${i + 1}</span><div><h3>${esc(h)}</h3><p>${esc(smart(d))}</p></div></li>`).join('\n')}
+    </ol>
+  </div>
+</section>`;
+}
+
+function serviceReview(name) {
+  const r = REVIEWS.find(x => x.name === name && !x.hide);
+  if (!r) {
+    warnings.push(`reviewFrom "${name}" matches no review in REVIEWS — quote omitted.`);
+    return '';
+  }
+  const meta = [r.project, r.where, r.date].filter(Boolean).join(' · ');
+  return `<section class="section section--tight">
+  <div class="wrap">
+    <figure class="pullquote reveal">
+      <p class="stars" aria-label="Five out of five stars">&#9733;&#9733;&#9733;&#9733;&#9733;</p>
+      <blockquote><p>${esc(smart(r.text))}</p></blockquote>
+      <figcaption>${esc(r.name)}${meta ? ` <span>${esc(meta)}</span>` : ''}${r.source ? ` <span>via ${esc(r.source)}</span>` : ''}</figcaption>
+    </figure>
+    <p style="text-align:center;margin-top:1.25rem"><a href="/reviews/">Read all ${esc(BIZ.reviewCount)} reviews</a></p>
+  </div>
+</section>`;
+}
+
 function faqSection(items) {
   const rows = items.map(f => `<details>
   <summary>${esc(f.q)}</summary>
@@ -700,12 +735,18 @@ function buildService(s) {
 
 ${sections}
 
+${processSection(s.process, s.title)}
+
 ${projectGrid(projectsFor(s.href), {
   heading: `${s.title} projects`,
   intro: `Recent ${s.title.toLowerCase()} jobs, each with its own page. Photographs are our own work.`,
 })}
 
 ${gallerySection}
+
+${s.reviewFrom ? serviceReview(s.reviewFrom) : ''}
+
+${s.faq && s.faq.length ? faqSection(s.faq) : ''}
 
 <section class="section section--tight">
   <div class="wrap">
@@ -740,7 +781,17 @@ ${ctaBand()}`;
       description: s.card,
       provider: { '@id': BIZ.origin + '/#business' },
       areaServed: AREAS.map(a => ({ '@type': 'Place', name: a })),
-    }],
+    },
+    ...(s.faq && s.faq.length ? [{
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity: s.faq.map(f => ({
+        '@type': 'Question',
+        name: f.q,
+        acceptedAnswer: { '@type': 'Answer', text: f.a.join(' ') },
+      })),
+    }] : []),
+    ],
   }));
 }
 
