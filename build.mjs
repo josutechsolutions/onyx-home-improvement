@@ -212,7 +212,7 @@ function footer() {
 }
 
 /* --- page shell ---------------------------------------------------------- */
-function layout({ title, desc, url, body, current, jsonld = [], heroImage = null, trail = null }) {
+function layout({ title, desc, url, body, current, jsonld = [], heroImage = null, trail = null, script = '' }) {
   const canonical = BIZ.origin + url;
 
   // Search Console's HTML-tag verification. Emitted on staging too, so the tag
@@ -289,7 +289,7 @@ ${header(current)}
 <main id="main">
 ${body}
 </main>
-${footer()}
+${footer()}${script ? `\n<script>${script}</script>` : ''}
 </body>
 </html>`;
 }
@@ -1057,6 +1057,34 @@ ${ctaBand()}`;
   }));
 }
 
+/* Estimate form: post in the background and swap the form for a confirmation,
+   so the visitor never leaves the page. Progressive enhancement — without it
+   the form posts normally and _next sends the browser to /thank-you/.
+   Formspree returns JSON rather than redirecting when we ask for it. */
+const FORM_SCRIPT = `(function(){
+var form=document.getElementById('estimate-form'),done=document.getElementById('form-done'),err=document.getElementById('form-error');
+if(!form||!done||!form.action||!window.fetch||!window.FormData)return;
+var btn=form.querySelector('button[type=submit]'),label=btn?btn.textContent:'';
+form.addEventListener('submit',function(e){
+e.preventDefault();
+if(form.reportValidity&&!form.reportValidity())return;
+if(err){err.hidden=true}
+if(btn){btn.disabled=true;btn.textContent='Sending\\u2026'}
+fetch(form.action,{method:'POST',body:new FormData(form),headers:{Accept:'application/json'}})
+.then(function(r){
+if(!r.ok)throw new Error(r.status);
+form.hidden=true;done.hidden=false;
+/* Move focus, or a screen reader is left on a form no longer in the page. */
+done.focus();
+done.scrollIntoView({block:'center'});
+})
+.catch(function(){
+if(err){err.textContent='Something went wrong sending that. Please try again, or call ${BIZ.phone}.';err.hidden=false}
+if(btn){btn.disabled=false;btn.textContent=label}
+});
+});
+})();`;
+
 /* --- Estimate / contact -------------------------------------------------- */
 function buildContact() {
   const action = BIZ.formspreeId
@@ -1083,7 +1111,12 @@ function buildContact() {
 <section class="section section--tight">
   <div class="wrap contact-grid">
     <div>
-      <form class="form" method="POST"${action ? ` action="${action}"` : ''}>
+      <div class="formdone" id="form-done" hidden tabindex="-1" role="status" aria-live="polite">
+        <p class="formdone__mark" aria-hidden="true">&check;</p>
+        <p class="formdone__head">Submitted</p>
+        <p class="formdone__sub">Thanks &mdash; we have your request and will be in touch, usually the same day. If it is urgent, call <a class="tel" href="${BIZ.phoneHref}">${BIZ.phone}</a>.</p>
+      </div>
+      <form class="form" id="estimate-form" method="POST"${action ? ` action="${action}"` : ''}>
         <input type="hidden" name="_subject" value="New estimate request — onyxhomeimprovementllc.com">
         <input type="hidden" name="_next" value="${BIZ.origin}/thank-you/">
         <div class="hp" aria-hidden="true">
@@ -1132,6 +1165,7 @@ function buildContact() {
         </div>
 
         <p class="form__note"><abbr class="req" title="required">*</abbr> Required &mdash; everything else is optional.</p>
+        <p class="form__error" id="form-error" hidden role="alert"></p>
         <button class="btn btn--solid" type="submit" style="justify-self:start;padding-inline:2rem">Request My Free Estimate</button>
         <p class="form__note">We reply to every request, usually the same day. We never share your details.</p>
       </form>
@@ -1168,9 +1202,12 @@ function buildContact() {
     current: '/get-your-free-estimate/',
     trail,
     body,
+    script: FORM_SCRIPT,
   }));
 
-  /* Thank-you page that Formspree redirects to after a successful post. */
+  /* Thank-you page. Only reached without JavaScript now: the handler above
+     posts in the background and swaps in the confirmation instead. Kept as
+     the no-JS fallback, since _next still points here. */
   write('thank-you/index.html', layout({
     title: `Thank You | ${BIZ.legal}`,
     desc: 'Your estimate request has been received. We will be in touch shortly.',

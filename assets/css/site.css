@@ -3,6 +3,11 @@
    Single stylesheet. No framework, no build step, no JavaScript.
    ========================================================================== */
 
+/* The UA rule for [hidden] is display:none at attribute specificity, so any
+   class that sets display — .form is display:grid — silently beats it and the
+   element stays visible. Author-level !important is the standard fix. */
+[hidden] { display: none !important; }
+
 /* --- Fonts: self-hosted, latin subset, variable ------------------------- */
 @font-face {
   font-family: 'Fraunces';
@@ -1146,4 +1151,52 @@ a { color: inherit; }
 
 @media (max-width: 620px) {
   .wtable__row { grid-template-columns: 1fr; gap: 0.5rem; }
+}
+
+/* --- Estimate form: in-place confirmation --------------------------------
+   Replaces the form after a successful background post. `hidden` does the
+   showing and hiding, so without JavaScript the form stays and this never
+   appears. */
+.formdone {
+  border: 1px solid var(--line);
+  background: var(--bg-card);
+  border-radius: 4px;
+  padding: 3rem 2.5rem;
+  text-align: center;
+  outline: none;
+}
+.formdone__mark {
+  width: 2.75rem;
+  height: 2.75rem;
+  margin: 0 auto 1.25rem;
+  border-radius: 50%;
+  background: var(--dark);
+  color: var(--on-dark);
+  display: grid;
+  place-items: center;
+  font-size: 1.35rem;
+  /* The glyph sits optically high in its em box; nudge it back to centre. */
+  line-height: 1;
+  padding-top: 0.1em;
+}
+.formdone__head {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  line-height: 1.2;
+}
+.formdone__sub {
+  margin-top: 0.75rem;
+  color: var(--ink-mid);
+  font-size: 0.925rem;
+  max-width: 46ch;
+  margin-inline: auto;
+  text-wrap: pretty;
+}
+.form__error {
+  color: #9c2f2f;
+  font-size: 0.875rem;
+  background: #fbf0ee;
+  border: 1px solid #eccfc9;
+  border-radius: 3px;
+  padding: 0.7rem 0.9rem;
 }

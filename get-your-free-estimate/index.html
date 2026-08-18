@@ -96,7 +96,12 @@
 <section class="section section--tight">
   <div class="wrap contact-grid">
     <div>
-      <form class="form" method="POST" action="https://formspree.io/f/xaewlaon">
+      <div class="formdone" id="form-done" hidden tabindex="-1" role="status" aria-live="polite">
+        <p class="formdone__mark" aria-hidden="true">&check;</p>
+        <p class="formdone__head">Submitted</p>
+        <p class="formdone__sub">Thanks &mdash; we have your request and will be in touch, usually the same day. If it is urgent, call <a class="tel" href="tel:+15716329067">(571) 632-9067</a>.</p>
+      </div>
+      <form class="form" id="estimate-form" method="POST" action="https://formspree.io/f/xaewlaon">
         <input type="hidden" name="_subject" value="New estimate request — onyxhomeimprovementllc.com">
         <input type="hidden" name="_next" value="https://onyxhomeimprovementllc.com/thank-you/">
         <div class="hp" aria-hidden="true">
@@ -167,6 +172,7 @@
         </div>
 
         <p class="form__note"><abbr class="req" title="required">*</abbr> Required &mdash; everything else is optional.</p>
+        <p class="form__error" id="form-error" hidden role="alert"></p>
         <button class="btn btn--solid" type="submit" style="justify-self:start;padding-inline:2rem">Request My Free Estimate</button>
         <p class="form__note">We reply to every request, usually the same day. We never share your details.</p>
       </form>
@@ -252,5 +258,28 @@
     </div>
   </div>
 </footer>
+<script>(function(){
+var form=document.getElementById('estimate-form'),done=document.getElementById('form-done'),err=document.getElementById('form-error');
+if(!form||!done||!form.action||!window.fetch||!window.FormData)return;
+var btn=form.querySelector('button[type=submit]'),label=btn?btn.textContent:'';
+form.addEventListener('submit',function(e){
+e.preventDefault();
+if(form.reportValidity&&!form.reportValidity())return;
+if(err){err.hidden=true}
+if(btn){btn.disabled=true;btn.textContent='Sending\u2026'}
+fetch(form.action,{method:'POST',body:new FormData(form),headers:{Accept:'application/json'}})
+.then(function(r){
+if(!r.ok)throw new Error(r.status);
+form.hidden=true;done.hidden=false;
+/* Move focus, or a screen reader is left on a form no longer in the page. */
+done.focus();
+done.scrollIntoView({block:'center'});
+})
+.catch(function(){
+if(err){err.textContent='Something went wrong sending that. Please try again, or call (571) 632-9067.';err.hidden=false}
+if(btn){btn.disabled=false;btn.textContent=label}
+});
+});
+})();</script>
 </body>
 </html>
