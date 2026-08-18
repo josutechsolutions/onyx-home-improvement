@@ -531,9 +531,9 @@ function buildHome() {
     altOverride: 'Circular paver driveway with a stone medallion in front of a stone-faced Northern Virginia home',
   })}</div>
   <div class="wrap hero__inner">
-    <p class="eyebrow">Masonry &amp; Stonework · Northern Virginia · Washington DC</p>
-    <h1 class="h-display">Onyx Home Improvement</h1>
-    <p class="hero__lede">Family-operated in Fairfax since ${BIZ.since} (<a href="/about-us/">read our story</a>). Driveways, patios, walkways, and stone that are built on a base that holds. Free estimates across NoVA and DC.</p>
+    <p class="eyebrow">Family-operated in Fairfax since ${BIZ.since}</p>
+    <h1 class="h-display" style="max-width:16ch">Northern Virginia&rsquo;s Driveway, Hardscape &amp; Masonry Specialists</h1>
+    <p class="hero__lede">Paver, asphalt, and concrete driveways, patios, walkways, retaining walls, and stonework throughout Northern Virginia and Washington DC. Free written estimates, and the owners are on site for every job (<a href="/about-us/">read our story</a>).</p>
     <div class="hero__actions">
       <a class="btn btn--solid" href="/get-your-free-estimate/">Request an Estimate</a>
       <a class="btn btn--on-photo tel" href="${BIZ.phoneHref}">${BIZ.phone}</a>
