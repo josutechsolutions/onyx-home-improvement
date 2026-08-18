@@ -13,7 +13,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import {
   BIZ, NAV, SERVICES, REVIEWS, FEATURED_REVIEWS, AREAS,
-  PORTFOLIO, HOME_PORTFOLIO, FAQ, POINTS,
+  PORTFOLIO, HOME_PORTFOLIO, FAQ, POINTS, PROJECTS,
 } from './content.mjs';
 
 const ROOT = path.dirname(fileURLToPath(import.meta.url));
@@ -38,6 +38,17 @@ const esc = (s = '') => String(s)
 const smart = (s = '') => String(s)
   .replace(/(^|[\s(\[])"/g, '$1“').replace(/"/g, '”')
   .replace(/(^|[\s(\[])'/g, '$1‘');
+
+/* Google truncates meta descriptions around 155-160 characters. Rather than
+   hand-tuning every string, append the boilerplate tail only when the result
+   still fits, so the sentence that actually describes the page always
+   survives intact. Never truncates mid-word. */
+function metaDesc(base, tail = '', max = 158) {
+  const full = tail ? `${base} ${tail}` : base;
+  if (full.length <= max) return full;
+  if (base.length <= max) return base;
+  return base.slice(0, max - 1).replace(/\s+\S*$/, '') + '…';
+}
 
 /* Rewrite root-relative URLs onto BASE. Absolute URLs (https://…) never match
    these patterns, so canonicals, og:url and JSON-LD are left alone. */
@@ -94,9 +105,11 @@ function header(current) {
 
   return `<header class="masthead">
   <div class="wrap masthead__inner">
-    <a class="wordmark" href="/">
-      <span class="wordmark__name">Onyx</span>
-      <span class="wordmark__sub">Home Improvement</span>
+    <a class="wordmark" href="/" aria-label="${esc(BIZ.legal)} — home">
+      <img class="wordmark__logo"
+           src="/assets/img/logo/onyx-mark-dark-360.png"
+           srcset="/assets/img/logo/onyx-mark-dark-180.png 180w, /assets/img/logo/onyx-mark-dark-360.png 360w"
+           sizes="88px" width="360" height="185" alt="" decoding="async">
     </a>
     <nav aria-label="Primary">
       <ul class="nav">
@@ -155,6 +168,11 @@ function footer() {
 
   return `<footer class="footer">
   <div class="wrap">
+    <img class="footer__logo"
+         src="/assets/img/logo/onyx-full-dark-720.png"
+         srcset="/assets/img/logo/onyx-full-dark-360.png 360w, /assets/img/logo/onyx-full-dark-720.png 720w"
+         sizes="200px" width="720" height="431"
+         alt="${esc(BIZ.legal)}" loading="lazy" decoding="async">
     <div class="footer__cols">
       <div>
         <h2>Contact</h2>
@@ -193,8 +211,22 @@ function footer() {
 }
 
 /* --- page shell ---------------------------------------------------------- */
-function layout({ title, desc, url, body, current, jsonld = [], heroImage = null }) {
+function layout({ title, desc, url, body, current, jsonld = [], heroImage = null, trail = null }) {
   const canonical = BIZ.origin + url;
+
+  // Search Console's HTML-tag verification. Emitted on staging too, so the tag
+  // is already live the moment the domain is verified.
+  const verify = BIZ.gscVerification
+    ? `\n<meta name="google-site-verification" content="${esc(BIZ.gscVerification)}">`
+    : '';
+
+  // GA4. Deliberately withheld from BASE_PATH builds — a staging preview and a
+  // localhost run would otherwise land in the same property as real traffic.
+  const analytics = BIZ.ga4Id && !BASE
+    ? `\n<script async src="https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(BIZ.ga4Id)}"></script>`
+      + `\n<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}`
+      + `gtag('js',new Date());gtag('config',${JSON.stringify(BIZ.ga4Id)});</script>`
+    : '';
   // Preload the hero so the LCP element starts downloading before the CSS has
   // parsed. imagesrcset/imagesizes must mirror the <picture> exactly, or the
   // browser treats the preload as a separate resource and fetches twice.
@@ -204,8 +236,24 @@ function layout({ title, desc, url, body, current, jsonld = [], heroImage = null
       + ` imagesizes="100vw">`
     : '';
 
-  const ld = jsonld.length
-    ? `\n<script type="application/ld+json">${JSON.stringify(jsonld.length === 1 ? jsonld[0] : jsonld)}</script>`
+  // BreadcrumbList mirrors the visible crumbs exactly — Google requires the
+  // markup to match what the user can see, so both are driven off one array.
+  const breadcrumb = trail && trail.length > 1 ? [{
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: trail.map((t, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      name: t.label,
+      // The final crumb is the current page, which carries no link in the
+      // visible trail; schema.org wants it identified by the canonical URL.
+      item: t.href ? BIZ.origin + t.href : canonical,
+    })),
+  }] : [];
+
+  const graph = [...jsonld, ...breadcrumb];
+  const ld = graph.length
+    ? `\n<script type="application/ld+json">${JSON.stringify(graph.length === 1 ? graph[0] : graph)}</script>`
     : '';
 
   return `<!doctype html>
@@ -216,7 +264,7 @@ function layout({ title, desc, url, body, current, jsonld = [], heroImage = null
 <title>${esc(title)}</title>
 <meta name="description" content="${esc(desc)}">
 <link rel="canonical" href="${canonical}">
-<meta name="theme-color" content="#14120f">${BASE ? '\n<meta name="robots" content="noindex, nofollow">' : ''}
+<meta name="theme-color" content="#14120f">${BASE ? '\n<meta name="robots" content="noindex, nofollow">' : ''}${verify}
 
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="${esc(BIZ.legal)}">
@@ -229,8 +277,10 @@ function layout({ title, desc, url, body, current, jsonld = [], heroImage = null
 <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/fraunces-latin.woff2" crossorigin>
 <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/dm-sans-latin.woff2" crossorigin>
 <link rel="stylesheet" href="/assets/css/site.css">${heroPreload}
+<link rel="icon" href="/assets/favicon.ico" sizes="16x16 32x32 48x48">
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
-<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">${ld}
+<link rel="icon" href="/assets/favicon-32.png" type="image/png" sizes="32x32">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">${ld}${analytics}
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
@@ -325,15 +375,99 @@ ${rows}
 </section>`;
 }
 
+/* The map is inlined rather than <img>-linked so it inherits the site palette.
+   That means each copy carries the same element ids, so they get suffixed per
+   instance — two copies on one page would otherwise produce duplicate ids and
+   break the aria-labelledby wiring. */
+function areaMap(instance, extraClass = '') {
+  const svg = AREA_MAP
+    .replace(/areamap-t/g, `areamap-t-${instance}`)
+    .replace(/areamap-d/g, `areamap-d-${instance}`);
+  return extraClass
+    ? svg.replace('class="areamap"', `class="areamap ${extraClass}"`)
+    : svg;
+}
+
 function areasSection() {
-  return `<section class="section section--tight section--sunk">
-  <div class="wrap">
-    <p class="eyebrow">Service area</p>
-    <ul class="chips">
-      ${AREAS.map(a => `<li><a href="/service-areas/">${esc(a)}</a></li>`).join('\n      ')}
-    </ul>
+  return `<section class="section section--tight areaband-section">
+  <div class="wrap areaband">
+    <div class="areaband__map">${areaMap('band', 'areamap--quiet')}</div>
+    <div>
+      <p class="eyebrow">Service area</p>
+      <p class="areaband__lede">Estimates are free everywhere on this list. If you are just outside it, call and ask &mdash; we often can.</p>
+      <ul class="chips">
+        ${AREAS.map(a => `<li><a href="/service-areas/${areaSlugOf(a)}/">${esc(a)}</a></li>`).join('\n        ')}
+      </ul>
+      <p style="margin-top:1.5rem"><a class="link-arrow" href="/service-areas/">See all service areas ${ARROW}</a></p>
+    </div>
   </div>
 </section>`;
+}
+
+
+/* --- projects ------------------------------------------------------------ */
+const areaSlugOf = a => a.toLowerCase().replace(/,/g, '').replace(/\s+/g, '-');
+const projectUrl = p => p.service + p.slug + '/';
+const projectsFor = href => PROJECTS.filter(p => p.service === href);
+const projectsIn = city => PROJECTS.filter(p => p.city === city);
+
+/* A project photo. These are plain JPEGs rather than the AVIF/WebP set the
+   rest of the site uses — they came from the Google Business Profile after
+   the image pipeline had already run, and there is no encoder on hand to
+   regenerate them. Two widths, so the srcset still does its job. */
+function projectPicture(p, { sizes, lazy = true } = {}) {
+  const base = '/assets/img/projects/' + p.slug;
+  return `<img src="${base}-1200.jpg"
+       srcset="${base}-760.jpg 760w, ${base}-1200.jpg 1200w" sizes="${sizes}"
+       width="${p.w}" height="${p.h}" alt="${esc(p.alt)}"${lazy ? ' loading="lazy" decoding="async"' : ' fetchpriority="high" decoding="async"'}>`;
+}
+
+/* Card grid of projects. `heading` is omitted when the caller supplies its
+   own section header. */
+function projectGrid(list, { heading = null, intro = null, showService = false } = {}) {
+  if (!list.length) return '';
+  // Built on the site's own .card / .card__media primitives so the tiles
+  // inherit the hairline outline, radius, and image-scale hover that every
+  // other card on the site uses. .pcard only adjusts the type scale down.
+  const cards = list.map(p => {
+    const svc = SERVICES.find(s => s.href === p.service);
+    return `<a class="card pcard reveal" href="${projectUrl(p)}">
+    <div class="card__media">${projectPicture(p, { sizes: '(min-width:1000px) 22vw, (min-width:760px) 30vw, (min-width:460px) 45vw, 92vw' })}</div>
+    <p class="pcard__meta">${showService && svc ? esc(svc.title) + ' &middot; ' : ''}${esc(p.city)}</p>
+    <h3>${esc(p.title)}</h3>
+    <p class="pcard__mat">${esc(p.material)}</p>
+  </a>`;
+  }).join('\n  ');
+
+  return `<section class="section">
+  <div class="wrap">
+    ${heading ? `<p class="eyebrow eyebrow--ruled reveal">Recent work</p>
+    <h2 class="h-section reveal">${heading}</h2>` : ''}
+    ${intro ? `<p class="lede reveal">${intro}</p>` : ''}
+    <div class="pgrid">
+  ${cards}
+    </div>
+  </div>
+</section>`;
+}
+
+/* Projects shown on a city page. If we have built in that city, show those.
+   Otherwise show recent work from elsewhere, labelled as such — a city page
+   must never imply a job happened somewhere it did not. */
+function areaProjects(area, city) {
+  const local = projectsIn(area);
+  if (local.length) {
+    return projectGrid(local, {
+      heading: `Our work in ${city}`,
+      intro: `Completed ${local.length === 1 ? 'project' : 'projects'} in ${city}. Every photograph is a job we built.`,
+      showService: true,
+    });
+  }
+  return projectGrid(PROJECTS.slice(0, 3), {
+    heading: 'Recent work nearby',
+    intro: `We have not photographed a ${city} job for the site yet. These are recent projects from elsewhere in the service area &mdash; the same crews and the same standard apply here.`,
+    showService: true,
+  });
 }
 
 /* --- structured data ----------------------------------------------------- */
@@ -484,7 +618,10 @@ ${ctaBand()}`;
 
   write('index.html', layout({
     title: `Masonry Contractor in Fairfax, VA | ${BIZ.legal}`,
-    desc: `Family-operated masonry and stonework contractor in Fairfax, VA since 2010. Driveways, patios, walkways, retaining walls, stone veneer, chimney and foundation repair. Free estimates across Northern Virginia and DC.`,
+    desc: metaDesc(
+      `Family-operated masonry and stonework contractor in Fairfax, VA since ${BIZ.since}.`
+      + ` Driveways, patios, retaining walls, stone veneer, chimney and foundation repair.`,
+      'Free estimates.'),
     url: '/',
     current: '/',
     heroImage: 'hero-driveway',
@@ -527,7 +664,7 @@ function buildService(s) {
   const gallerySection = gallery.length > 1 ? `<section class="section section--sunk">
   <div class="wrap">
     <div class="section__head">
-      <h2 class="h-section reveal">${esc(s.title)} projects</h2>
+      <h2 class="h-section reveal">${esc(s.title)} photographs</h2>
     </div>
     <div class="grid grid--3">
       ${gallery.map(g => `<figure class="reveal" style="margin:0">${picture(g, { sizes: '(max-width:620px) 92vw, (max-width:900px) 45vw, 30vw', cls: 'card__media' })}
@@ -538,11 +675,12 @@ function buildService(s) {
 
   const others = SERVICES.filter(o => o.slug !== s.slug).slice(0, 3);
 
-  const body = `${crumbs([
+  const trail = [
     { label: 'Home', href: '/' },
     { label: 'Services', href: '/services/' },
     { label: s.title },
-  ])}
+  ];
+  const body = `${crumbs(trail)}
 
 <section class="pagehead">
   <div class="wrap">
@@ -561,6 +699,11 @@ function buildService(s) {
 </div>
 
 ${sections}
+
+${projectGrid(projectsFor(s.href), {
+  heading: `${s.title} projects`,
+  intro: `Recent ${s.title.toLowerCase()} jobs, each with its own page. Photographs are our own work.`,
+})}
 
 ${gallerySection}
 
@@ -583,9 +726,10 @@ ${ctaBand()}`;
 
   write(s.href.replace(/^\//, '') + 'index.html', layout({
     title: `${s.title} in Fairfax, VA | ${BIZ.legal}`,
-    desc: smart(s.card) + ` Free estimates across Northern Virginia and Washington DC. Call ${BIZ.phone}.`,
+    desc: metaDesc(smart(s.card), `Free estimates across Northern Virginia and DC. Call ${BIZ.phone}.`),
     url: s.href,
     current: '/services/',
+    trail,
     body,
     jsonld: [{
       '@context': 'https://schema.org',
@@ -603,7 +747,8 @@ ${ctaBand()}`;
 /* --- Services index ------------------------------------------------------ */
 function buildServicesIndex() {
   const groups = [...new Set(SERVICES.map(s => s.group))];
-  const body = `${crumbs([{ label: 'Home', href: '/' }, { label: 'Services' }])}
+  const trail = [{ label: 'Home', href: '/' }, { label: 'Services' }];
+  const body = `${crumbs(trail)}
 
 <section class="pagehead">
   <div class="wrap">
@@ -633,16 +778,18 @@ ${ctaBand()}`;
 
   write('services/index.html', layout({
     title: `Masonry & Stonework Services in Fairfax, VA | ${BIZ.legal}`,
-    desc: 'Driveway paving, brickwork, retaining walls, foundation repair, chimney repair, patio design, stone veneer, and outdoor fireplaces across Northern Virginia and Washington DC.',
+    desc: 'Driveway paving, brickwork, retaining walls, foundation and chimney repair, patios, stone veneer, and outdoor fireplaces across Northern Virginia and DC.',
     url: '/services/',
     current: '/services/',
+    trail,
     body,
   }));
 }
 
 /* --- About --------------------------------------------------------------- */
 function buildAbout() {
-  const body = `${crumbs([{ label: 'Home', href: '/' }, { label: 'About' }])}
+  const trail = [{ label: 'Home', href: '/' }, { label: 'About' }];
+  const body = `${crumbs(trail)}
 
 <section class="pagehead">
   <div class="wrap">
@@ -717,6 +864,7 @@ ${ctaBand()}`;
     desc: `Onyx Home Improvement is a family-operated masonry and stonework contractor serving Fairfax and Northern Virginia since ${BIZ.since}. Meet the team and how we work.`,
     url: '/about-us/',
     current: '/about-us/',
+    trail,
     body,
   }));
 }
@@ -727,7 +875,8 @@ function buildPortfolio() {
   <figcaption>${esc(IMG[slug].alt)}</figcaption>
 </figure>`).join('\n');
 
-  const body = `${crumbs([{ label: 'Home', href: '/' }, { label: 'Portfolio' }])}
+  const trail = [{ label: 'Home', href: '/' }, { label: 'Portfolio' }];
+  const body = `${crumbs(trail)}
 
 <section class="pagehead">
   <div class="wrap">
@@ -736,6 +885,8 @@ function buildPortfolio() {
     <p class="lede">Driveways, walkways, patios, steps, and stone walls built across Fairfax County, Northern Virginia, and Washington DC. Every photograph here is our own work.</p>
   </div>
 </section>
+
+${projectGrid(PROJECTS, { heading: 'Projects', intro: 'Individual jobs with their own pages — what was built, what it was built from, and where.', showService: true })}
 
 <section class="section section--tight">
   <div class="wrap">
@@ -752,6 +903,7 @@ ${ctaBand()}`;
     desc: 'Photographs of completed driveway, walkway, patio, step, and retaining wall projects by Onyx Home Improvement across Fairfax and Northern Virginia.',
     url: '/portfolio/',
     current: '/portfolio/',
+    trail,
     body,
   }));
 }
@@ -770,7 +922,8 @@ function buildReviews() {
 </li>`;
   }).join('\n');
 
-  const body = `${crumbs([{ label: 'Home', href: '/' }, { label: 'Reviews' }])}
+  const trail = [{ label: 'Home', href: '/' }, { label: 'Reviews' }];
+  const body = `${crumbs(trail)}
 
 <section class="pagehead">
   <div class="wrap">
@@ -801,6 +954,7 @@ ${ctaBand()}`;
     desc: `${BIZ.reviewCount} five-star customer reviews of Onyx Home Improvement on ${BIZ.ratingSource}, for masonry and stonework across Fairfax and Northern Virginia.`,
     url: '/reviews/',
     current: '/reviews/',
+    trail,
     body,
   }));
 }
@@ -817,7 +971,8 @@ function buildContact() {
   const serviceOptions = SERVICES.map(s => `<option value="${esc(s.title)}">${esc(s.title)}</option>`).join('\n            ');
   const areaOptions = AREAS.map(a => `<option value="${esc(a)}">${esc(a)}</option>`).join('\n            ');
 
-  const body = `${crumbs([{ label: 'Home', href: '/' }, { label: 'Free Estimate' }])}
+  const trail = [{ label: 'Home', href: '/' }, { label: 'Free Estimate' }];
+  const body = `${crumbs(trail)}
 
 <section class="pagehead">
   <div class="wrap">
@@ -913,6 +1068,7 @@ function buildContact() {
     desc: `Request a free, itemized masonry or stonework estimate from Onyx Home Improvement. Serving Fairfax, Northern Virginia, and Washington DC. Call ${BIZ.phone}.`,
     url: '/get-your-free-estimate/',
     current: '/get-your-free-estimate/',
+    trail,
     body,
   }));
 
@@ -941,7 +1097,8 @@ function buildContact() {
    and leave lightweight stubs at each city URL so existing search results and
    inbound links land somewhere useful instead of a 404. */
 function buildAreas() {
-  const body = `${crumbs([{ label: 'Home', href: '/' }, { label: 'Service Areas' }])}
+  const trail = [{ label: 'Home', href: '/' }, { label: 'Service Areas' }];
+  const body = `${crumbs(trail)}
 
 <section class="pagehead">
   <div class="wrap">
@@ -953,7 +1110,7 @@ function buildAreas() {
 
 <section class="section section--tight">
   <div class="wrap map-grid">
-    <div class="reveal">${AREA_MAP}</div>
+    <div class="reveal areamap-col">${areaMap('hero')}</div>
     <div>
       <h2 class="h-sub reveal">From Fredericksburg to the District</h2>
       <p class="lede reveal" style="margin-top:1rem">Shaded areas are the counties and independent cities we work in. Vienna and Herndon sit inside Fairfax County, so they are marked with pins rather than their own outline.</p>
@@ -990,9 +1147,10 @@ ${ctaBand()}`;
 
   write('service-areas/index.html', layout({
     title: `Service Areas | Masonry in Northern Virginia & DC | ${BIZ.legal}`,
-    desc: `Onyx Home Improvement serves ${AREAS.join(', ')} with masonry, paving, and stonework. Free estimates.`,
+    desc: 'Onyx Home Improvement covers Fairfax, Arlington, Alexandria, Vienna, Falls Church, Herndon, Manassas, Fredericksburg, and Washington DC. Free estimates.',
     url: '/service-areas/',
     current: '',
+    trail,
     body,
   }));
 
@@ -1001,16 +1159,35 @@ ${ctaBand()}`;
   for (const a of AREAS) {
     const slug = slugFor(a);
     const city = a.split(',')[0];
+    const trail = [
+      { label: 'Home', href: '/' },
+      { label: 'Service Areas', href: '/service-areas/' },
+      { label: a },
+    ];
     write(`service-areas/${slug}/index.html`, layout({
       title: `Masonry & Stonework in ${a} | ${BIZ.legal}`,
-      desc: `Onyx Home Improvement provides driveway paving, patios, walkways, retaining walls, and masonry repair in ${a}. Family-operated since ${BIZ.since}. Free estimates.`,
+      desc: metaDesc(
+        `Onyx Home Improvement provides driveway paving, patios, walkways, retaining walls,`
+        + ` and masonry repair in ${a}. Family-operated since ${BIZ.since}.`,
+        'Free estimates.'),
       url: `/service-areas/${slug}/`,
       current: '',
-      body: `${crumbs([
-        { label: 'Home', href: '/' },
-        { label: 'Service Areas', href: '/service-areas/' },
-        { label: a },
-      ])}
+      trail,
+      // City landing pages carry the same service list as /services/, but with
+      // areaServed narrowed to this one city — that pairing is what tells
+      // Google the page is about masonry *in this place*. provider points at
+      // the LocalBusiness node on the home page rather than restating it, so
+      // there is exactly one business entity across the site.
+      jsonld: SERVICES.map(s => ({
+        '@context': 'https://schema.org',
+        '@type': 'Service',
+        name: `${s.title} in ${a}`,
+        serviceType: s.title,
+        url: BIZ.origin + s.href,
+        provider: { '@id': BIZ.origin + '/#business' },
+        areaServed: { '@type': 'Place', name: a },
+      })),
+      body: `${crumbs(trail)}
 
 <section class="pagehead">
   <div class="wrap">
@@ -1033,10 +1210,90 @@ ${serviceGrid()}
   </div>
 </section>
 
+${areaProjects(a, city)}
 ${faqSection(FAQ.slice(0, 4))}
 ${ctaBand()}`,
     }));
   }
+}
+
+/* --- Project pages ------------------------------------------------------- */
+function buildProject(p) {
+  const svc = SERVICES.find(s => s.href === p.service);
+  if (!svc) { warnings.push(`project ${p.slug}: no service matches ${p.service}`); return; }
+  if (!AREAS.includes(p.city)) warnings.push(`project ${p.slug}: city "${p.city}" is not in AREAS, so no city page links to it`);
+
+  const url = projectUrl(p);
+  const trail = [
+    { label: 'Home', href: '/' },
+    { label: 'Services', href: '/services/' },
+    { label: svc.title, href: svc.href },
+    { label: p.title },
+  ];
+
+  const siblings = projectsFor(svc.href).filter(o => o.slug !== p.slug);
+  const cityPage = AREAS.includes(p.city) ? `/service-areas/${areaSlugOf(p.city)}/` : null;
+
+  const body = `${crumbs(trail)}
+
+<section class="pagehead">
+  <div class="wrap">
+    <p class="eyebrow">${esc(svc.title)} &middot; ${esc(p.city)}</p>
+    <h1 class="h-display">${esc(p.title)}</h1>
+    <p class="lede">${esc(p.summary)}</p>
+  </div>
+</section>
+
+<section class="section section--tight">
+  <div class="wrap">
+    <figure class="pfigure">
+      ${projectPicture(p, { sizes: '(min-width:1100px) 1000px, 94vw', lazy: false })}
+      <figcaption>${esc(p.title)} &mdash; ${esc(p.city)}</figcaption>
+    </figure>
+  </div>
+</section>
+
+<section class="section section--tight">
+  <div class="wrap prose">
+    <dl class="pspec">
+      <div><dt>Service</dt><dd><a href="${svc.href}">${esc(svc.title)}</a></dd></div>
+      <div><dt>Material</dt><dd>${esc(p.material)}</dd></div>
+      <div><dt>Location</dt><dd>${cityPage ? `<a href="${cityPage}">${esc(p.city)}</a>` : esc(p.city)}</dd></div>
+    </dl>
+    ${p.body.map(t => `<p>${smart(t)}</p>`).join('\n    ')}
+  </div>
+</section>
+
+${projectGrid(siblings, { heading: `More ${svc.title.toLowerCase()} work` })}
+
+${ctaBand()}`;
+
+  write(url.replace(/^\//, '') + 'index.html', layout({
+    title: `${p.title} in ${p.city} | ${BIZ.legal}`,
+    desc: metaDesc(smart(p.summary), `${svc.title} in ${p.city}. Free estimates &mdash; call ${BIZ.phone}.`),
+    url,
+    current: '/portfolio/',
+    trail,
+    body,
+    // A completed job is a CreativeWork about the service, not a Service
+    // offer in its own right — marking it up as an Offer would tell Google
+    // this single driveway is purchasable. about/ locationCreated are what
+    // tie it to the service and the city.
+    jsonld: [{
+      '@context': 'https://schema.org',
+      '@type': 'CreativeWork',
+      '@id': BIZ.origin + url + '#project',
+      name: `${p.title} — ${p.city}`,
+      headline: p.title,
+      description: p.summary,
+      url: BIZ.origin + url,
+      image: BIZ.origin + '/assets/img/projects/' + p.slug + '-1200.jpg',
+      creator: { '@id': BIZ.origin + '/#business' },
+      locationCreated: { '@type': 'Place', name: p.city },
+      about: { '@type': 'Service', name: svc.title, url: BIZ.origin + svc.href },
+      material: p.material,
+    }],
+  }));
 }
 
 /* --- 404 ----------------------------------------------------------------- */
@@ -1067,6 +1324,7 @@ function buildMeta() {
     ['/', '1.0'],
     ['/services/', '0.9'],
     ...SERVICES.map(s => [s.href, '0.8']),
+    ...PROJECTS.map(p => [projectUrl(p), '0.6']),
     ['/portfolio/', '0.7'],
     ['/reviews/', '0.7'],
     ['/about-us/', '0.7'],
@@ -1100,12 +1358,9 @@ Sitemap: ${BIZ.origin}/sitemap.xml
   }
   write('.nojekyll', '');
 
-  /* Monogram favicon — an "O" cut from an onyx-black square. */
-  write('assets/favicon.svg', `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-<rect width="64" height="64" rx="10" fill="#14120f"/>
-<path d="M32 14c9.94 0 18 8.06 18 18s-8.06 18-18 18-18-8.06-18-18 8.06-18 18-18zm0 7c-6.08 0-11 4.92-11 11s4.92 11 11 11 11-4.92 11-11-4.92-11-11-11z" fill="#f6f4f1"/>
-</svg>
-`);
+  /* Icons and logo files are NOT generated here. They are rasterised from
+     the source artwork by tools/icons.mjs, which owns the only PNG encoder in
+     the repo; build.mjs has none. Run that script after replacing a logo. */
 }
 
 /* --- run ----------------------------------------------------------------- */
@@ -1113,6 +1368,7 @@ console.log('Building ' + BIZ.legal + '…\n');
 buildHome();
 buildServicesIndex();
 SERVICES.forEach(buildService);
+PROJECTS.forEach(buildProject);
 buildAbout();
 buildPortfolio();
 buildReviews();

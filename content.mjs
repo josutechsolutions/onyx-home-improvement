@@ -45,6 +45,19 @@ export const BIZ = {
   // Paste your Formspree form ID here (formspree.io -> New Form).
   // Until it is set, the estimate form falls back to an email link.
   formspreeId: '',
+
+  // --- Analytics & search-console verification ---------------------------
+  // Both lines are dropped entirely from the HTML while blank, so the site is
+  // safe to ship before either account exists.
+  //
+  // gscVerification is emitted on every build, including staging, so the tag
+  // is already in place whenever you verify. ga4Id is emitted only on a
+  // production build (no BASE_PATH) — otherwise local previews and the
+  // staging site would report as real traffic.
+  ga4Id: '',            // 'G-XXXXXXXXXX' — GA4 > Admin > Data streams > Web
+  gscVerification: '',  // token only, not the whole tag — Search Console >
+                        // Add property > URL prefix > HTML tag; from
+                        // <meta name="google-site-verification" content="THIS">
 };
 
 /* --- Primary navigation -------------------------------------------------- */
@@ -408,8 +421,10 @@ export const FEATURED_REVIEWS = ['Susan D.', 'Bob R.', 'Nancy P.'];
 /* --- Service areas ------------------------------------------------------- */
 export const AREAS = [
   'Fairfax, VA', 'Vienna, VA', 'Falls Church, VA', 'Arlington, VA',
-  'Alexandria, VA', 'Herndon, VA', 'Manassas, VA', 'Manassas Park, VA',
-  'Fredericksburg, VA', 'Washington, DC',
+  'Alexandria, VA', 'McLean, VA', 'Tysons, VA', 'Reston, VA',
+  'Herndon, VA', 'Springfield, VA', 'Annandale, VA', 'Clifton, VA',
+  'Manassas, VA', 'Manassas Park, VA', 'Fredericksburg, VA',
+  'Washington, DC',
 ];
 
 /* --- Portfolio ----------------------------------------------------------- */
@@ -431,6 +446,150 @@ export const HOME_PORTFOLIO = [
   'driveway-circle', 'walkway-bluestone', 'patio-firepit',
   'wall-curved', 'walkway-brick', 'driveway-paver-grey',
   'steps-stone', 'patio-cobble', 'walkway-curved',
+];
+
+/* --- Projects ------------------------------------------------------------
+   Real completed jobs, each tied to the service it belongs under and the
+   city it was built in. Project pages are generated at
+   {service.href}{slug}/ — e.g. /masonry/driveway-paving/paver-driveway-
+   arlington-va/ — so a project always sits beneath its own service.
+
+   Every entry here must be an actual job. Titles and copy are written from
+   the photograph, which is why several differ from the labels the old site
+   carried: four of those labels described the wrong material entirely.
+
+   To add a job: drop {slug}-1200.jpg and {slug}-760.jpg into
+   assets/img/projects/, add an entry below, run `node build.mjs`. The page,
+   its schema, the sitemap entry, and the links from both the service page
+   and the city page are all generated from this one record.
+   ------------------------------------------------------------------------ */
+export const PROJECTS = [
+  {
+    slug: 'paver-driveway-medallion-arlington-va',
+    title: 'Paver Driveway with Circular Medallion',
+    city: 'Arlington, VA',
+    service: '/masonry/driveway-paving/',
+    material: 'Interlocking pavers',
+    w: 1200, h: 900,
+    alt: 'Tan paver driveway with a circular medallion inlay in front of a stone-faced Arlington home with two garage doors',
+    summary: 'A full paver driveway in tumbled tan and grey units, laid to a running bond with a darker circular medallion set on the approach to the garages.',
+    body: [
+      'The field is laid in a running bond that keeps the eye moving toward the house, with a soldier course running the full perimeter to lock the edges. The circular medallion is the piece that does the work here — set on axis with the two garage bays, it breaks up what would otherwise read as a large uninterrupted expanse of paving and gives the approach a centre.',
+      'Pavers earn their keep on a driveway of this size. Individual units lift out and go back without a patch mark, so a future utility trench or a settled area is a repair rather than a scar. The stone facade on the house set the colour direction: the paving picks up its warm tans without matching it exactly, which would have flattened both.',
+    ],
+  },
+  {
+    slug: 'stamped-concrete-driveway-annandale-va',
+    title: 'Stamped Concrete Driveway',
+    city: 'Annandale, VA',
+    service: '/masonry/driveway-paving/',
+    material: 'Stamped concrete',
+    w: 1200, h: 874,
+    alt: 'Stamped concrete driveway in a large-format ashlar slate pattern running to the garage of a white Annandale colonial',
+    summary: 'A single-width drive replaced in stamped concrete, textured in a large-format ashlar pattern and run the full length from street to garage.',
+    body: [
+      'A narrow lot leaves no room for a driveway that reads as a slab, so this one is stamped in a large-format ashlar pattern that gives the surface scale and grip without the maintenance of a jointed material. The tone was kept close to the grey of the roof and shutters rather than competing with the white brick.',
+      'Stamped concrete suits a drive like this one: a single continuous pour with no joints for weeds to find, textured enough to keep its footing in a wet Northern Virginia winter. The run is graded to carry water off the surface and away from the house rather than toward the foundation.',
+    ],
+  },
+  {
+    slug: 'concrete-driveway-paver-border-springfield-va',
+    title: 'Concrete Driveway with Paver Border',
+    city: 'Springfield, VA',
+    service: '/masonry/driveway-paving/',
+    material: 'Concrete with paver edging',
+    w: 1200, h: 900,
+    alt: 'Broom-finished concrete driveway edged with a grey paver soldier course, curving to the garage of a brick Springfield home in winter',
+    summary: 'A broom-finished concrete drive with a grey paver soldier course run down both edges, curving from the street to a two-car garage.',
+    body: [
+      'The curve is the reason for the border. A concrete drive that sweeps rather than runs straight needs its edge defined, or the eye reads the sweep as a mistake — the paver soldier course does that, and it also gives the slab a clean termination against the lawn instead of a raw edge that grass creeps over.',
+      'Poured in winter, which is a matter of watching the forecast rather than avoiding the season. Concrete needs its cure protected from freezing, so the pour was scheduled into a clear window and the surface kept covered. The broom finish across the driving surface is what gives it traction once the weather turns.',
+    ],
+  },
+  {
+    slug: 'asphalt-driveway-springfield-va',
+    title: 'Asphalt Driveway Replacement',
+    city: 'Springfield, VA',
+    service: '/masonry/driveway-paving/',
+    material: 'Asphalt',
+    w: 1200, h: 722,
+    alt: 'Onyx crew compacting a freshly laid asphalt driveway with a ride-on roller at a Springfield home',
+    summary: 'A full-width asphalt replacement, photographed mid-compaction with the roller working the fresh mat.',
+    body: [
+      'This is what the middle of an asphalt job looks like. The mat has been laid and the ride-on roller is compacting it while the material is still hot — compaction is the step that decides how long the surface lasts, and it has a window measured in minutes, not hours. Get it right and the driveway sheds water for two decades; rush it and the surface ravels at the edges within a few winters.',
+      'The old surface was torn out and the base regraded before any new material went down. That is the part no one photographs and the part that actually matters: asphalt laid over a failing base fails in exactly the same places the old one did, on roughly the same schedule.',
+    ],
+  },
+  {
+    slug: 'asphalt-driveway-paver-border-mclean-va',
+    title: 'Asphalt Driveway with Paver Border',
+    city: 'McLean, VA',
+    service: '/masonry/driveway-paving/',
+    material: 'Asphalt with paver edging',
+    w: 1200, h: 934,
+    alt: 'Freshly laid asphalt driveway edged with a tan paver border, running past clipped shrubs at a McLean home',
+    summary: 'A long asphalt drive finished with a tan paver soldier course along its edge, separating the paving from the planting beds.',
+    body: [
+      'Asphalt on its own gives you a clean surface and a soft edge. The paver border is what turns it into a finished piece of hardscape — it holds the asphalt edge from crumbling under a tyre that strays, and it draws a deliberate line between the drive and the beds instead of letting mulch and blacktop meet in a ragged seam.',
+      'On a run this long the border also does something for the eye: it follows the curve and makes the length feel intentional. The alternative, an unedged strip of asphalt disappearing between the shrubs, reads as utility rather than as part of the property.',
+    ],
+  },
+  {
+    slug: 'circular-fire-pit-patio-vienna-va',
+    title: 'Circular Fire Pit Patio with Seating Wall',
+    city: 'Vienna, VA',
+    service: '/stone-work/patio-design/',
+    material: 'Stone patio with block seating wall',
+    w: 1200, h: 900,
+    alt: 'Circular stone patio with a low seating wall and a central fire pit ringed by Adirondack chairs in a landscaped Vienna backyard',
+    summary: 'A free-standing circular patio built around a fire pit, ringed by a low seating wall and set into an established lawn.',
+    body: [
+      'The circle is set away from the house rather than attached to it, which is the right call on a property that already had a pool terrace doing the job of an entertaining space. This is the other kind of outdoor room — the one you use in October, facing inward at the fire rather than outward at the yard.',
+      'The low wall around the perimeter is structural and social at once: it retains the raised pad against the surrounding grade and it seats another half-dozen people when the four chairs are taken. Sized so that a person on the wall and a person in a chair are at roughly the same height, which is the detail that decides whether a fire pit space actually gets used.',
+    ],
+  },
+  {
+    slug: 'brick-herringbone-walkway-arlington-va',
+    title: 'Brick Herringbone Walkway',
+    city: 'Arlington, VA',
+    service: '/masonry/brickwork/',
+    material: 'Clay brick pavers',
+    w: 1200, h: 900,
+    alt: 'Onyx mason setting red clay brick pavers in a herringbone pattern with a mallet during installation in Arlington',
+    summary: 'Red clay brick set in a herringbone bond, photographed during installation with the field being closed unit by unit.',
+    body: [
+      'Herringbone is the strongest bond you can lay in a brick field, which is why it is worth the extra labour it costs. Every unit locks against its neighbours in two directions, so the surface distributes load instead of letting individual bricks work loose — the reason it has been the pattern of choice for paved surfaces since long before anyone was laying them by machine.',
+      'Set by hand, one at a time, with a mallet and a string line. The cuts at the perimeter are what the work is judged on: a herringbone field meeting its border cleanly means every edge unit was measured and cut to fit, and there is no way to hurry that part.',
+    ],
+  },
+  {
+    slug: 'block-retaining-wall-steps-vienna-va',
+    title: 'Segmental Block Retaining Wall with Steps',
+    city: 'Vienna, VA',
+    service: '/masonry/retaining-walls/',
+    material: 'Segmental block',
+    w: 1200, h: 900,
+    alt: 'Curved cream segmental block retaining wall with integrated steps and a paver landing at the front entrance of a Vienna home',
+    summary: 'A curved segmental block wall terracing a sloped front yard, with steps and a paver landing built into the run.',
+    body: [
+      'A front yard that falls away from the house gives you two bad options and one good one: live with an awkward slope, cut a raw bank into it, or terrace it properly. This is the third. The wall holds the grade back in a curve that follows the natural line of the approach, and the steps are built into the wall rather than bolted on beside it.',
+      'Segmental block suits a wall like this because it flexes. Each course sets back slightly into the slope, so the wall leans into the load it is holding instead of standing straight up against it, and the curve is achieved by the geometry of the units rather than by cutting. The capping course finishes the top and, on the lower run, doubles as somewhere to sit.',
+    ],
+  },
+  {
+    slug: 'paver-walkway-soldier-border-fairfax-va',
+    title: 'Paver Walkway with Soldier Border',
+    city: 'Fairfax, VA',
+    service: '/stone-work/patio-design/',
+    material: 'Interlocking pavers',
+    w: 1200, h: 554,
+    alt: 'Wide paver walkway with a contrasting soldier-course border running from the public sidewalk toward a Fairfax home',
+    summary: 'A wide paver walk running from the public sidewalk to the house, bordered on both sides with a contrasting soldier course.',
+    body: [
+      'Wider than a standard front walk, and deliberately so — two people should be able to walk up to a front door side by side. The field is laid in a running bond with the contrasting border framing it the whole way, which keeps a long straight run from reading as a corridor.',
+      'The walk meets the public sidewalk flush, with the transition set level so there is nothing to catch a toe or a wheel. Everything is pitched to shed water into the lawn on either side rather than letting it run the length of the walk and pool at the low end.',
+    ],
+  },
 ];
 
 /* --- FAQ ----------------------------------------------------------------- */
