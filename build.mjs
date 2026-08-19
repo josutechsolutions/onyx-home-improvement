@@ -558,11 +558,14 @@ const LOCAL_BUSINESS = {
   telephone: BIZ.phone,
   email: BIZ.email,
   foundingDate: BIZ.since,
-  description: 'Family-operated masonry and stonework contractor serving Fairfax, Northern Virginia, and Washington DC since 2010. Driveways, patios, walkways, retaining walls, stone veneer, chimney and foundation repair.',
+  description: 'Family-operated masonry and stonework contractor serving Northern Virginia and Washington DC since 2010. Driveways, patios, walkways, retaining walls, stone veneer, chimney and foundation repair.',
   image: BIZ.origin + '/assets/img/hero-driveway-1200.webp',
   address: {
     '@type': 'PostalAddress',
     ...(BIZ.street ? { streetAddress: BIZ.street } : {}),
+    // A locality, per schema.org — this is the business address, not the
+    // service area. The visible copy says "Northern Virginia"; this field
+    // has to name an actual city or Google discards the address.
     addressLocality: 'Fairfax',
     addressRegion: 'VA',
     addressCountry: 'US',
@@ -609,7 +612,7 @@ function buildHome() {
     altOverride: 'Circular paver driveway with a stone medallion in front of a stone-faced Northern Virginia home',
   })}</div>
   <div class="wrap hero__inner">
-    <p class="eyebrow">Family-operated in Fairfax since ${BIZ.since}</p>
+    <p class="eyebrow">Family-operated in Northern Virginia since ${BIZ.since}</p>
     <h1 class="h-display" style="max-width:16ch">Northern Virginia&rsquo;s Driveway, Hardscape &amp; Masonry Specialists</h1>
     <p class="hero__lede">Paver, asphalt, and concrete driveways, patios, walkways, retaining walls, and stonework throughout Northern Virginia and Washington DC. Free written estimates, and the owners are on site for every job (<a href="/about-us/">read our story</a>).</p>
     <div class="hero__actions">
@@ -625,7 +628,7 @@ ${trustbar()}
   <div class="wrap">
     <div class="section__head">
       <h2 class="h-section reveal">What we do</h2>
-      <p class="lede reveal">Masonry and stonework for homes across Fairfax County and the surrounding area — from a single set of front steps to a full driveway replacement.</p>
+      <p class="lede reveal">Masonry and stonework for homes across Northern Virginia — from a single set of front steps to a full driveway replacement.</p>
     </div>
     <div class="grid grid--3">
 ${serviceGrid()}
@@ -695,9 +698,9 @@ ${faqSection(FAQ)}
 ${ctaBand()}`;
 
   write('index.html', layout({
-    title: `Masonry Contractor in Fairfax, VA | ${BIZ.legal}`,
+    title: `Masonry Contractor in Northern Virginia | ${BIZ.legal}`,
     desc: metaDesc(
-      `Family-operated masonry and stonework contractor in Fairfax, VA since ${BIZ.since}.`
+      `Family-operated masonry and stonework contractor in Northern Virginia since ${BIZ.since}.`
       + ` Driveways, patios, retaining walls, stone veneer, chimney and foundation repair.`,
       'Free estimates.'),
     url: '/',
@@ -811,7 +814,7 @@ ${areasSection()}
 ${ctaBand()}`;
 
   write(s.href.replace(/^\//, '') + 'index.html', layout({
-    title: `${s.title} in Fairfax, VA | ${BIZ.legal}`,
+    title: `${s.title} in Northern Virginia | ${BIZ.legal}`,
     desc: metaDesc(smart(s.card), `Free estimates across Northern Virginia and DC. Call ${BIZ.phone}.`),
     url: s.href,
     current: '/services/',
@@ -875,7 +878,7 @@ ${faqSection(FAQ)}
 ${ctaBand()}`;
 
   write('services/index.html', layout({
-    title: `Masonry & Stonework Services in Fairfax, VA | ${BIZ.legal}`,
+    title: `Masonry & Stonework Services in Northern Virginia | ${BIZ.legal}`,
     desc: 'Driveway paving, brickwork, retaining walls, foundation and chimney repair, patios, stone veneer, and outdoor fireplaces across Northern Virginia and DC.',
     url: '/services/',
     current: '/services/',
@@ -906,7 +909,7 @@ function buildAbout() {
     <div>
       <h2 class="h-sub reveal">A family business, working where we live</h2>
       <div class="prose reveal" style="margin-top:1.25rem">
-        <p>Onyx has been serving homeowners in and around Fairfax since ${BIZ.since}. We are family-operated — two brothers and a crew — which means the people who quote your job are the same people on site while it is being built. There is no sales layer between you and the work.</p>
+        <p>Onyx has been serving homeowners across Northern Virginia since ${BIZ.since}. We are family-operated — two brothers and a crew — which means the people who quote your job are the same people on site while it is being built. There is no sales layer between you and the work.</p>
         <p>Our roots are local, and so is our pride in every project we take on. Most of our work comes through word of mouth and repeat customers, which is a standard that keeps us honest: we would rather keep a customer for a decade than win one job.</p>
       </div>
     </div>
@@ -935,7 +938,7 @@ function buildAbout() {
     </div>
     <ul class="points" style="grid-template-columns:repeat(2,1fr);display:grid;gap:2rem">
       ${POINTS.map(([t, d]) => `<li class="reveal"><strong>${esc(t)}</strong><span>${esc(smart(d))}</span></li>`).join('\n      ')}
-      <li class="reveal"><strong>Premium materials, proven technique</strong><span>We use materials that suit the Fairfax climate and methods that have earned their place. Beauty never comes at the expense of long-term performance.</span></li>
+      <li class="reveal"><strong>Premium materials, proven technique</strong><span>We use materials that suit the Northern Virginia climate and methods that have earned their place. Beauty never comes at the expense of long-term performance.</span></li>
       <li class="reveal"><strong>Clean sites and kept timelines</strong><span>We prioritize job site cleanliness and realistic scheduling, so a project in progress does not take over your property.</span></li>
     </ul>
   </div>
@@ -944,7 +947,7 @@ function buildAbout() {
 <section class="section section--sunk">
   <div class="wrap">
     <div class="section__head">
-      <h2 class="h-section reveal">Building stronger homes in Fairfax, VA</h2>
+      <h2 class="h-section reveal">Building stronger homes across Northern Virginia</h2>
     </div>
     <div class="prose reveal">
       <p>We do not just build walls, patios, and fireplaces — we build spaces that stand up to time and weather. Using premium materials and proven techniques, we make sure your stonework is not only beautiful the week it is finished, but years afterward.</p>
@@ -958,8 +961,8 @@ ${areasSection()}
 ${ctaBand()}`;
 
   write('about-us/index.html', layout({
-    title: `About Onyx Home Improvement | Masonry in Fairfax, VA`,
-    desc: `Onyx Home Improvement is a family-operated masonry and stonework contractor serving Fairfax and Northern Virginia since ${BIZ.since}. Meet the team and how we work.`,
+    title: `About Onyx Home Improvement | Masonry in Northern Virginia`,
+    desc: `Onyx Home Improvement is a family-operated masonry and stonework contractor serving Northern Virginia since ${BIZ.since}. Meet the team and how we work.`,
     url: '/about-us/',
     current: '/about-us/',
     trail,
@@ -980,7 +983,7 @@ function buildPortfolio() {
   <div class="wrap">
     <p class="eyebrow">Recent work</p>
     <h1 class="h-display">Portfolio</h1>
-    <p class="lede">Driveways, walkways, patios, steps, and stone walls built across Fairfax County, Northern Virginia, and Washington DC. Every photograph here is our own work.</p>
+    <p class="lede">Driveways, walkways, patios, steps, and stone walls built across Northern Virginia and Washington DC. Every photograph here is our own work.</p>
   </div>
 </section>
 
@@ -998,7 +1001,7 @@ ${ctaBand()}`;
 
   write('portfolio/index.html', layout({
     title: `Portfolio | Masonry & Stonework in Northern Virginia | ${BIZ.legal}`,
-    desc: 'Photographs of completed driveway, walkway, patio, step, and retaining wall projects by Onyx Home Improvement across Fairfax and Northern Virginia.',
+    desc: 'Photographs of completed driveway, walkway, patio, step, and retaining wall projects by Onyx Home Improvement across Northern Virginia.',
     url: '/portfolio/',
     current: '/portfolio/',
     trail,
@@ -1048,8 +1051,8 @@ ${leaveReview()}
 ${ctaBand()}`;
 
   write('reviews/index.html', layout({
-    title: `Reviews | ${BIZ.legal} | ${BIZ.rating}/5 in Fairfax, VA`,
-    desc: `${BIZ.reviewCount} five-star customer reviews of Onyx Home Improvement on ${BIZ.ratingSource}, for masonry and stonework across Fairfax and Northern Virginia.`,
+    title: `Reviews | ${BIZ.legal} | ${BIZ.rating}/5 in Northern Virginia`,
+    desc: `${BIZ.reviewCount} five-star customer reviews of Onyx Home Improvement on ${BIZ.ratingSource}, for masonry and stonework across Northern Virginia.`,
     url: '/reviews/',
     current: '/reviews/',
     trail,
@@ -1197,7 +1200,7 @@ function buildContact() {
 
   write('get-your-free-estimate/index.html', layout({
     title: `Get Your Free Estimate | ${BIZ.legal}`,
-    desc: `Request a free, itemized masonry or stonework estimate from Onyx Home Improvement. Serving Fairfax, Northern Virginia, and Washington DC. Call ${BIZ.phone}.`,
+    desc: `Request a free, itemized masonry or stonework estimate from Onyx Home Improvement. Serving Northern Virginia and Washington DC. Call ${BIZ.phone}.`,
     url: '/get-your-free-estimate/',
     current: '/get-your-free-estimate/',
     trail,
@@ -1239,7 +1242,7 @@ function buildAreas() {
   <div class="wrap">
     <p class="eyebrow">Where we work</p>
     <h1 class="h-display">Service areas</h1>
-    <p class="lede">Onyx is based in Fairfax and works throughout Northern Virginia and Washington DC. Estimates are free everywhere on this list — if you are just outside it, call and ask, because we often can.</p>
+    <p class="lede">Onyx works throughout Northern Virginia and Washington DC. Estimates are free everywhere on this list — if you are just outside it, call and ask, because we often can.</p>
   </div>
 </section>
 
@@ -1247,8 +1250,8 @@ function buildAreas() {
   <div class="wrap map-grid">
     <div class="reveal areamap-col">${areaMap('hero')}</div>
     <div>
-      <h2 class="h-sub reveal">From Fredericksburg to the District</h2>
-      <p class="lede reveal" style="margin-top:1rem">Shaded areas are the counties and independent cities we work in. Vienna and Herndon sit inside Fairfax County, so they are marked with pins rather than their own outline.</p>
+      <h2 class="h-sub reveal">From Clifton to the District</h2>
+      <p class="lede reveal" style="margin-top:1rem">Shaded areas are the counties and independent cities we work in. Towns like Vienna, Burke, and Fairfax Station sit inside Fairfax County, so they are marked with pins rather than their own outline.</p>
       <ul class="map-legend reveal">
         <li><i></i>Jurisdictions we serve</li>
         <li><i class="is-pin"></i>Cities and towns</li>
@@ -1282,7 +1285,7 @@ ${ctaBand()}`;
 
   write('service-areas/index.html', layout({
     title: `Service Areas | Masonry in Northern Virginia & DC | ${BIZ.legal}`,
-    desc: 'Onyx Home Improvement covers Fairfax, Arlington, Alexandria, Vienna, Falls Church, Herndon, Manassas, Fredericksburg, and Washington DC. Free estimates.',
+    desc: 'Onyx Home Improvement covers Fairfax, Arlington, Alexandria, Vienna, Falls Church, Burke, Fairfax Station, Springfield, and Washington DC. Free estimates.',
     url: '/service-areas/',
     current: '',
     trail,
@@ -1328,7 +1331,7 @@ ${ctaBand()}`;
   <div class="wrap">
     <p class="eyebrow">Service area</p>
     <h1 class="h-display" style="max-width:18ch">Masonry &amp; Stonework in ${esc(a)}</h1>
-    <p class="lede">Onyx Home Improvement has built driveways, patios, walkways, steps, and stone walls for homeowners in ${esc(city)} since ${BIZ.since}. We are family-operated, based in Fairfax, and estimates here are free.</p>
+    <p class="lede">Onyx Home Improvement has built driveways, patios, walkways, steps, and stone walls for homeowners in ${esc(city)} since ${BIZ.since}. We are family-operated, work throughout Northern Virginia, and estimates here are free.</p>
     <div class="hero__actions" style="margin-top:2rem">
       <a class="btn btn--solid" href="/get-your-free-estimate/">Get a Free Estimate</a>
       <a class="btn btn--ghost tel" href="${BIZ.phoneHref}">${BIZ.phone}</a>

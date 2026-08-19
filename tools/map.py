@@ -23,9 +23,6 @@ SERVED = {
     '51610': 'Falls Church',
     '51013': 'Arlington',
     '51510': 'Alexandria',
-    '51683': 'Manassas',
-    '51685': 'Manassas Park',
-    '51630': 'Fredericksburg',
     '11001': 'Washington, D.C.',
 }
 # Neighbouring jurisdictions, drawn faintly so the served area has context.
@@ -38,25 +35,28 @@ CONTEXT = {
     '51047': 'Culpeper', '24017': 'Charles', '51057': 'Essex',
 }
 
-# Pins. Towns inside Fairfax County (Vienna, Herndon) have no separate
-# boundary, so every service area gets a pin for consistency.
+# Pins. Towns inside Fairfax County (Vienna, Burke, Fairfax Station) have no
+# separate boundary of their own, so they only appear as pins.
 PINS = [
     # name, lat, lon, text-anchor, dy nudge (viewBox units)
-    ('Herndon',        38.9696, -77.3861, 'end',    0),
-    ('Vienna',         38.9012, -77.2653, 'start', -14),
-    ('Falls Church',   38.8823, -77.1711, 'end',     8),
-    ('Washington, DC', 38.9072, -77.0369, 'start', -16),
-    ('Arlington',      38.8816, -77.0910, 'start',  30),
-    ('Alexandria',     38.8048, -77.0469, 'start',   6),
-    ('Fairfax',        38.8462, -77.3064, 'end',     8),
-    ('Manassas Park',  38.7840, -77.4467, 'end',   -10),
-    ('Manassas',       38.7509, -77.4753, 'end',    12),
-    ('Fredericksburg', 38.3032, -77.4605, 'start',   0),
+    ('Vienna',          38.9012, -77.2653, 'start', -14),
+    ('Falls Church',    38.8823, -77.1711, 'end',     8),
+    ('Washington, DC',  38.9072, -77.0369, 'start', -16),
+    ('Arlington',       38.8816, -77.0910, 'start',  30),
+    ('Alexandria',      38.8048, -77.0469, 'start',   6),
+    ('Fairfax',         38.8462, -77.3064, 'end',     8),
+    ('Fairfax Station', 38.8043, -77.3225, 'end',     0),
+    ('Burke',           38.7934, -77.2717, 'start',  10),
 ]
 
+# Towns that appear only as a pin, for the <desc>. Kept explicit rather than
+# derived: the pin names and the SERVED labels are deliberately spelled
+# differently ("Fairfax" vs "Fairfax City"), so no join between them is safe.
+PIN_ONLY = ['Vienna', 'Burke', 'Fairfax Station']
+
 # Viewport in degrees, chosen so the served band reads roughly square.
-LON0, LON1 = -77.70, -76.85
-LAT0, LAT1 = 38.22, 39.10
+LON0, LON1 = -77.60, -76.85
+LAT0, LAT1 = 38.58, 39.12
 W = 1000.0
 LAT_MID = (LAT0 + LAT1) / 2
 KX = math.cos(math.radians(LAT_MID))          # flatten lon at this latitude
@@ -130,7 +130,8 @@ parts.append('<title id="areamap-t">Onyx Home Improvement service area map</titl
 parts.append(
     '<desc id="areamap-d">Northern Virginia and Washington DC, with '
     + ', '.join(v for v in SERVED.values())
-    + ' highlighted, plus Vienna and Herndon.</desc>'
+    + ' highlighted, plus '
+    + ', '.join(PIN_ONLY[:-1]) + ' and ' + PIN_ONLY[-1] + '.</desc>'
 )
 
 parts.append('<g class="areamap__context">')

@@ -685,8 +685,10 @@ a { color: inherit; }
 
 .map-grid {
   display: grid;
-  /* The map runs tall (Fredericksburg is a long way south of the Beltway), so
-     it takes the narrower column to keep the two sides in proportion. */
+  /* The map takes the narrower column to keep the two sides in proportion.
+     It used to run tall because Fredericksburg sat a long way south of the
+     Beltway; the served area is compact now, so the SVG is roughly landscape
+     and this split just keeps it from crowding the text. */
   grid-template-columns: 0.8fr 1.2fr;
   gap: clamp(2rem, 5vw, 4rem);
   align-items: center;

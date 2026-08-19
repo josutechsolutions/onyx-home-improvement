@@ -14,14 +14,14 @@ export const BIZ = {
   phone: '(571) 632-9067',
   phoneHref: 'tel:+15716329067',
   email: 'onyxhomeimprovementsllc@gmail.com',
-  city: 'Fairfax, VA',
+  city: 'Northern Virginia',
   since: '2010',
   facebook: 'https://www.facebook.com/OnyxHomeImprovementLLC',
   origin: 'https://onyxhomeimprovementllc.com',
 
   // --- TODO: confirm before launch -------------------------------------
   // Fill these in and rebuild; the build drops the line entirely if empty.
-  license: '',              // e.g. 'Class B #2705XXXXXX' — VA DPOR number
+  license: '#2705193852',   // VA DPOR number, rendered as "License #…"
   street: '',               // leave blank to show service area only
   // ----------------------------------------------------------------------
 
@@ -179,9 +179,9 @@ export const SERVICES = [
         ],
       },
       {
-        h: 'Serving homeowners across Fairfax',
+        h: 'Serving homeowners across Northern Virginia',
         p: [
-          'We are proud to work throughout Fairfax and the surrounding communities, on everything from intricate facades to sturdy retaining walls and pathways. Local knowledge matters more than people expect — soil, drainage, and the way local weather works on mortar all shape how a job should be built.',
+          'We are proud to work throughout Northern Virginia and the surrounding communities, on everything from intricate facades to sturdy retaining walls and pathways. Local knowledge matters more than people expect — soil, drainage, and the way local weather works on mortar all shape how a job should be built.',
         ],
       },
     ],
@@ -275,7 +275,7 @@ export const SERVICES = [
     image: 'foundation-exterior',
     feature: 'foundation-exterior',
     gallery: ['foundation-exterior', 'foundation-driveway'],
-    h1: 'Professional Foundation Repair in Fairfax, VA',
+    h1: 'Professional Foundation Repair in Northern Virginia',
     intro: 'Your foundation is the most important structural element of the house, and protecting it means protecting the whole investment. Cracks, shifting, and settling get worse quickly when they are left alone — which is why early detection and timely repair matter so much.',
     sections: [
       {
@@ -375,7 +375,7 @@ export const SERVICES = [
       {
         h: 'Local experience matters',
         p: [
-          'Fairfax homes face seasonal swings that are hard on masonry — freeze-thaw cycles work on any joint that is already compromised. We know how local weather and aging construction materials interact, and we build repairs accordingly.',
+          'Northern Virginia homes face seasonal swings that are hard on masonry — freeze-thaw cycles work on any joint that is already compromised. We know how local weather and aging construction materials interact, and we build repairs accordingly.',
         ],
       },
       {
@@ -450,7 +450,7 @@ export const SERVICES = [
         ],
       },
       {
-        h: 'Built for the Fairfax climate',
+        h: 'Built for the Northern Virginia climate',
         p: [
           'We build with materials suited to this climate — weather-resistant stone, properly sealed pavers, and joints set to handle freeze-thaw movement. Good drainage and a compacted base are what keep a patio level years after installation.',
         ],
@@ -670,9 +670,8 @@ export const FEATURED_REVIEWS = ['Susan D.', 'Bob R.', 'Nancy P.'];
 export const AREAS = [
   'Fairfax, VA', 'Vienna, VA', 'Falls Church, VA', 'Arlington, VA',
   'Alexandria, VA', 'McLean, VA', 'Tysons, VA', 'Reston, VA',
-  'Herndon, VA', 'Springfield, VA', 'Annandale, VA', 'Clifton, VA',
-  'Manassas, VA', 'Manassas Park, VA', 'Fredericksburg, VA',
-  'Washington, DC',
+  'Burke, VA', 'Fairfax Station, VA', 'Springfield, VA',
+  'Annandale, VA', 'Clifton, VA', 'Washington, DC',
 ];
 
 /* --- Portfolio ----------------------------------------------------------- */
@@ -848,11 +847,11 @@ export const FAQ = [
   },
   {
     q: 'How long has Onyx been in business?',
-    a: ['We have been serving homeowners in and around Fairfax since 2010. Onyx is family-operated — you deal with the owners directly, not a salesperson, and the same people who quote the job are on site while it is being built.'],
+    a: ['We have been serving homeowners across Northern Virginia since 2010. Onyx is family-operated — you deal with the owners directly, not a salesperson, and the same people who quote the job are on site while it is being built.'],
   },
   {
     q: 'What areas do you serve?',
-    a: ['Fairfax, Vienna, Falls Church, Arlington, Alexandria, Herndon, Manassas, Manassas Park, and Fredericksburg in Virginia, plus Washington, DC. If you are just outside that list, call and ask — we often can.'],
+    a: ['Fairfax, Vienna, Falls Church, Arlington, Alexandria, McLean, Tysons, Reston, Burke, Fairfax Station, Springfield, Annandale, and Clifton in Virginia, plus Washington, DC. If you are just outside that list, call and ask — we often can.'],
   },
   {
     q: 'How long does a typical project take?',
@@ -907,8 +906,17 @@ export const POINTS = [
    Keep this list even after the ads' final URLs are updated: these URLs are
    also in whatever inbound links and citations the old pages accumulated. */
 export const REDIRECTS = [
-  ['/driveway-landing-page/',          '/masonry/driveway-paving/'],
-  ['/patio-design-installation-nova/', '/stone-work/patio-design/'],
-  ['/hardscape/',                      '/services/'],
-  ['/retaining-walls-landing/',        '/masonry/retaining-walls/'],
+  // Ad landing pages from the old WordPress site.
+  ['/driveway-landing-page/',            '/masonry/driveway-paving/'],
+  ['/patio-design-installation-nova/',   '/stone-work/patio-design/'],
+  ['/hardscape/',                        '/services/'],
+  ['/retaining-walls-landing/',          '/masonry/retaining-walls/'],
+
+  // Service areas Onyx no longer covers. Their pages were indexed, so they
+  // point at the current list rather than going dark. Delete these four
+  // entries if you would rather they 404 outright.
+  ['/service-areas/herndon-va/',         '/service-areas/'],
+  ['/service-areas/manassas-va/',        '/service-areas/'],
+  ['/service-areas/manassas-park-va/',   '/service-areas/'],
+  ['/service-areas/fredericksburg-va/',  '/service-areas/'],
 ];
