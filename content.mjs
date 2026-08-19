@@ -897,3 +897,18 @@ export const POINTS = [
   ['Clean sites, kept schedules', 'Our crews show up when they say they will and leave the site clean at the end of every day — the thing customers mention most.'],
   ['Free written estimates', 'Itemized, no obligation, and honest about what can wait. We would rather keep a customer than sell a job.'],
 ];
+
+/* --- Retired URLs --------------------------------------------------------
+   Landing pages from the old WordPress site that live Google Ads campaigns
+   still point at. The rebuild dropped them, so every one of these was
+   returning a 404 — which is what stopped the campaigns. Each maps to the
+   closest equivalent page on the current site.
+
+   Keep this list even after the ads' final URLs are updated: these URLs are
+   also in whatever inbound links and citations the old pages accumulated. */
+export const REDIRECTS = [
+  ['/driveway-landing-page/',          '/masonry/driveway-paving/'],
+  ['/patio-design-installation-nova/', '/stone-work/patio-design/'],
+  ['/hardscape/',                      '/services/'],
+  ['/retaining-walls-landing/',        '/masonry/retaining-walls/'],
+];

@@ -13,7 +13,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import {
   BIZ, NAV, SERVICES, REVIEWS, FEATURED_REVIEWS, AREAS, WARRANTY,
-  PORTFOLIO, HOME_PORTFOLIO, FAQ, POINTS, PROJECTS,
+  PORTFOLIO, HOME_PORTFOLIO, FAQ, POINTS, PROJECTS, REDIRECTS,
 } from './content.mjs';
 
 const ROOT = path.dirname(fileURLToPath(import.meta.url));
@@ -1542,6 +1542,47 @@ ${ctaBand()}`;
   }));
 }
 
+/* --- Retired URLs --------------------------------------------------------
+   GitHub Pages serves static files and has no redirect configuration, so a
+   real 301 is not available to us here. Each retired URL gets a stub instead:
+   an instant client-side redirect that Google treats as equivalent to a 301
+   for indexing, and that Google Ads follows without complaint.
+
+   The stub deliberately carries the only inline script on the site. A meta
+   refresh alone would drop the query string, taking the `gclid` with it and
+   breaking Ads conversion attribution on every click. The script preserves
+   the query and hash; the meta refresh below it is the no-JavaScript
+   fallback, and the visible link is the fallback for both.
+
+   Also emits a `_redirects` file. GitHub Pages ignores it, but it is the
+   native format for Netlify and Cloudflare Pages — moving the site to either
+   turns all of these into genuine 301s with no further work. */
+function buildRedirects() {
+  for (const [from, to] of REDIRECTS) {
+    const hop = `${BASE}${to}`;
+    write(`${from.replace(/^\/+|\/+$/g, '')}/index.html`, `<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Redirecting&hellip;</title>
+<link rel="canonical" href="${BIZ.origin}${to}">
+<meta name="robots" content="noindex">
+<script>location.replace(${JSON.stringify(hop)} + location.search + location.hash);</script>
+<meta http-equiv="refresh" content="0; url=${hop}">
+</head>
+<body>
+<p>This page has moved to <a href="${to}">${BIZ.origin}${to}</a>.</p>
+</body>
+</html>
+`);
+  }
+
+  const width = Math.max(...REDIRECTS.map(([from]) => from.length));
+  write('_redirects', REDIRECTS
+    .map(([from, to]) => `${from.padEnd(width)}  ${to}  301`)
+    .join('\n') + '\n');
+}
+
 /* --- sitemap / robots / misc --------------------------------------------- */
 function buildMeta() {
   const urls = [
@@ -1601,6 +1642,7 @@ buildContact();
 buildWarranty();
 buildAreas();
 build404();
+buildRedirects();
 buildMeta();
 
 console.log(`  ${written} files written`);
