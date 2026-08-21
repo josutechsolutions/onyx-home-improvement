@@ -100,7 +100,7 @@ function header(current) {
 
   const mobileLinks = [
     ...NAV.map(n => `<li><a href="${n.href}"${n.href === current ? ' aria-current="page"' : ''}>${n.label}</a></li>`),
-    ...SERVICES.map(s => `<li><a href="${s.href}">${s.title}</a></li>`),
+    ...TOP.map(s => `<li><a href="${s.href}">${esc(s.title)}</a></li>`),
   ].join('\n            ');
 
   return `<header class="masthead">
@@ -131,8 +131,10 @@ function header(current) {
             ${mobileLinks}
           </ul>
         </nav>
-        <a class="btn btn--solid" href="/get-your-free-estimate/">Free Estimate</a>
-        <a class="btn btn--ghost" href="${BIZ.phoneHref}" style="width:100%;margin-top:.6rem">${BIZ.phone}</a>
+        <div class="mobile-nav__cta">
+          <a class="btn btn--solid" href="/get-your-free-estimate/">Free Estimate</a>
+          <a class="btn btn--ghost tel" href="${BIZ.phoneHref}">${BIZ.phone}</a>
+        </div>
       </div>
     </details>
   </div>
@@ -153,7 +155,7 @@ function ctaBand() {
 }
 
 function footer() {
-  const svc = SERVICES.map(s => `<li><a href="${s.href}">${s.title}</a></li>`).join('\n        ');
+  const svc = TOP.map(s => `<li><a href="${s.href}">${esc(s.title)}</a></li>`).join('\n        ');
   // These city pages exist, so link them: better for visitors who are checking
   // coverage, and it gives the service-area pages internal links.
   const areaSlug = a => a.toLowerCase().replace(/,/g, '').replace(/\s+/g, '-');
@@ -320,9 +322,19 @@ function trustbar() {
 </div>`;
 }
 
+/* Services split into a two-level tree. A service with `parent` set is a
+   material-specific page beneath a hub — /masonry/asphalt-driveways/ under
+   /masonry/driveway-paving/. Only the hubs go in the nav, the footer, and the
+   home grid; the children are surfaced from their parent's page, from the
+   services index, and from search. Keeping them out of the top-level lists is
+   what stops fourteen services reading as a directory. */
+const TOP = SERVICES.filter(s => !s.parent);
+const childrenOf = href => SERVICES.filter(s => s.parent === href);
+const parentOf = s => (s.parent ? SERVICES.find(x => x.href === s.parent) : null);
+
 function serviceGrid(reveal = true) {
-  return SERVICES.map(s => `<a class="card${reveal ? ' reveal' : ''}" href="${s.href}">
-  <div class="card__media">${picture(s.image, { sizes: '(max-width:620px) 92vw, (max-width:900px) 45vw, 30vw' })}</div>
+  return TOP.map(s => `<a class="card${reveal ? ' reveal' : ''}" href="${s.href}">
+  <div class="card__media">${mediaFor(s.image, { sizes: '(max-width:620px) 92vw, (max-width:900px) 45vw, 30vw' })}</div>
   <h3>${esc(s.title)}</h3>
   <p>${esc(smart(s.card))}</p>
   <span class="card__more">Learn more</span>
@@ -486,7 +498,14 @@ function areasSection() {
 /* --- projects ------------------------------------------------------------ */
 const areaSlugOf = a => a.toLowerCase().replace(/,/g, '').replace(/\s+/g, '-');
 const projectUrl = p => p.service + p.slug + '/';
-const projectsFor = href => PROJECTS.filter(p => p.service === href);
+/* Projects shown on a service page. A project lives at exactly one URL —
+   {service}{slug}/ — but it can be *listed* under more than one service:
+   `also` adds the extra hrefs, and a hub page picks up everything filed
+   under its children. No page is duplicated, only cross-linked. */
+function projectsFor(href) {
+  const scope = new Set([href, ...childrenOf(href).map(c => c.href)]);
+  return PROJECTS.filter(p => scope.has(p.service) || (p.also || []).some(a => scope.has(a)));
+}
 const projectsIn = city => PROJECTS.filter(p => p.city === city);
 
 /* A project photo. These are plain JPEGs rather than the AVIF/WebP set the
@@ -500,9 +519,61 @@ function projectPicture(p, { sizes, lazy = true } = {}) {
        width="${p.w}" height="${p.h}" alt="${esc(p.alt)}"${lazy ? ' loading="lazy" decoding="async"' : ' fetchpriority="high" decoding="async"'}>`;
 }
 
+/* A service's card and feature image. Normally a slug from the image
+   manifest, but it falls back to a project photo of the same name — some
+   services only have a photograph because a job produced one, and there is no
+   sense duplicating that file into the manifest set just to reference it. */
+function mediaFor(slug, opts = {}) {
+  if (IMG[slug]) return picture(slug, opts);
+  const p = PROJECTS.find(x => x.slug === slug);
+  if (p) return projectPicture(p, opts);
+  warnings.push(`image "${slug}" matches neither the image manifest nor a project`);
+  return '';
+}
+
+/* A photograph is captioned with the job and, where we know it, the city.
+   `city` is optional: a job we have the photograph for but not the location is
+   still real work, and stating a city we are not sure of would be worse than
+   omitting it. Everything city-dependent below degrades to nothing. */
+const caption = p => esc(p.title) + (p.city ? ' \u2014 ' + esc(p.city) : '');
+
+/* The "before" shot, where one exists. Same JPEG pair convention as the
+   finished photo, with `-before` on the slug. */
+function beforePicture(p, { sizes } = {}) {
+  const base = '/assets/img/projects/' + p.slug + '-before';
+  return `<img src="${base}-1200.jpg"
+       srcset="${base}-760.jpg 760w, ${base}-1200.jpg 1200w" sizes="${sizes}"
+       width="${p.before.w}" height="${p.before.h}" alt="${esc(p.before.alt)}"
+       loading="lazy" decoding="async">`;
+}
+
+/* Before and after side by side, or just the finished job when no before
+   photograph exists. Both are labelled, because an unlabelled pair is an
+   invitation to read them in the wrong order. */
+function projectFigures(p) {
+  if (!p.before) {
+    return `<figure class="pfigure">
+      ${projectPicture(p, { sizes: '(min-width:1100px) 1000px, 94vw', lazy: false })}
+      <figcaption>${caption(p)}</figcaption>
+    </figure>`;
+  }
+  return `<div class="ba">
+      <figure class="pfigure ba__half">
+        <p class="ba__tag">Before</p>
+        ${beforePicture(p, { sizes: '(min-width:1100px) 490px, 94vw' })}
+        <figcaption>${esc(p.before.alt)}</figcaption>
+      </figure>
+      <figure class="pfigure ba__half">
+        <p class="ba__tag ba__tag--after">After</p>
+        ${projectPicture(p, { sizes: '(min-width:1100px) 490px, 94vw', lazy: false })}
+        <figcaption>${caption(p)}</figcaption>
+      </figure>
+    </div>`;
+}
+
 /* Card grid of projects. `heading` is omitted when the caller supplies its
    own section header. */
-function projectGrid(list, { heading = null, intro = null, showService = false } = {}) {
+function projectGrid(list, { heading = null, intro = null, showService = false, eyebrow = 'Recent work' } = {}) {
   if (!list.length) return '';
   // Built on the site's own .card / .card__media primitives so the tiles
   // inherit the hairline outline, radius, and image-scale hover that every
@@ -511,7 +582,7 @@ function projectGrid(list, { heading = null, intro = null, showService = false }
     const svc = SERVICES.find(s => s.href === p.service);
     return `<a class="card pcard reveal" href="${projectUrl(p)}">
     <div class="card__media">${projectPicture(p, { sizes: '(min-width:1000px) 22vw, (min-width:760px) 30vw, (min-width:460px) 45vw, 92vw' })}</div>
-    <p class="pcard__meta">${showService && svc ? esc(svc.title) + ' &middot; ' : ''}${esc(p.city)}</p>
+    <p class="pcard__meta">${[showService && svc ? esc(svc.title) : '', p.city ? esc(p.city) : ''].filter(Boolean).join(' &middot; ')}</p>
     <h3>${esc(p.title)}</h3>
     <p class="pcard__mat">${esc(p.material)}</p>
   </a>`;
@@ -519,7 +590,7 @@ function projectGrid(list, { heading = null, intro = null, showService = false }
 
   return `<section class="section">
   <div class="wrap">
-    ${heading ? `<p class="eyebrow eyebrow--ruled reveal">Recent work</p>
+    ${heading ? `${eyebrow ? `<p class="eyebrow eyebrow--ruled reveal">${esc(eyebrow)}</p>` : ''}
     <h2 class="h-section reveal">${heading}</h2>` : ''}
     ${intro ? `<p class="lede reveal">${intro}</p>` : ''}
     <div class="pgrid">
@@ -754,11 +825,59 @@ function buildService(s) {
   </div>
 </section>` : '';
 
-  const others = SERVICES.filter(o => o.slug !== s.slug).slice(0, 3);
+  const kids = childrenOf(s.href);
+  const parent = parentOf(s);
+
+  /* "Also from Onyx" leads with the pages closest to this one — the material
+     pages under a hub, or the siblings under the same hub — then falls back
+     to the rest of the top-level list. Three cards, never a duplicate. */
+  const near = parent ? [parent, ...childrenOf(parent.href)] : kids;
+  const others = [...near, ...TOP]
+    .filter(o => o.slug !== s.slug)
+    .filter((o, i, a) => a.findIndex(x => x.slug === o.slug) === i)
+    .slice(0, 3);
+
+  /* The material pages beneath a hub, shown high on the hub's own page. Two
+     or more get the card grid; a lone child gets the same one-line link row
+     the child pages carry, because a single card in a three-column grid reads
+     as a layout that lost two cards. */
+  const childSection = kids.length > 1 ? `<section class="section section--tight">
+  <div class="wrap">
+    <p class="eyebrow eyebrow--ruled reveal">Choose your material</p>
+    <h2 class="h-section reveal">${esc(s.title)} by material</h2>
+    <p class="lede reveal">Each one has its own page — what it costs, how it fails, and when it is genuinely the right answer.</p>
+    <div class="grid grid--3" style="margin-top:1.75rem">
+      ${kids.map(c => `<a class="card reveal" href="${c.href}">
+        <div class="card__media">${mediaFor(c.image, { sizes: '(max-width:620px) 92vw, (max-width:900px) 45vw, 30vw' })}</div>
+        <h3>${esc(c.title)}</h3>
+        <p>${esc(smart(c.card))}</p>
+        <span class="card__more">Learn more</span>
+      </a>`).join('\n      ')}
+    </div>
+  </div>
+</section>` : '';
+
+  /* A child page says where it sits, so a visitor who landed from search on
+     "paver driveways" can still find the other two materials. */
+  const siblings = childrenOf(parent ? parent.href : '').filter(c => c.slug !== s.slug);
+  const relatedRow = links => `<div class="wrap">
+  <p class="svc-parent reveal"><span>${links.label}</span>
+    ${links.items.map(c => `<a href="${c.href}">${esc(c.title)}</a>`).join('')}</p>
+</div>`;
+
+  const parentNote = parent
+    ? relatedRow({
+        label: `Also under ${esc(parent.title)}:`,
+        items: [...siblings, { href: parent.href, title: `${parent.title} overview` }],
+      })
+    : kids.length === 1
+      ? relatedRow({ label: 'Go deeper:', items: kids })
+      : '';
 
   const trail = [
     { label: 'Home', href: '/' },
     { label: 'Services', href: '/services/' },
+    ...(parent ? [{ label: parent.title, href: parent.href }] : []),
     { label: s.title },
   ];
   const body = `${crumbs(trail)}
@@ -778,16 +897,20 @@ function buildService(s) {
 ${warrantyBand(s.warranty)}
 
 <div class="wrap" style="margin-bottom:var(--section-y)">
-  ${picture(s.feature, { sizes: '(max-width:1180px) 92vw, 1120px' })}
+  ${mediaFor(s.feature, { sizes: '(max-width:1180px) 92vw, 1120px' })}
 </div>
+
+${parentNote}
+
+${childSection}
 
 ${sections}
 
 ${processSection(s.process, s.title)}
 
 ${projectGrid(projectsFor(s.href), {
-  heading: `${s.title} projects`,
-  intro: `Recent ${s.title.toLowerCase()} jobs, each with its own page. Photographs are our own work.`,
+  heading: `${esc(s.title)} projects`,
+  intro: `Recent ${esc(s.title.toLowerCase())} jobs, each with its own page. Photographs are our own work.`,
 })}
 
 ${gallerySection}
@@ -801,7 +924,7 @@ ${s.faq && s.faq.length ? faqSection(s.faq) : ''}
     <p class="eyebrow">Also from Onyx</p>
     <div class="grid grid--3" style="margin-top:1.5rem">
       ${others.map(o => `<a class="card reveal" href="${o.href}">
-        <div class="card__media">${picture(o.image, { sizes: '(max-width:620px) 92vw, 30vw' })}</div>
+        <div class="card__media">${mediaFor(o.image, { sizes: '(max-width:620px) 92vw, 30vw' })}</div>
         <h3>${esc(o.title)}</h3>
         <p>${esc(smart(o.card))}</p>
       </a>`).join('\n      ')}
@@ -845,7 +968,17 @@ ${ctaBand()}`;
 
 /* --- Services index ------------------------------------------------------ */
 function buildServicesIndex() {
-  const groups = [...new Set(SERVICES.map(s => s.group))];
+  const groups = [...new Set(TOP.map(s => s.group))];
+
+  /* A hub marked `splitOnIndex` hands its slot here to its children: the three
+     driveway materials are three different searches with three different
+     intents, so the index sells them as three services rather than as one card
+     with footnotes. The hub page itself is unchanged and still linked from the
+     footer, from each of its children, and from every project filed under it.
+     Hubs without the flag keep their card and list their children as chips —
+     Patio Installation & Design is far more than its stamped concrete page, so
+     promoting that child over the parent would misrepresent the service. */
+  const indexCards = TOP.flatMap(s => (s.splitOnIndex ? childrenOf(s.href) : [s]));
   const trail = [{ label: 'Home', href: '/' }, { label: 'Services' }];
   const body = `${crumbs(trail)}
 
@@ -863,12 +996,20 @@ ${groups.map(g => `<section class="section section--tight">
   <div class="wrap">
     <h2 class="eyebrow">${esc(g)}</h2>
     <div class="grid grid--3" style="margin-top:1.5rem">
-${SERVICES.filter(s => s.group === g).map(s => `<a class="card reveal" href="${s.href}">
-  <div class="card__media">${picture(s.image, { sizes: '(max-width:620px) 92vw, (max-width:900px) 45vw, 30vw' })}</div>
-  <h3>${esc(s.title)}</h3>
-  <p>${esc(smart(s.card))}</p>
-  <span class="card__more">Learn more</span>
-</a>`).join('\n')}
+${indexCards.filter(s => s.group === g).map(s => {
+  const kids = childrenOf(s.href);
+  return `<div class="svc-cell reveal">
+  <a class="card" href="${s.href}">
+    <div class="card__media">${mediaFor(s.image, { sizes: '(max-width:620px) 92vw, (max-width:900px) 45vw, 30vw' })}</div>
+    <h3>${esc(s.title)}</h3>
+    <p>${esc(smart(s.card))}</p>
+    <span class="card__more">Learn more</span>
+  </a>${kids.length ? `
+  <ul class="chips svc-cell__kids">
+    ${kids.map(c => `<li><a href="${c.href}">${esc(c.title)}</a></li>`).join('\n    ')}
+  </ul>` : ''}
+</div>`;
+}).join('\n')}
     </div>
   </div>
 </section>`).join('\n')}
@@ -879,7 +1020,7 @@ ${ctaBand()}`;
 
   write('services/index.html', layout({
     title: `Masonry & Stonework Services in Northern Virginia | ${BIZ.legal}`,
-    desc: 'Driveway paving, brickwork, retaining walls, foundation and chimney repair, patios, stone veneer, and outdoor fireplaces across Northern Virginia and DC.',
+    desc: 'Asphalt, concrete, and paver driveways, patios, walkways and steps, retaining walls, brickwork, drainage, chimney and foundation repair across Northern Virginia and DC.',
     url: '/services/',
     current: '/services/',
     trail,
@@ -971,6 +1112,73 @@ ${ctaBand()}`;
 }
 
 /* --- Portfolio ----------------------------------------------------------- */
+/* --- Projects index ------------------------------------------------------
+   Every completed job on one page, grouped by the service it sits under. The
+   photo gallery stays at /portfolio/ and is linked from here — this page is
+   the one with the individual project pages behind it, so it is the one in
+   the nav. */
+function buildProjects() {
+  const trail = [{ label: 'Home', href: '/' }, { label: 'Projects' }];
+
+  const body = `${crumbs(trail)}
+
+<section class="pagehead">
+  <div class="wrap">
+    <p class="eyebrow">Recent work</p>
+    <h1 class="h-display" style="max-width:16ch">Projects we have built.</h1>
+    <p class="lede">Completed jobs across Northern Virginia and Washington DC, each with its own page &mdash; what was built, what it was built from, where it is, and what the work actually involved. Every photograph is our own.</p>
+    <div class="hero__actions" style="margin-top:2rem">
+      <a class="btn btn--solid" href="/get-your-free-estimate/">Get a Free Estimate</a>
+      <a class="btn btn--ghost" href="/portfolio/">Browse the photo gallery</a>
+    </div>
+  </div>
+</section>
+
+${projectGrid(PROJECTS, { showService: true })}
+
+<section class="section section--sunk">
+  <div class="wrap">
+    <div class="section__head">
+      <p class="eyebrow">Photographs</p>
+      <h2 class="h-section reveal">More of our work</h2>
+      <p class="lede reveal">Not every job has a write-up. The gallery has the rest of the photographs &mdash; driveways, walkways, patios, steps, and stone walls.</p>
+    </div>
+    <p><a class="link-arrow" href="/portfolio/">See the full photo gallery ${ARROW}</a></p>
+  </div>
+</section>
+
+${areasSection()}
+
+${ctaBand()}`;
+
+  write('projects/index.html', layout({
+    title: `Recent Projects | Masonry & Hardscape in Northern Virginia | ${BIZ.legal}`,
+    desc: metaDesc(
+      `Completed driveway, patio, walkway, step, and retaining wall projects by ${BIZ.legal} across Northern Virginia and DC.`,
+      'Materials, locations, and photographs of the finished work.'),
+    url: '/projects/',
+    current: '/projects/',
+    trail,
+    body,
+    jsonld: [{
+      '@context': 'https://schema.org',
+      '@type': 'CollectionPage',
+      name: 'Projects',
+      url: BIZ.origin + '/projects/',
+      about: { '@id': BIZ.origin + '/#business' },
+      mainEntity: {
+        '@type': 'ItemList',
+        itemListElement: PROJECTS.map((p, i) => ({
+          '@type': 'ListItem',
+          position: i + 1,
+          url: BIZ.origin + projectUrl(p),
+          name: p.city ? `${p.title} — ${p.city}` : p.title,
+        })),
+      },
+    }],
+  }));
+}
+
 function buildPortfolio() {
   const items = PORTFOLIO.filter(s => IMG[s]).map(slug => `<figure class="reveal">${picture(slug, { sizes: '(max-width:560px) 92vw, (max-width:900px) 45vw, 30vw' })}
   <figcaption>${esc(IMG[slug].alt)}</figcaption>
@@ -981,13 +1189,17 @@ function buildPortfolio() {
 
 <section class="pagehead">
   <div class="wrap">
-    <p class="eyebrow">Recent work</p>
+    <p class="eyebrow">Photo gallery</p>
     <h1 class="h-display">Portfolio</h1>
     <p class="lede">Driveways, walkways, patios, steps, and stone walls built across Northern Virginia and Washington DC. Every photograph here is our own work.</p>
+    <div class="hero__actions" style="margin-top:2rem">
+      <a class="btn btn--solid" href="/projects/">See individual projects</a>
+      <a class="btn btn--ghost" href="/get-your-free-estimate/">Get a Free Estimate</a>
+    </div>
   </div>
 </section>
 
-${projectGrid(PROJECTS, { heading: 'Projects', intro: 'Individual jobs with their own pages — what was built, what it was built from, and where.', showService: true })}
+${projectGrid(PROJECTS.slice(0, 8), { heading: 'Projects with their own page', intro: 'Individual jobs written up in full &mdash; what was built, what it was built from, and where. <a href="/projects/">See all projects</a>.', showService: true })}
 
 <section class="section section--tight">
   <div class="wrap">
@@ -1003,7 +1215,7 @@ ${ctaBand()}`;
     title: `Portfolio | Masonry & Stonework in Northern Virginia | ${BIZ.legal}`,
     desc: 'Photographs of completed driveway, walkway, patio, step, and retaining wall projects by Onyx Home Improvement across Northern Virginia.',
     url: '/portfolio/',
-    current: '/portfolio/',
+    current: '/projects/',
     trail,
     body,
   }));
@@ -1097,7 +1309,15 @@ function buildContact() {
     warnings.push('BIZ.formspreeId is empty — the estimate form will not submit until you set it in content.mjs. See README.');
   }
 
-  const serviceOptions = SERVICES.map(s => `<option value="${esc(s.title)}">${esc(s.title)}</option>`).join('\n            ');
+  /* Grouped so the material pages sit under their hub rather than reading as
+     four unrelated driveway entries in a flat list. */
+  const serviceOptions = TOP.map(s => {
+    const kids = childrenOf(s.href);
+    const opt = t => `<option value="${esc(t)}">${esc(t)}</option>`;
+    return kids.length
+      ? `<optgroup label="${esc(s.title)}">${[opt(s.title), ...kids.map(c => opt(c.title))].join('')}</optgroup>`
+      : opt(s.title);
+  }).join('\n            ');
   const areaOptions = AREAS.map(a => `<option value="${esc(a)}">${esc(a)}</option>`).join('\n            ');
 
   const trail = [{ label: 'Home', href: '/' }, { label: 'Free Estimate' }];
@@ -1316,7 +1536,7 @@ ${ctaBand()}`;
       // Google the page is about masonry *in this place*. provider points at
       // the LocalBusiness node on the home page rather than restating it, so
       // there is exactly one business entity across the site.
-      jsonld: SERVICES.map(s => ({
+      jsonld: TOP.map(s => ({
         '@context': 'https://schema.org',
         '@type': 'Service',
         name: `${s.title} in ${a}`,
@@ -1359,7 +1579,8 @@ ${ctaBand()}`,
 function buildProject(p) {
   const svc = SERVICES.find(s => s.href === p.service);
   if (!svc) { warnings.push(`project ${p.slug}: no service matches ${p.service}`); return; }
-  if (!AREAS.includes(p.city)) warnings.push(`project ${p.slug}: city "${p.city}" is not in AREAS, so no city page links to it`);
+  if (!p.city) warnings.push(`project ${p.slug}: no city set \u2014 add one to link it from a service-area page`);
+  else if (!AREAS.includes(p.city)) warnings.push(`project ${p.slug}: city "${p.city}" is not in AREAS, so no city page links to it`);
 
   const url = projectUrl(p);
   const trail = [
@@ -1370,13 +1591,13 @@ function buildProject(p) {
   ];
 
   const siblings = projectsFor(svc.href).filter(o => o.slug !== p.slug);
-  const cityPage = AREAS.includes(p.city) ? `/service-areas/${areaSlugOf(p.city)}/` : null;
+  const cityPage = p.city && AREAS.includes(p.city) ? `/service-areas/${areaSlugOf(p.city)}/` : null;
 
   const body = `${crumbs(trail)}
 
 <section class="pagehead">
   <div class="wrap">
-    <p class="eyebrow">${esc(svc.title)} &middot; ${esc(p.city)}</p>
+    <p class="eyebrow">${[esc(svc.title), p.city ? esc(p.city) : ''].filter(Boolean).join(' &middot; ')}</p>
     <h1 class="h-display">${esc(p.title)}</h1>
     <p class="lede">${esc(p.summary)}</p>
   </div>
@@ -1384,10 +1605,7 @@ function buildProject(p) {
 
 <section class="section section--tight">
   <div class="wrap">
-    <figure class="pfigure">
-      ${projectPicture(p, { sizes: '(min-width:1100px) 1000px, 94vw', lazy: false })}
-      <figcaption>${esc(p.title)} &mdash; ${esc(p.city)}</figcaption>
-    </figure>
+    ${projectFigures(p)}
   </div>
 </section>
 
@@ -1396,21 +1614,25 @@ function buildProject(p) {
     <dl class="pspec">
       <div><dt>Service</dt><dd><a href="${svc.href}">${esc(svc.title)}</a></dd></div>
       <div><dt>Material</dt><dd>${esc(p.material)}</dd></div>
-      <div><dt>Location</dt><dd>${cityPage ? `<a href="${cityPage}">${esc(p.city)}</a>` : esc(p.city)}</dd></div>
+      ${p.city ? `<div><dt>Location</dt><dd>${cityPage ? `<a href="${cityPage}">${esc(p.city)}</a>` : esc(p.city)}</dd></div>` : ''}
     </dl>
+    ${p.scope && p.scope.length ? `<div class="pscope">
+      <h2>What the job involved</h2>
+      <ul>${p.scope.map(t => `<li>${esc(smart(t))}</li>`).join('')}</ul>
+    </div>` : ''}
     ${p.body.map(t => `<p>${smart(t)}</p>`).join('\n    ')}
   </div>
 </section>
 
-${projectGrid(siblings, { heading: `More ${svc.title.toLowerCase()} work` })}
+${projectGrid(siblings, { heading: `More ${esc(svc.title.toLowerCase())} work` })}
 
 ${ctaBand()}`;
 
   write(url.replace(/^\//, '') + 'index.html', layout({
-    title: `${p.title} in ${p.city} | ${BIZ.legal}`,
-    desc: metaDesc(smart(p.summary), `${svc.title} in ${p.city}. Free estimates &mdash; call ${BIZ.phone}.`),
+    title: p.city ? `${p.title} in ${p.city} | ${BIZ.legal}` : `${p.title} | ${BIZ.legal}`,
+    desc: metaDesc(smart(p.summary), `${svc.title} in ${p.city || 'Northern Virginia'}. Free estimates &mdash; call ${BIZ.phone}.`),
     url,
-    current: '/portfolio/',
+    current: '/projects/',
     trail,
     body,
     // A completed job is a CreativeWork about the service, not a Service
@@ -1421,13 +1643,13 @@ ${ctaBand()}`;
       '@context': 'https://schema.org',
       '@type': 'CreativeWork',
       '@id': BIZ.origin + url + '#project',
-      name: `${p.title} — ${p.city}`,
+      name: p.city ? `${p.title} — ${p.city}` : p.title,
       headline: p.title,
       description: p.summary,
       url: BIZ.origin + url,
       image: BIZ.origin + '/assets/img/projects/' + p.slug + '-1200.jpg',
       creator: { '@id': BIZ.origin + '/#business' },
-      locationCreated: { '@type': 'Place', name: p.city },
+      ...(p.city ? { locationCreated: { '@type': 'Place', name: p.city } } : {}),
       about: { '@type': 'Service', name: svc.title, url: BIZ.origin + svc.href },
       material: p.material,
     }],
@@ -1592,6 +1814,7 @@ function buildMeta() {
     ['/', '1.0'],
     ['/services/', '0.9'],
     ...SERVICES.map(s => [s.href, '0.8']),
+    ['/projects/', '0.8'],
     ...PROJECTS.map(p => [projectUrl(p), '0.6']),
     ['/portfolio/', '0.7'],
     ['/reviews/', '0.7'],
@@ -1639,6 +1862,7 @@ buildServicesIndex();
 SERVICES.forEach(buildService);
 PROJECTS.forEach(buildProject);
 buildAbout();
+buildProjects();
 buildPortfolio();
 buildReviews();
 buildContact();

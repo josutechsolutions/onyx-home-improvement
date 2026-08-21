@@ -91,6 +91,11 @@ img { height: auto; background: var(--bg-sunk); }
 .mosaic img,
 .quote-feature__media img,
 .prose img,
+/* :not() because the footer logo is also a bare <img> inside a .wrap, and a
+   hairline meant to give a photograph an edge just draws a box around a
+   transparent logo. Excluding it here beats an opt-out on .footer__logo,
+   which would lose on specificity (0,1,0 against this rule's 0,1,1). */
+.wrap > img:not(.footer__logo),
 .wrap > picture img {
   outline: 1px solid rgba(0, 0, 0, 0.1);
   outline-offset: -1px;
@@ -336,19 +341,48 @@ a { color: inherit; }
   top: 100%;
   background: var(--bg);
   border-bottom: 1px solid var(--line);
-  padding: 0.5rem var(--gutter) 1.5rem;
+  padding: 0.5rem var(--gutter) 0;
   max-height: calc(100dvh - 68px);
   overflow-y: auto;
 }
 .mobile-nav__panel ul { list-style: none; }
-.mobile-nav__panel a {
+/* :not(.btn) — this rule is for the nav links. Without the exclusion it also
+   won against .btn (0,1,1 against 0,1,0) and turned both call-to-action
+   buttons into bare blocks: display:block killed the centring, `0.7rem 0`
+   wiped their horizontal padding, and they picked up a stray bottom hairline. */
+.mobile-nav__panel a:not(.btn) {
   display: block;
   padding: 0.7rem 0;
   border-bottom: 1px solid var(--line-soft);
   text-decoration: none;
   font-size: 1.02rem;
 }
-.mobile-nav__panel .btn { width: 100%; margin-top: 1.25rem; }
+
+/* The last link's rule and the sticky bar's top border would otherwise stack
+   into a doubled hairline once the list is scrolled to the end. */
+.mobile-nav__panel li:last-child a { border-bottom: 0; }
+
+/* The panel is a long list — six pages plus ten services — so on a phone the
+   two actions that matter were a scroll away at the bottom. Sticky pins them
+   to the foot of the panel, visible the moment the menu opens, with the list
+   scrolling underneath. */
+.mobile-nav__cta {
+  position: sticky;
+  bottom: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.6rem;
+  margin-top: 0.9rem;
+  padding: 0.85rem 0 calc(0.85rem + env(safe-area-inset-bottom, 0px));
+  background: var(--bg);
+  border-top: 1px solid var(--line);
+}
+.mobile-nav__cta .btn {
+  width: 100%;
+  margin: 0;
+  padding-inline: 0.75rem;   /* 1.5rem would overflow the phone number at 2-up */
+  min-height: 46px;
+}
 
 @media (max-width: 900px) {
   .nav, .masthead__cta { display: none; }
@@ -1004,6 +1038,94 @@ a { color: inherit; }
 }
 .pspec dd { margin: 0; font-size: 1rem; }
 
+/* Scope list on a project page. Sits inside .prose, so the heading and list
+   reset the .prose defaults deliberately — it is a label above a spec list,
+   not a section heading in the body copy. */
+.pscope { margin: 0 0 1.75rem; }
+.prose .pscope h2 {
+  margin-top: 0;
+  margin-bottom: 0.75rem;
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+}
+.pscope ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 0.5rem; }
+.pscope li {
+  position: relative;
+  padding-left: 1.1rem;
+  font-size: 0.95rem;
+  color: var(--ink-mid);
+}
+.pscope li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.62em;
+  width: 0.34rem;
+  height: 0.34rem;
+  border-radius: 50%;
+  background: var(--clay);
+}
+
+/* --- Before / after --------------------------------------------------------
+   Two figures side by side, each labelled. An unlabelled pair gets read in
+   whichever order the viewer guesses, which is a coin toss. Stacks below
+   720px, where side-by-side leaves both images too small to show anything. */
+.ba {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(1rem, 2.5vw, 1.75rem);
+}
+@media (max-width: 720px) { .ba { grid-template-columns: 1fr; } }
+.ba__half { position: relative; }
+.ba__tag {
+  position: absolute;
+  top: 0.75rem;
+  left: 0.75rem;
+  z-index: 1;
+  margin: 0;
+  padding: 0.28rem 0.65rem;
+  border-radius: 999px;
+  background: var(--dark);
+  color: var(--on-dark);
+  font-size: 0.66rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.ba__tag--after { background: var(--clay); }
+
+/* --- Service tree ----------------------------------------------------------
+   A hub service card with its material pages listed beneath it. The chips are
+   a sibling of the card rather than inside it: anchors cannot nest, and each
+   material page needs to be its own link and its own tab stop. */
+.svc-cell { display: flex; flex-direction: column; }
+.svc-cell > .card { flex: 1 1 auto; }
+.svc-cell__kids { margin-top: 0.9rem; gap: 0.4rem; }
+.svc-cell__kids a { font-size: 0.76rem; padding: 0.3rem 0.7rem; }
+
+/* The row a material page carries, so someone who landed here from search can
+   reach the sibling materials and the overview without going back to /services/. */
+.svc-parent {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.45rem 1.1rem;
+  margin-bottom: var(--section-y);
+  padding-bottom: 1.15rem;
+  border-bottom: 1px solid var(--line-soft);
+  font-size: 0.875rem;
+}
+.svc-parent > span {
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+}
+
 /* --- Service process steps ------------------------------------------------
    Numbered because the order is the point: each stage depends on the one
    before it, and the sequence is what the copy is arguing for. */
@@ -1083,6 +1205,12 @@ a { color: inherit; }
    Dark so it reads as a distinct claim rather than as more page copy, and
    placed directly under the page head so it lands above the fold. */
 .wband { background: var(--dark); color: var(--on-dark); margin-bottom: var(--section-y); }
+/* Where the band is followed by a padded section rather than a bare .wrap, the
+   section already brings a full section's worth of top padding — the band's own
+   margin on top of that stacks to roughly 180px of empty ground. Service pages
+   still need the full margin, because what follows them there is an unpadded
+   feature image. */
+.wband:has(+ .section) { margin-bottom: clamp(0.75rem, 1.5vw, 1.5rem); }
 .wband__inner {
   display: grid;
   grid-template-columns: auto 1fr auto;
