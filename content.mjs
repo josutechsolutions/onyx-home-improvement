@@ -46,18 +46,14 @@ export const BIZ = {
   // Until it is set, the estimate form falls back to an email link.
   formspreeId: 'xaewlaon',
 
-  // --- Analytics & search-console verification ---------------------------
-  // Both lines are dropped entirely from the HTML while blank, so the site is
-  // safe to ship before either account exists.
-  //
-  // gscVerification is emitted on every build, including staging, so the tag
-  // is already in place whenever you verify. ga4Id is emitted only on a
-  // production build (no BASE_PATH) — otherwise local previews and the
-  // staging site would report as real traffic.
-  ga4Id: '',            // 'G-XXXXXXXXXX' — GA4 > Admin > Data streams > Web
-  gscVerification: '',  // token only, not the whole tag — Search Console >
-                        // Add property > URL prefix > HTML tag; from
-                        // <meta name="google-site-verification" content="THIS">
+  // --- Site verification and production tracking -------------------------
+  // Search Console verification is included in every build. Visitor tracking
+  // is included only in production builds (no BASE_PATH), which keeps local
+  // and staging traffic out of the live reporting accounts.
+  gscVerification: 'irJd0874Ff6aPP9yA1IlvP7dy-dOiKuMCRzMghlXXSc',
+  googleTagId: 'AW-18210774523',
+  googleTagManagerId: 'GTM-PJZ64PS6',
+  clarityId: 'xey91rvlco',
 };
 
 /* --- Primary navigation -------------------------------------------------- */

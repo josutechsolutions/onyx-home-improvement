@@ -2,10 +2,9 @@
 
 Static site for [onyxhomeimprovementllc.com](https://onyxhomeimprovementllc.com).
 No framework and no server-side build. GitHub Pages serves the `.html` files in
-this repo directly. The only executable JavaScript that ships is a 1 KB
-progressive enhancement on the estimate form and, if you set `BIZ.ga4Id`, the
-Google Analytics snippet — the site works fully without either. Content pages
-carry no other script.
+this repo directly. Executable JavaScript is limited to the production tracking
+snippets and a 1 KB progressive enhancement on the estimate form; the site
+continues to work if either is blocked.
 
 ---
 
@@ -17,7 +16,7 @@ carry no other script.
 - [Editing content](#editing-content) — reviews, the map, the logo, photos
 - [Services](#services) — the two-level service tree
 - [Projects](#projects) — adding a job, before/after photos, the rules
-- [Search Console & Analytics](#search-console--analytics)
+- [Search Console & tracking](#search-console--tracking)
 - [Local preview](#local-preview)
 
 ---
@@ -62,20 +61,16 @@ Some consequences, all deliberate:
   animations, and in a browser that lacks them the content is simply visible.
   Nothing on the site *needs* script to work.
 
-  Three `<script>` tags do exist, and it is worth knowing what each is:
-  the 1 KB form enhancement on `/get-your-free-estimate/` (without it the form
-  posts normally and lands on `/thank-you/`); the GA4 snippet, emitted only on
-  a production build and only once you set `BIZ.ga4Id`; and a one-line
-  `location.replace()` in each redirect stub, which is belt-and-braces beside
-  the `<meta http-equiv="refresh">` next to it. Every page also carries a
-  `<script type="application/ld+json">` block — that is structured data for
-  search engines, not code, and nothing executes it.
-- **No third-party resources are loaded.** Fonts are self-hosted (Fraunces + DM
-  Sans, latin subset, ~72 KB). The service-area map is inline SVG generated
-  from Census boundary data — no map API, no key, no tiles, no tracking. There
-  is no analytics until you add a GA4 ID yourself. The only external URLs
-  anywhere in the HTML are four ordinary links a visitor can click: the Google
-  profile, the Google review form, Facebook, and HomeAdvisor.
+  The 1 KB form enhancement on `/get-your-free-estimate/` is optional (without
+  it the form posts normally and lands on `/thank-you/`). Production pages also
+  load Google Tag Manager, the Google tag, and Microsoft Clarity. Redirect
+  stubs use a one-line `location.replace()` to preserve query parameters and
+  attribution. Every page may also carry structured-data JSON-LD; it is data
+  for search engines, not executable application code.
+- **Third-party tracking is production-only.** Fonts remain self-hosted
+  (Fraunces + DM Sans, latin subset, ~72 KB), and the service-area map remains
+  an inline SVG with no map API or tiles. Tracking is omitted from local and
+  `BASE_PATH` staging builds so preview visits do not enter live reports.
 - **One content file, not five.** `content.mjs` is large and it stays that
   way on purpose. The person most likely to edit it is the business owner, and
   "everything is in this one file" beats "work out which of five modules owns
@@ -540,40 +535,39 @@ over to `picture()`.
 
 ---
 
-## Search Console & Analytics
+## Search Console & tracking
 
-Both are configured in **`content.mjs`** under `BIZ`, and both are omitted from
-the HTML entirely while blank — the site is safe to ship before either account
-exists.
+Tracking identifiers are configured in **`content.mjs`** under `BIZ`. The
+shared layout in `build.mjs` emits each provider's standard, labelled snippet.
 
 | Field | Where to get it |
 |---|---|
 | `BIZ.gscVerification` | [Search Console](https://search.google.com/search-console) → Add property → **URL prefix** → HTML tag method. Copy only the `content="…"` token, not the whole tag. |
-| `BIZ.ga4Id` | [GA4](https://analytics.google.com) → Admin → Data streams → Web → Measurement ID (`G-XXXXXXXXXX`). |
+| `BIZ.googleTagId` | The Google tag destination ID. The supplied value starts with `AW-`, which identifies a Google Ads destination; GA4 measurement IDs start with `G-`. |
+| `BIZ.googleTagManagerId` | Google Tag Manager → Admin → Install Google Tag Manager (`GTM-…`). |
+| `BIZ.clarityId` | Microsoft Clarity → Settings → Setup → Install tracking code. |
 
-Set them, run `node build.mjs`, commit, and push. Then:
+After changing an identifier, run `node build.mjs`, commit, and push. Then:
 
 1. **Verify** in Search Console — the tag is live on the deployed page.
 2. **Submit the sitemap** at `https://onyxhomeimprovementllc.com/sitemap.xml`.
    This is a separate step; verification alone does not submit it.
-3. **Link GA4 to Search Console** (GA4 → Admin → Product links) so search
-   queries show up alongside traffic.
 
 Two behaviours worth knowing:
 
 - The **verification tag is emitted on every build**, staging included, so it
   is already in place whenever you get round to verifying.
-- The **GA4 snippet is emitted only on a production build** (no `BASE_PATH`).
-  A staging preview and a `localhost` run would otherwise be recorded as real
-  traffic in the same property.
+- **Google Tag Manager, the Google tag, and Clarity are production-only** (no
+  `BASE_PATH`). A staging preview and a `localhost` run would otherwise be
+  recorded as real traffic.
 
 Search Console reports nothing until the site is indexable — while the staging
 build's `noindex` and `Disallow: /` are in place, expect an empty report. See
 [Two build modes](#two-build-modes--preview-vs-production).
 
-If you add GA4, the site sets analytics cookies, which brings it in scope of
-disclosure rules in some jurisdictions. A short privacy notice linked from the
-footer is the usual answer; there isn't one yet.
+Google and Clarity tracking can set or read identifiers, which brings the site
+in scope of disclosure or consent rules in some jurisdictions. A privacy notice
+and, where applicable, consent handling should be reviewed before launch.
 
 ---
 
@@ -599,3 +593,9 @@ For a **production build** (no `BASE_PATH`), the simple form works:
 python3 -m http.server 8000
 # then open http://localhost:8000
 ```
+
+
+git switch -c feature/add-google-tracking
+  git add -A
+  git commit -m "Add sitewide Google and Clarity tracking"
+  git push -u origin feature/add-google-tracking
