@@ -543,6 +543,7 @@ shared layout in `build.mjs` emits each provider's standard, labelled snippet.
 | Field | Where to get it |
 |---|---|
 | `BIZ.gscVerification` | [Search Console](https://search.google.com/search-console) → Add property → **URL prefix** → HTML tag method. Copy only the `content="…"` token, not the whole tag. |
+| `BIZ.ga4Id` | [GA4](https://analytics.google.com) → Admin → Data streams → Web → Measurement ID (`G-XXXXXXXXXX`). |
 | `BIZ.googleTagId` | The Google tag destination ID. The supplied value starts with `AW-`, which identifies a Google Ads destination; GA4 measurement IDs start with `G-`. |
 | `BIZ.googleTagManagerId` | Google Tag Manager → Admin → Install Google Tag Manager (`GTM-…`). |
 | `BIZ.clarityId` | Microsoft Clarity → Settings → Setup → Install tracking code. |

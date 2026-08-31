@@ -51,6 +51,7 @@ export const BIZ = {
   // is included only in production builds (no BASE_PATH), which keeps local
   // and staging traffic out of the live reporting accounts.
   gscVerification: 'irJd0874Ff6aPP9yA1IlvP7dy-dOiKuMCRzMghlXXSc',
+  ga4Id: 'G-QEQ54WWH8B',
   googleTagId: 'AW-18210774523',
   googleTagManagerId: 'GTM-PJZ64PS6',
   clarityId: 'xey91rvlco',
