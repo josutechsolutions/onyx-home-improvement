@@ -213,23 +213,68 @@ function footer() {
 </footer>`;
 }
 
+/* --- tracking ------------------------------------------------------------
+   Search Console verification is safe in every build. Executable tracking is
+   production-only so local and BASE_PATH previews do not pollute live data. */
+function googleTagManagerHead() {
+  if (!BIZ.googleTagManagerId || BASE) return '';
+  return `<!-- Google Tag Manager -->
+<script>
+(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer',${JSON.stringify(BIZ.googleTagManagerId)});
+</script>
+<!-- End Google Tag Manager -->`;
+}
+
+function googleTagManagerBody() {
+  if (!BIZ.googleTagManagerId || BASE) return '';
+  return `<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=${encodeURIComponent(BIZ.googleTagManagerId)}"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->`;
+}
+
+function trackingHead() {
+  const verification = BIZ.gscVerification
+    ? `\n<!-- Google Search Console site verification -->
+<meta name="google-site-verification" content="${esc(BIZ.gscVerification)}">`
+    : '';
+
+  if (BASE) return verification;
+
+  const googleTag = BIZ.googleTagId
+    ? `\n<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(BIZ.googleTagId)}"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', ${JSON.stringify(BIZ.googleTagId)});
+</script>
+<!-- End Google tag (gtag.js) -->`
+    : '';
+
+  const clarity = BIZ.clarityId
+    ? `\n<!-- Microsoft Clarity -->
+<script type="text/javascript">
+(function(c,l,a,r,i,t,y){
+    c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+    t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+    y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+})(window, document, "clarity", "script", ${JSON.stringify(BIZ.clarityId)});
+</script>
+<!-- End Microsoft Clarity -->`
+    : '';
+
+  return verification + googleTag + clarity;
+}
+
 /* --- page shell ---------------------------------------------------------- */
 function layout({ title, desc, url, body, current, jsonld = [], heroImage = null, trail = null, script = '' }) {
   const canonical = BIZ.origin + url;
-
-  // Search Console's HTML-tag verification. Emitted on staging too, so the tag
-  // is already live the moment the domain is verified.
-  const verify = BIZ.gscVerification
-    ? `\n<meta name="google-site-verification" content="${esc(BIZ.gscVerification)}">`
-    : '';
-
-  // GA4. Deliberately withheld from BASE_PATH builds — a staging preview and a
-  // localhost run would otherwise land in the same property as real traffic.
-  const analytics = BIZ.ga4Id && !BASE
-    ? `\n<script async src="https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(BIZ.ga4Id)}"></script>`
-      + `\n<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}`
-      + `gtag('js',new Date());gtag('config',${JSON.stringify(BIZ.ga4Id)});</script>`
-    : '';
   // Preload the hero so the LCP element starts downloading before the CSS has
   // parsed. imagesrcset/imagesizes must mirror the <picture> exactly, or the
   // browser treats the preload as a separate resource and fetches twice.
@@ -262,12 +307,13 @@ function layout({ title, desc, url, body, current, jsonld = [], heroImage = null
   return `<!doctype html>
 <html lang="en">
 <head>
+${googleTagManagerHead()}
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${esc(title)}</title>
 <meta name="description" content="${esc(desc)}">
 <link rel="canonical" href="${canonical}">
-<meta name="theme-color" content="#14120f">${BASE ? '\n<meta name="robots" content="noindex, nofollow">' : ''}${verify}
+<meta name="theme-color" content="#14120f">${BASE ? '\n<meta name="robots" content="noindex, nofollow">' : ''}${trackingHead()}
 
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="${esc(BIZ.legal)}">
@@ -283,9 +329,10 @@ function layout({ title, desc, url, body, current, jsonld = [], heroImage = null
 <link rel="icon" href="/assets/favicon.ico" sizes="16x16 32x32 48x48">
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="/assets/favicon-32.png" type="image/png" sizes="32x32">
-<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">${ld}${analytics}
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">${ld}
 </head>
 <body>
+${googleTagManagerBody()}
 <a class="skip" href="#main">Skip to content</a>
 ${header(current)}
 <main id="main">
