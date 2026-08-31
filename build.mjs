@@ -245,14 +245,18 @@ function trackingHead() {
 
   if (BASE) return verification;
 
-  const googleTag = BIZ.googleTagId
+  // One gtag.js loader can configure multiple Google destinations. Load GA4
+  // first, then register both GA4 and Google Ads without downloading the same
+  // library twice.
+  const googleTagIds = [BIZ.ga4Id, BIZ.googleTagId].filter(Boolean);
+  const googleTag = googleTagIds.length
     ? `\n<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(BIZ.googleTagId)}"></script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(googleTagIds[0])}"></script>
 <script>
 window.dataLayer = window.dataLayer || [];
 function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
-gtag('config', ${JSON.stringify(BIZ.googleTagId)});
+${googleTagIds.map(id => `gtag('config', ${JSON.stringify(id)});`).join('\n')}
 </script>
 <!-- End Google tag (gtag.js) -->`
     : '';
