@@ -16,6 +16,7 @@ continues to work if either is blocked.
 - [Editing content](#editing-content) — reviews, the map, the logo, photos
 - [Services](#services) — the two-level service tree
 - [Projects](#projects) — adding a job, before/after photos, the rules
+- [Blog](#blog) — adding articles and publishing the sample section
 - [Search Console & tracking](#search-console--tracking)
 - [Local preview](#local-preview)
 
@@ -35,8 +36,9 @@ content.mjs   ──┐
 build.mjs     ──┘                          (committed, served as-is)
 ```
 
-- **`content.mjs`** is the data. Business details, services, projects, reviews,
-  service areas, FAQ, warranty terms, redirects. No markup, no logic.
+- **`content.mjs`** is the data. Business details, services, projects, blog
+  articles, reviews, service areas, FAQ, warranty terms, redirects. No markup,
+  no logic.
 - **`build.mjs`** is the templates. One function per page type, plus a shared
   `layout()` that supplies the `<head>`, header, footer, and JSON-LD.
 - **`assets/css/site.css`** is all the styling. Colour, type, and spacing are
@@ -88,8 +90,8 @@ state — it rewrites every page every time, in about a second:
 
 1. Reads `assets/img/manifest.json` (the image index) and the generated
    service-area SVG.
-2. Builds the home page, `/services/`, every service page, every project page,
-   about, projects, portfolio, reviews, contact, warranty, and every
+2. Builds the home page, `/services/`, every service page, every project and
+   blog page, about, projects, portfolio, reviews, contact, warranty, and every
    service-area page.
 3. Writes the redirect stubs listed in `REDIRECTS`, plus a `_redirects` file
    for hosts that understand one.
@@ -532,6 +534,49 @@ already run, and there is no AVIF or WebP encoder available here — so they are
 plain JPEGs at two widths, served through a `srcset`. If you ever regenerate
 the image set, fold these in and switch `projectPicture()` in `build.mjs`
 over to `picture()`.
+
+---
+
+## Blog
+
+The blog is generated from `BLOG_SETTINGS` and `BLOG_POSTS` in
+`content.mjs`. The shared templates in `build.mjs` create:
+
+- `/blog/` — the blog landing page and its first nine article cards.
+- `/blog/page/<number>/` — additional landing pages created automatically
+  when the blog contains more than nine posts.
+- `/blog/<slug>/` — one detailed page for every object in `BLOG_POSTS`,
+  including a collapsible automatic table of contents, social-share links,
+  a Summarize in GPT link, article FAQ accordion, latest-post links, and a
+  contact card in the article sidebar.
+
+Pagination is automatic and requires no separate page data. Posts 1–9 appear
+on `/blog/`, posts 10–18 on `/blog/page/2/`, and so on. Numbered,
+Previous, and Next links are generated with each page. The build also clears
+obsolete blog and pagination output if posts are removed later.
+
+The current posts contain Lorem Ipsum for design review. As a safety measure,
+`BLOG_SETTINGS.noindex` is set to `true`. That setting adds
+`<meta name="robots" content="noindex, nofollow">` to the blog landing page
+and every detailed page, and excludes all of those URLs from `sitemap.xml`.
+
+To add or update an article:
+
+1. Edit its object in `BLOG_POSTS`. The required fields are `slug`, `title`,
+   `date` (YYYY-MM-DD), `category`, `author`, `image`, `alt`, `excerpt`,
+   `body`, and `faq`.
+2. Build the article body from the supported block types: `p`, `h2`, `h3`,
+   `ul`, and `quote`. The `h2` and `h3` blocks automatically become
+   working links in the table of contents.
+   FAQ entries use `{ q, a: ['Answer paragraph'] }`; the FAQ heading is also
+   added to the table of contents and the page receives FAQ structured data.
+3. Run `node build.mjs`.
+4. Review the generated landing page and detailed pages, then commit both the
+   source files and generated HTML.
+
+When real, approved articles replace every placeholder, set
+`BLOG_SETTINGS.noindex` to `false` and rebuild. The build will remove the
+robots restriction and add the blog URLs to the sitemap automatically.
 
 ---
 
