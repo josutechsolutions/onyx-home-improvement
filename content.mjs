@@ -64,7 +64,130 @@ export const NAV = [
   { label: 'Services',  href: '/services/' },
   { label: 'Projects',  href: '/projects/' },
   { label: 'Reviews',   href: '/reviews/' },
+  { label: 'Blog',      href: '/blog/' },
   { label: 'Contact',   href: '/get-your-free-estimate/' },
+];
+
+/* --- Blog ---------------------------------------------------------------
+   These sample articles exist only to review the blog layout and workflow.
+   While `noindex` is true, build.mjs adds noindex/nofollow to the blog index
+   and every article, and keeps all blog URLs out of sitemap.xml.
+
+   To publish the blog later: replace the placeholder copy, set `noindex` to
+   false, and run `node build.mjs`. One object below creates one article page
+   and one card on /blog/; no generated HTML needs to be edited manually.
+   ------------------------------------------------------------------------ */
+export const BLOG_SETTINGS = {
+  noindex: true,
+  title: 'Blogs',
+  eyebrow: 'Ideas & guidance',
+  heading: 'Practical home improvement tips and project inspiration.',
+  intro: 'Explore planning ideas, material guidance, and maintenance advice for masonry and outdoor living projects.',
+};
+
+const DUMMY_BLOG_BODY = [
+  {
+    type: 'p',
+    text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
+  },
+  {
+    type: 'h2',
+    text: 'Lorem ipsum dolor sit amet',
+  },
+  {
+    type: 'p',
+    text: 'Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
+  },
+  {
+    type: 'h2',
+    text: 'Consectetur adipiscing elit',
+  },
+  {
+    type: 'ul',
+    items: [
+      'Sed ut perspiciatis unde omnis iste natus error sit voluptatem.',
+      'Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit.',
+      'Neque porro quisquam est qui dolorem ipsum quia dolor sit amet.',
+    ],
+  },
+  {
+    type: 'p',
+    text: 'At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident.',
+  },
+  {
+    type: 'quote',
+    text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+  },
+  {
+    type: 'h2',
+    text: 'Sed do eiusmod tempor incididunt',
+  },
+  {
+    type: 'p',
+    text: 'Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus. Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet.',
+  },
+];
+
+const DUMMY_BLOG_FAQ = [
+  {
+    q: 'What should I consider before starting a home improvement project?',
+    a: ['Lorem ipsum dolor sit amet, consectetur adipiscing elit. Consider your goals, available space, preferred materials, budget, and expected project timeline before work begins.'],
+  },
+  {
+    q: 'How do I choose the right materials for my project?',
+    a: ['Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Material selection should account for appearance, durability, maintenance, climate, and how the finished space will be used.'],
+  },
+  {
+    q: 'How long does a typical home improvement project take?',
+    a: ['Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris. The schedule depends on the project size, site preparation, material availability, permitting requirements, and weather conditions.'],
+  },
+  {
+    q: 'Should I request an estimate before choosing the final design?',
+    a: ['Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore. An initial estimate can help align the proposed scope and material choices with the available budget.'],
+  },
+  {
+    q: 'How can I prepare my property before work begins?',
+    a: ['Excepteur sint occaecat cupidatat non proident. Keep the work area accessible, move personal belongings when requested, and discuss parking, utilities, pets, and daily access with the project team.'],
+  },
+];
+
+export const BLOG_POSTS = [
+  {
+    slug: 'planning-a-masonry-project-that-fits-your-home',
+    title: 'Planning a Masonry Project That Fits Your Home',
+    date: '2026-08-14',
+    category: 'Project Planning',
+    author: 'Onyx Home Improvement',
+    image: 'patio-firepit',
+    alt: 'Stone patio and fire pit in a landscaped backyard',
+    excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+    body: DUMMY_BLOG_BODY,
+    faq: DUMMY_BLOG_FAQ,
+  },
+  {
+    slug: 'choosing-materials-for-an-outdoor-living-space',
+    title: 'Choosing Materials for an Outdoor Living Space',
+    date: '2026-08-07',
+    category: 'Materials',
+    author: 'Onyx Home Improvement',
+    image: 'patio-stone',
+    alt: 'Natural stone patio beside an outdoor living area',
+    excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.',
+    body: DUMMY_BLOG_BODY,
+    faq: DUMMY_BLOG_FAQ,
+  },
+  {
+    slug: 'a-simple-guide-to-driveway-project-planning',
+    title: 'A Simple Guide to Driveway Project Planning',
+    date: '2026-07-30',
+    category: 'Driveways',
+    author: 'Onyx Home Improvement',
+    image: 'driveway-circle',
+    alt: 'Finished circular paver driveway in front of a home',
+    excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum.',
+    body: DUMMY_BLOG_BODY,
+    faq: DUMMY_BLOG_FAQ,
+  },
 ];
 
 /* --- Services ------------------------------------------------------------
