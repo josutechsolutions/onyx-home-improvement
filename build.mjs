@@ -1287,11 +1287,96 @@ ${ctaBand()}`;
 
 /* --- Blog ---------------------------------------------------------------
    BLOG_POSTS is the single source of truth for both the listing cards and the
-   article pages. The current entries are layout samples, so BLOG_SETTINGS
-   keeps the entire section noindex/nofollow and out of the sitemap. */
+   article pages. Client-supplied rich HTML is stored in non-page .source files
+   so ordered lists, tables, links, emphasis, and every word survive builds. */
+function decodeBlogEntities(value = '') {
+  const named = { amp: '&', lt: '<', gt: '>', quot: '"', apos: "'", nbsp: ' ' };
+  return String(value).replace(/&(#x[0-9a-f]+|#\d+|amp|lt|gt|quot|apos|nbsp);/gi, (entity, code) => {
+    if (code[0] === '#') {
+      const point = code[1].toLowerCase() === 'x'
+        ? Number.parseInt(code.slice(2), 16)
+        : Number.parseInt(code.slice(1), 10);
+      return Number.isFinite(point) ? String.fromCodePoint(point) : entity;
+    }
+    return named[code.toLowerCase()] ?? entity;
+  });
+}
+
+function blogPlainText(html = '') {
+  return decodeBlogEntities(String(html)
+    .replace(/<br\s*\/?>/gi, ' ')
+    .replace(/<[^>]+>/g, ' '))
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function blogHeadingId(text, index) {
+  const slug = String(text)
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '') || 'section';
+  return `${slug}-${index + 1}`;
+}
+
+function loadBlogPost(seed) {
+  const sourcePath = path.join(ROOT, seed.source);
+  const raw = fs.readFileSync(sourcePath, 'utf8').replace(/^\uFEFF/, '');
+  if (/<\/?(?:script|style|iframe|object|embed|form)\b/i.test(raw) || /\son[a-z]+\s*=/i.test(raw)) {
+    throw new Error(`Unsafe markup in blog source: ${seed.source}`);
+  }
+
+  const documentBody = raw.match(/<body>([\s\S]*?)<\/body>/i)?.[1];
+  if (!documentBody) throw new Error(`Missing <body> in blog source: ${seed.source}`);
+
+  const metadata = documentBody.match(/^<p>([\s\S]*?)<\/p>/i)?.[0];
+  if (!metadata) throw new Error(`Missing metadata block in blog source: ${seed.source}`);
+  const excerpt = blogPlainText(metadata.match(/<strong>Meta Description:<\/strong>\s*([\s\S]*?)<br/i)?.[1]);
+  const slug = blogPlainText(metadata.match(/<strong>URL Slug:<\/strong>\s*<code>([\s\S]*?)<\/code>/i)?.[1]);
+  if (!excerpt || !slug) throw new Error(`Incomplete metadata in blog source: ${seed.source}`);
+
+  let content = documentBody.slice(metadata.length);
+  const imageTag = content.match(/^<img\b[^>]*>/i)?.[0];
+  if (!imageTag) throw new Error(`Missing featured image in blog source: ${seed.source}`);
+  const sourceImage = imageTag.match(/\bsrc="([^"]+)"/i)?.[1] || '';
+  const alt = decodeBlogEntities(imageTag.match(/\balt="([^"]*)"/i)?.[1] || '');
+  content = content.slice(imageTag.length);
+
+  const h1 = content.match(/^<h1>([\s\S]*?)<\/h1>/i);
+  if (!h1) throw new Error(`Missing article heading in blog source: ${seed.source}`);
+  const title = blogPlainText(h1[1]);
+  content = content.slice(h1[0].length);
+
+  const faqMarker = /<h2>\s*Frequently Asked Questions\s*<\/h2>/i;
+  const faqMatch = faqMarker.exec(content);
+  if (!faqMatch) throw new Error(`Missing FAQ section in blog source: ${seed.source}`);
+  let bodyHtml = content.slice(0, faqMatch.index);
+  const faqHtml = content.slice(faqMatch.index + faqMatch[0].length);
+  const faq = [...faqHtml.matchAll(/<h3>([\s\S]*?)<\/h3>\s*<p>([\s\S]*?)<\/p>/gi)]
+    .map(match => ({ q: blogPlainText(match[1]), a: [blogPlainText(match[2])] }));
+  const faqRemainder = faqHtml
+    .replace(/<h3>[\s\S]*?<\/h3>\s*<p>[\s\S]*?<\/p>/gi, '')
+    .replace(/<p>\s*<\/p>/gi, '')
+    .trim();
+  if (!faq.length || faqRemainder) throw new Error(`Unparsed FAQ content in blog source: ${seed.source}`);
+
+  const headings = [];
+  bodyHtml = bodyHtml.replace(/<(h2|h3)>([\s\S]*?)<\/\1>/gi, (heading, tag, inner) => {
+    const text = blogPlainText(inner);
+    const id = blogHeadingId(text, headings.length);
+    headings.push({ type: tag.toLowerCase(), text, id });
+    return `<${tag.toLowerCase()} id="${id}">${inner}</${tag.toLowerCase()}>`;
+  });
+  bodyHtml = bodyHtml
+    .replace(/<table>/gi, '<div class="blog-table-wrap"><table>')
+    .replace(/<\/table>/gi, '</table></div>');
+
+  return { ...seed, slug, title, excerpt, alt, sourceImage, bodyHtml, headings, faq };
+}
+
+const BLOGS = BLOG_POSTS.map(loadBlogPost);
 const blogUrl = post => `/blog/${post.slug}/`;
 const BLOG_PAGE_SIZE = 9;
-const blogPageCount = () => Math.max(1, Math.ceil(BLOG_POSTS.length / BLOG_PAGE_SIZE));
+const blogPageCount = () => Math.max(1, Math.ceil(BLOGS.length / BLOG_PAGE_SIZE));
 const blogPageUrl = page => page === 1 ? '/blog/' : `/blog/page/${page}/`;
 const blogDateFormatter = new Intl.DateTimeFormat('en-US', {
   month: 'long',
@@ -1305,64 +1390,52 @@ function blogDate(date) {
 }
 
 function blogImageUrl(post) {
+  if (post.image && typeof post.image === 'object') return BIZ.origin + post.image.src;
   const image = IMG[post.image];
   if (!image) return BIZ.origin + '/assets/img/hero-driveway-1200.webp';
   const largest = image.sizes[image.sizes.length - 1];
   return `${BIZ.origin}/assets/img/${post.image}-${largest.w}.webp`;
 }
 
+function blogPicture(post, { cls = '', lazy = true, altOverride = null, sizes = '' } = {}) {
+  if (typeof post.image === 'string') {
+    return picture(post.image, { cls, lazy, altOverride, sizes });
+  }
+  const image = post.image;
+  const alt = esc(altOverride ?? post.alt ?? '');
+  const loading = lazy ? ' loading="lazy" decoding="async"' : ' fetchpriority="high" decoding="async"';
+  return `<picture${cls ? ` class="${cls}"` : ''}>
+  <img src="${esc(image.src)}" width="${image.width}" height="${image.height}" alt="${alt}"${loading}>
+</picture>`;
+}
+
 function blogCard(post, headingLevel = 2) {
   const Heading = headingLevel === 3 ? 'h3' : 'h2';
   return `<article class="blog-card reveal">
   <a class="blog-card__media" href="${blogUrl(post)}" tabindex="-1" aria-hidden="true">
-    ${picture(post.image, {
+    ${blogPicture(post, {
       sizes: '(max-width:700px) 92vw, (max-width:1180px) 44vw, 540px',
       altOverride: post.alt,
     })}
   </a>
   <div class="blog-card__body">
     <${Heading}><a href="${blogUrl(post)}">${esc(post.title)}</a></${Heading}>
-    <p class="blog-card__excerpt">${esc(smart(post.excerpt))}</p>
+    <p class="blog-card__excerpt">${esc(post.excerpt)}</p>
     <a class="blog-card__more" href="${blogUrl(post)}" aria-label="Read ${esc(post.title)}">Read More ${ARROW}</a>
   </div>
 </article>`;
 }
 
-function blogHeadingId(block, index) {
-  const slug = String(block.text)
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '') || 'section';
-  return `${slug}-${index + 1}`;
-}
-
-function blogArticleContent(blocks) {
-  return blocks.map((block, index) => {
-    if (block.type === 'h2') {
-      return `<h2 id="${blogHeadingId(block, index)}">${esc(block.text)}</h2>`;
-    }
-    if (block.type === 'h3') {
-      return `<h3 id="${blogHeadingId(block, index)}">${esc(block.text)}</h3>`;
-    }
-    if (block.type === 'p') return `<p>${esc(smart(block.text))}</p>`;
-    if (block.type === 'ul') {
-      return `<ul>${block.items.map(item => `<li>${esc(smart(item))}</li>`).join('')}</ul>`;
-    }
-    if (block.type === 'quote') {
-      return `<blockquote><p>${esc(smart(block.text))}</p></blockquote>`;
-    }
-    warnings.push(`unknown blog content block: ${block.type}`);
-    return '';
-  }).join('\n');
+function blogArticleContent(post) {
+  return post.bodyHtml;
 }
 
 function blogTableOfContents(post) {
-  const contentLinks = post.body.map((block, index) => {
-    if (block.type !== 'h2' && block.type !== 'h3') return '';
-    return `<li${block.type === 'h3' ? ' class="blog-toc__sub"' : ''}>
-      <a href="#${blogHeadingId(block, index)}">${esc(block.text)}</a>
+  const contentLinks = post.headings.map(heading => {
+    return `<li${heading.type === 'h3' ? ' class="blog-toc__sub"' : ''}>
+      <a href="#${heading.id}">${esc(heading.text)}</a>
     </li>`;
-  }).filter(Boolean);
+  });
   const faqLink = post.faq && post.faq.length
     ? '<li><a href="#frequently-asked-questions">Frequently Asked Questions</a></li>'
     : '';
@@ -1389,7 +1462,7 @@ function blogFaqSection(post) {
   if (!post.faq || !post.faq.length) return '';
   const rows = post.faq.map((item, index) => `<details${index === 0 ? ' open' : ''}>
   <summary>${esc(item.q)}</summary>
-  <div>${item.a.map(answer => `<p>${esc(smart(answer))}</p>`).join('')}</div>
+  <div>${item.a.map(answer => `<p>${esc(answer)}</p>`).join('')}</div>
 </details>`).join('\n');
   return `<section class="blog-faq" aria-labelledby="frequently-asked-questions">
   <h2 id="frequently-asked-questions">Frequently Asked Questions</h2>
@@ -1426,7 +1499,7 @@ function blogShareTools(post) {
 }
 
 function blogLatestPosts(currentPost) {
-  const latest = [...BLOG_POSTS]
+  const latest = [...BLOGS]
     .sort((a, b) => b.date.localeCompare(a.date))
     .slice(0, 3);
   if (!latest.length) return '';
@@ -1437,7 +1510,7 @@ function blogLatestPosts(currentPost) {
     ${latest.map(post => `<li>
       <a href="${blogUrl(post)}"${post.slug === currentPost.slug ? ' aria-current="page"' : ''}>
         <span class="blog-latest__media">
-          ${picture(post.image, { sizes: '84px', altOverride: '' })}
+          ${blogPicture(post, { sizes: '84px', altOverride: '' })}
         </span>
         <span>
           <strong>${esc(post.title)}</strong>
@@ -1480,7 +1553,7 @@ function blogPagination(currentPage, totalPages) {
 function buildBlogIndex(currentPage, totalPages) {
   const pageUrl = blogPageUrl(currentPage);
   const start = (currentPage - 1) * BLOG_PAGE_SIZE;
-  const posts = [...BLOG_POSTS]
+  const posts = [...BLOGS]
     .sort((a, b) => b.date.localeCompare(a.date))
     .slice(start, start + BLOG_PAGE_SIZE);
   const trail = currentPage === 1
@@ -1565,7 +1638,7 @@ function buildBlogPost(post) {
   <div class="wrap blog-article__layout">
     <div class="blog-article__main">
       <div class="blog-article__hero">
-        ${picture(post.image, {
+        ${blogPicture(post, {
           sizes: '(max-width:900px) 92vw, 760px',
           lazy: false,
           altOverride: post.alt,
@@ -1581,11 +1654,10 @@ function buildBlogPost(post) {
         ${blogShareTools(post)}
       </div>
       <h1 class="h-display">${esc(post.title)}</h1>
-      <p class="lede">${esc(smart(post.excerpt))}</p>
       </header>
 
       <div class="blog-article__content prose">
-        ${blogArticleContent(post.body)}
+        ${blogArticleContent(post)}
       </div>
       ${blogFaqSection(post)}
     </div>
@@ -1608,7 +1680,7 @@ function buildBlogPost(post) {
     robots: BLOG_SETTINGS.noindex ? 'noindex, nofollow' : '',
     ogType: 'article',
     ogImage: blogImageUrl(post),
-    heroImage: post.image,
+    heroImage: typeof post.image === 'string' ? post.image : null,
     jsonld: [{
       '@context': 'https://schema.org',
       '@type': 'BlogPosting',
@@ -2232,13 +2304,13 @@ function buildMeta() {
     ...PROJECTS.map(p => [projectUrl(p), '0.6']),
     ['/portfolio/', '0.7'],
     ['/reviews/', '0.7'],
-    // Sample blog pages must not enter the sitemap. When approved content
-    // replaces the placeholders, changing BLOG_SETTINGS.noindex to false
-    // publishes the whole section here as part of the same rebuild.
+    // Keep blog pages out of the sitemap until publication is approved.
+    // Changing BLOG_SETTINGS.noindex to false publishes the whole section
+    // here as part of the same rebuild.
     ...(!BLOG_SETTINGS.noindex ? [
       ['/blog/', '0.7'],
       ...Array.from({ length: blogPageCount() - 1 }, (_, index) => [blogPageUrl(index + 2), '0.5']),
-      ...BLOG_POSTS.map(post => [blogUrl(post), '0.6']),
+      ...BLOGS.map(post => [blogUrl(post), '0.6']),
     ] : []),
     ['/about-us/', '0.7'],
     ['/get-your-free-estimate/', '0.9'],
@@ -2288,7 +2360,7 @@ buildProjects();
 buildPortfolio();
 buildReviews();
 buildBlogIndexes();
-BLOG_POSTS.forEach(buildBlogPost);
+BLOGS.forEach(buildBlogPost);
 buildContact();
 buildWarranty();
 buildAreas();
