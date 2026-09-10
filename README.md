@@ -555,28 +555,28 @@ on `/blog/`, posts 10–18 on `/blog/page/2/`, and so on. Numbered,
 Previous, and Next links are generated with each page. The build also clears
 obsolete blog and pagination output if posts are removed later.
 
-The current posts contain Lorem Ipsum for design review. As a safety measure,
-`BLOG_SETTINGS.noindex` is set to `true`. That setting adds
+The three current posts are generated from the client-supplied documents in
+`blog-content/*.source`. Those source files are preserved unchanged so article
+text, headings, lists, tables, links, emphasis, and FAQs are not lost during
+generation. `BLOG_SETTINGS.noindex` remains set to `true` until publication is
+approved. That setting adds
 `<meta name="robots" content="noindex, nofollow">` to the blog landing page
 and every detailed page, and excludes all of those URLs from `sitemap.xml`.
 
 To add or update an article:
 
-1. Edit its object in `BLOG_POSTS`. The required fields are `slug`, `title`,
-   `date` (YYYY-MM-DD), `category`, `author`, `image`, `alt`, `excerpt`,
-   `body`, and `faq`.
-2. Build the article body from the supported block types: `p`, `h2`, `h3`,
-   `ul`, and `quote`. The `h2` and `h3` blocks automatically become
-   working links in the table of contents.
-   FAQ entries use `{ q, a: ['Answer paragraph'] }`; the FAQ heading is also
-   added to the table of contents and the page receives FAQ structured data.
+1. Save the supplied HTML document as a `.source` file in `blog-content/`.
+2. Add its `source`, `date`, `author`, and local featured-image details to
+   `BLOG_POSTS` in `content.mjs`.
 3. Run `node build.mjs`.
 4. Review the generated landing page and detailed pages, then commit both the
    source files and generated HTML.
 
-When real, approved articles replace every placeholder, set
-`BLOG_SETTINGS.noindex` to `false` and rebuild. The build will remove the
-robots restriction and add the blog URLs to the sitemap automatically.
+The source parser derives the SEO title, meta description, URL slug, article
+body, table of contents, and FAQ accordion directly from the supplied file.
+When publication is approved, set `BLOG_SETTINGS.noindex` to `false` and
+rebuild. The build will remove the robots restriction and add the blog URLs to
+the sitemap automatically.
 
 ---
 
