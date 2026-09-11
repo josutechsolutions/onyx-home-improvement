@@ -1940,6 +1940,57 @@ function buildContact() {
 /* The old site had a page per city. We keep one index at the same parent URL
    and leave lightweight stubs at each city URL so existing search results and
    inbound links land somewhere useful instead of a 404. */
+const AREA_META = {
+  'falls-church-va': {
+    title: 'Home Remodeling in Falls Church, VA | Onyx Home Improvement',
+    desc: 'Get home remodeling in Falls Church, VA. We build driveways, patios, walkways, steps, & stone walls for homeowners since 2010. Free estimates.',
+  },
+  'fairfax-va': {
+    title: ' Fairfax Home Improvement | Onyx Home Improvement',
+    desc: 'We offer Fairfax home improvement services covering driveways, patios, walkways, retaining walls, & masonry repair. Family-operated since 2010. Free estimate.',
+  },
+  'vienna-va': {
+    title: 'Home Remodeling Contractor, Vienna, VA || Onyx Home Improvement',
+    desc: 'Hire home remodeling contractor in Vienna, VA. We handle driveways, patios, steps, stone walls, & chimney repair. Owner-run since 2010. Get free estimate.',
+  },
+  'arlington-va': {
+    title: 'Home Improvement in Arlington, VA | Onyx Home Improvement',
+    desc: 'Planning home improvement in Arlington, VA? From driveway to paving, patios, walkways, retaining walls, & chimney repair, we handle all. Family-run since 2010.',
+  },
+  'alexandria-va': {
+    title: 'Alexandria, VA Home Improvement | Onyx Home Improvement ',
+    desc: 'Ready for Alexandria, VA home Improvement project? We build driveways, patios, walkways, & retaining walls. Licensed, insured, family-run. Get free estimate.',
+  },
+  'clifton-va': {
+    title: 'Home Improvement Construction Company in Clifton, VA',
+    desc: 'Looking for home improvement construction company in Clifton, VA? Onyx Home Improvement builds driveways, patios, walkways, & stone walls. Get free estimate.',
+  },
+  'annandale-va': {
+    title: 'Home Improvement Contractor in Annandale, VA',
+    desc: 'Get home improvement services in Annandale, VA. We offer driveway paving, patios, walkways, retaining walls, masonry repair. Family-operated since 2010. ',
+  },
+  'mclean-va': {
+    title: 'Home Remodeling Contractor, McLean, VA | Onyx Home Improvement ',
+    desc: 'Onyx Home Improvement is trusted home remodeling contractor in McLean, VA. We build driveways, patios, stone walls, & steps for homes since 2010.  Free estimate.',
+  },
+  'tysons-va': {
+    title: 'Home Improvement Contractor, Tysons, VA | Onyx Home Improvement ',
+    desc: 'Our home improvement services in Tysons, VA include driveways, patios, walkways, retaining walls, & chimney repair. Family-operated, 90+ five-star reviews.',
+  },
+  'springfield-va': {
+    title: 'Home Improvement Contracting in Springfield, VA ',
+    desc: 'Home improvement contracting in Springfield covers driveway paving, patios, walkways, & masonry repair. Family-run since 2010. Open seven days a week.',
+  },
+  'reston-va': {
+    title: 'Home Improvement Company, Reston, VA | Onyx Home Improvement ',
+    desc: 'Onyx Home Improvement company in Reston builds driveways, patios, walkways, & retaining walls. Licensed, insured, family-operated since 2010. Free estimates.',
+  },
+  'burke-va': {
+    title: 'Home Improvement Company, Burke, VA | Onyx Home Improvement ',
+    desc: 'Our home improvement company in Burke offers driveway paving, patios, walkways, retaining walls, & chimney repair. Family-operated since 2010. Call (571) 632-9067.',
+  },
+};
+
 function buildAreas() {
   const trail = [{ label: 'Home', href: '/' }, { label: 'Service Areas' }];
   const body = `${crumbs(trail)}
@@ -2003,14 +2054,15 @@ ${ctaBand()}`;
   for (const a of AREAS) {
     const slug = slugFor(a);
     const city = a.split(',')[0];
+    const areaMeta = AREA_META[slug];
     const trail = [
       { label: 'Home', href: '/' },
       { label: 'Service Areas', href: '/service-areas/' },
       { label: a },
     ];
     write(`service-areas/${slug}/index.html`, layout({
-      title: `Masonry & Stonework in ${a} | ${BIZ.legal}`,
-      desc: metaDesc(
+      title: areaMeta?.title ?? `Masonry & Stonework in ${a} | ${BIZ.legal}`,
+      desc: areaMeta?.desc ?? metaDesc(
         `Onyx Home Improvement provides driveway paving, patios, walkways, retaining walls,`
         + ` and masonry repair in ${a}. Family-operated since ${BIZ.since}.`,
         'Free estimates.'),
