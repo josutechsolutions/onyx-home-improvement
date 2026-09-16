@@ -1844,3 +1844,207 @@ a { color: inherit; }
   }
   .blog-article__hero > picture { aspect-ratio: 4 / 3; }
 }
+
+/* --- Service-area landing pages -------------------------------------------
+   The full city layout (/service-areas/{city}/). Built from the site's own
+   tokens and primitives; the classes below only add what the approved
+   design needs on top of them. */
+.btn--light { background: var(--bg); color: var(--ink); }
+.btn--light:hover { background: #fff; }
+
+/* Hero: headline column beside the estimate card. */
+.area-hero__inner {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+  gap: clamp(2rem, 5vw, 4.5rem);
+  align-items: center;
+  padding-block: clamp(2.5rem, 6vw, 4.5rem);
+}
+.area-hero__copy { color: #fff; }
+.area-hero__crumbs { padding-top: 0; margin-bottom: 1.5rem; color: rgba(255,255,255,.7); }
+.area-hero__crumbs [aria-current] { color: #fff; }
+.area-hero h1 { max-width: 16ch; font-size: clamp(2.25rem, 5.4vw, 4.1rem); }
+.area-hero__ticks { list-style: none; display: grid; gap: 0.7rem; margin-top: 2rem; font-size: 1.05rem; color: rgba(255,255,255,.9); }
+.area-hero__ticks li { display: flex; align-items: center; gap: 0.75rem; }
+.area-hero__ticks svg { flex: none; color: rgba(255,255,255,.8); }
+.area-hero__form {
+  background: var(--bg-card);
+  color: var(--ink);
+  border-radius: 8px;
+  padding: clamp(1.5rem, 3vw, 2rem);
+  box-shadow: 0 24px 60px -24px rgba(0,0,0,.45);
+}
+.area-hero .area-hero__form .eyebrow { margin-bottom: 0.6rem; color: var(--ink-dim); }
+.area-hero__form-head { font-size: clamp(1.45rem, 2.4vw, 1.85rem); line-height: 1.15; }
+.area-hero__form-sub { margin-top: 0.6rem; font-size: 0.875rem; color: var(--ink-mid); }
+.form--compact { gap: 0.9rem; margin-top: 1.25rem; }
+.form--compact .field { gap: 0.35rem; }
+.form--compact .field-row { gap: 0.9rem; }
+.form--compact .field label { font-size: 0.78rem; font-weight: 700; }
+.form--compact .field input,
+.form--compact .field select,
+.form--compact .field textarea { background: var(--bg); padding: 0.65rem 0.8rem; font-size: 0.9rem; }
+.form--compact .field textarea { min-height: 4.5rem; }
+.form--compact .btn { width: 100%; padding-block: 1rem; }
+.form--compact .form__note { text-align: center; font-size: 0.75rem; }
+.area-hero .formdone { border: 0; padding: 2rem 1rem; }
+@media (max-width: 960px) {
+  .area-hero__inner { grid-template-columns: 1fr; }
+}
+
+/* Section heads: centred, or heading beside its intro. */
+.area-head { margin-bottom: clamp(2.25rem, 4.5vw, 3.5rem); }
+.area-head--center { text-align: center; max-width: 52rem; margin-inline: auto; }
+.area-head--center .lede { margin: 1.1rem auto 0; }
+.area-head--split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(1.5rem, 5vw, 4rem);
+  align-items: start;
+}
+@media (max-width: 820px) { .area-head--split { grid-template-columns: 1fr; } }
+.area-actions { justify-content: center; }
+.area-center { text-align: center; margin-top: clamp(2rem, 4vw, 3rem); }
+
+/* Image beside copy. */
+.area-split {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+  gap: clamp(2rem, 5vw, 4rem);
+  align-items: center;
+}
+.area-split--cta { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); }
+.area-split__media { border-radius: 8px; overflow: hidden; aspect-ratio: 1 / 1; background: var(--bg-sunk); }
+.area-split__media--tall { aspect-ratio: 5 / 6; }
+.area-split__media > picture { display: block; width: 100%; height: 100%; }
+.area-split__media img { width: 100%; height: 100%; object-fit: cover; }
+.area-copy { margin-top: 1.5rem; display: grid; gap: 1.1rem; color: var(--ink-mid); font-size: 1.02rem; }
+.area-copy__em { color: var(--ink); font-weight: 500; }
+.area-split__copy .hero__actions { margin-top: 2rem; }
+@media (max-width: 820px) {
+  .area-split, .area-split--cta { grid-template-columns: 1fr; }
+  .area-split--cta .area-split__media { order: -1; }
+}
+
+/* Benefit cards. */
+.area-benefits { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(1rem, 2vw, 1.4rem); }
+.area-benefit { background: var(--bg); border-radius: 8px; padding: clamp(1.5rem, 2.6vw, 2rem); }
+.area-benefit__icon {
+  display: grid;
+  place-items: center;
+  width: 2.9rem;
+  height: 2.9rem;
+  border-radius: 6px;
+  background: var(--bg-sunk);
+  color: var(--ink);
+}
+.area-benefit h3 { margin-top: 1.4rem; font-size: 1.3rem; line-height: 1.2; }
+.area-benefit p { margin-top: 0.8rem; color: var(--ink-mid); font-size: 0.975rem; }
+@media (max-width: 900px) { .area-benefits { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 620px) { .area-benefits { grid-template-columns: 1fr; } }
+
+/* Service cards: photo, title, copy, two across. */
+.area-svcs { display: grid; grid-template-columns: repeat(2, 1fr); gap: clamp(2rem, 4vw, 3rem) clamp(1rem, 2vw, 1.5rem); }
+.area-svc__media { border-radius: 8px; overflow: hidden; aspect-ratio: 16 / 9; background: var(--bg-sunk); }
+.area-svc__media > picture { display: block; width: 100%; height: 100%; }
+.area-svc__media img { width: 100%; height: 100%; object-fit: cover; }
+.area-svc h3 { margin-top: 1.4rem; font-size: 1.4rem; }
+.area-svc h3 a { text-decoration: none; }
+.area-svc h3 a:hover { color: var(--clay); }
+.area-svc p { margin-top: 0.7rem; color: var(--ink-mid); font-size: 1.02rem; }
+@media (max-width: 720px) { .area-svcs { grid-template-columns: 1fr; } }
+
+/* Reviews slider on dark. */
+.area-reviews .h-section { color: var(--on-dark); }
+.rslider__track {
+  list-style: none;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: calc((100% - 2 * clamp(1rem, 2vw, 1.4rem)) / 3);
+  gap: clamp(1rem, 2vw, 1.4rem);
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  outline-offset: 4px;
+}
+.rslider__track::-webkit-scrollbar { display: none; }
+.rcard {
+  scroll-snap-align: start;
+  border: 1px solid rgba(246,244,241,.14);
+  border-radius: 8px;
+  background: rgba(246,244,241,.03);
+  padding: clamp(1.4rem, 2.4vw, 1.9rem);
+  display: flex;
+  flex-direction: column;
+}
+.rcard .stars { color: #c9973f; font-size: 0.9rem; }
+.rcard blockquote { margin: 1rem 0 0; color: var(--on-dark); font-size: 1.02rem; flex: 1; }
+.rcard cite { display: block; margin-top: 1.25rem; font-style: normal; font-weight: 500; font-size: 0.875rem; }
+.rcard cite span { font-weight: 400; color: var(--on-dark-dim); }
+.rslider__nav { display: flex; align-items: center; justify-content: center; gap: 2rem; margin-top: 2.5rem; }
+.rslider__btn {
+  display: grid;
+  place-items: center;
+  width: 2.9rem;
+  height: 2.9rem;
+  border-radius: 50%;
+  border: 1px solid rgba(246,244,241,.5);
+  background: transparent;
+  color: var(--on-dark);
+  cursor: pointer;
+  transition: background-color .18s ease, color .18s ease, opacity .18s ease;
+}
+.rslider__btn:hover:not(:disabled) { background: var(--on-dark); color: var(--ink); }
+.rslider__btn:disabled { opacity: 0.35; cursor: default; }
+.rslider__count { font-size: 0.9rem; color: var(--on-dark-dim); font-variant-numeric: tabular-nums; }
+@media (max-width: 900px) { .rslider__track { grid-auto-columns: calc((100% - clamp(1rem, 2vw, 1.4rem)) / 2); } }
+@media (max-width: 620px) { .rslider__track { grid-auto-columns: 100%; } }
+
+/* Numbered process cards. */
+.area-steps { list-style: none; display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(1rem, 2vw, 1.4rem); }
+.area-steps li { background: var(--bg-sunk); border-radius: 8px; padding: clamp(1.5rem, 2.6vw, 2rem); }
+.area-steps__n { display: block; font-family: var(--font-display); font-size: 3.4rem; line-height: 1; color: var(--ink-dim); opacity: 0.55; }
+.area-steps h3 { margin-top: 1.25rem; font-size: 1.3rem; line-height: 1.2; }
+.area-steps p { margin-top: 0.8rem; color: var(--ink-mid); font-size: 0.975rem; }
+@media (max-width: 820px) { .area-steps { grid-template-columns: 1fr; } }
+
+/* FAQ with a plus / minus marker. */
+.area-faq .faq { max-width: none; }
+.faq--plus summary { font-size: clamp(1.1rem, 1.8vw, 1.35rem); padding-block: 1.6rem; }
+/* A plus drawn as two bars rather than a glyph, so the vertical one can
+   collapse into the minus instead of the marker swapping character. */
+.faq--plus summary::after,
+.faq--plus summary::before {
+  content: '';
+  position: absolute;
+  right: 0.35rem;
+  top: 50%;
+  background: var(--ink-mid);
+  border: 0;
+  transform: none;
+  transition: transform .3s ease, opacity .3s ease;
+}
+.faq--plus summary::after { width: 15px; height: 1.5px; margin-top: -0.75px; }
+.faq--plus summary::before { width: 1.5px; height: 15px; margin-top: -7.5px; margin-right: 6.75px; }
+.faq--plus details[open] summary::before { transform: scaleY(0); opacity: 0; }
+/* The chevron variant rotates its marker when open; these bars must not. */
+.faq--plus details[open] summary::after { transform: none; margin-top: -0.75px; }
+
+/* Height animation. `interpolate-size` is what lets the closed height of 0
+   transition to the content's auto height; browsers without it simply open
+   and close instantly, which is the current behaviour. */
+@supports (interpolate-size: allow-keywords) and (selector(::details-content)) {
+  @media (prefers-reduced-motion: no-preference) {
+    :root { interpolate-size: allow-keywords; }
+    .faq details::details-content {
+      block-size: 0;
+      overflow: clip;
+      opacity: 0;
+      transition:
+        block-size .34s cubic-bezier(.2,.6,.2,1),
+        opacity .26s ease,
+        content-visibility .34s allow-discrete;
+    }
+    .faq details[open]::details-content { block-size: auto; opacity: 1; }
+  }
+}
