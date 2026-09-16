@@ -14,7 +14,7 @@ import { fileURLToPath } from 'url';
 import {
   BIZ, NAV, SERVICES, REVIEWS, FEATURED_REVIEWS, AREAS, WARRANTY,
   PORTFOLIO, HOME_PORTFOLIO, FAQ, POINTS, PROJECTS, REDIRECTS,
-  BLOG_SETTINGS, BLOG_POSTS,
+  BLOG_SETTINGS, BLOG_POSTS, AREA_PAGES, AREA_PAGE_IMAGES, AREA_SERVICE_CARDS,
 } from './content.mjs';
 
 const ROOT = path.dirname(fileURLToPath(import.meta.url));
@@ -282,6 +282,11 @@ function layout({
   title, desc, url, body, current, jsonld = [], heroImage = null,
   trail = null, script = '', robots = '', ogType = 'website', ogImage = '',
 }) {
+  /* Copy is pasted in from content documents, so a stray leading or trailing
+     space in a title or description is routine. Trim rather than ask every
+     author to spot it. */
+  title = String(title).trim();
+  desc = String(desc).trim();
   const canonical = BIZ.origin + url;
   // BASE_PATH builds are staging previews, so they always stay noindex. The
   // optional page-level value lets unfinished sections (such as the sample
@@ -1787,13 +1792,14 @@ if(btn){btn.disabled=false;btn.textContent=label}
 })();`;
 
 /* --- Estimate / contact -------------------------------------------------- */
-function buildContact() {
+/* The estimate form, shared by the contact page and the city landing pages.
+   `area` preselects the property location; `compact` is the card version in
+   a city page hero, which shows the hint as a placeholder and folds the two
+   notes into one line. Field ids are fixed, so a page carries one form. */
+function estimateForm({ area = '', compact = false } = {}) {
   const action = BIZ.formspreeId
     ? `https://formspree.io/f/${BIZ.formspreeId}`
     : '';
-  if (!BIZ.formspreeId) {
-    warnings.push('BIZ.formspreeId is empty — the estimate form will not submit until you set it in content.mjs. See README.');
-  }
 
   /* Grouped so the material pages sit under their hub rather than reading as
      four unrelated driveway entries in a flat list. */
@@ -1804,28 +1810,30 @@ function buildContact() {
       ? `<optgroup label="${esc(s.title)}">${[opt(s.title), ...kids.map(c => opt(c.title))].join('')}</optgroup>`
       : opt(s.title);
   }).join('\n            ');
-  const areaOptions = AREAS.map(a => `<option value="${esc(a)}">${esc(a)}</option>`).join('\n            ');
+  const areaOptions = AREAS.map(a => `<option value="${esc(a)}"${a === area ? ' selected' : ''}>${esc(a)}</option>`).join('\n            ');
 
-  const trail = [{ label: 'Home', href: '/' }, { label: 'Free Estimate' }];
-  const body = `${crumbs(trail)}
+  const hint = 'Size, condition, timing — whatever you know so far.';
+  const messageLabel = compact
+    ? `<label for="message">Tell us about the project</label>
+          <textarea id="message" name="message" rows="3" placeholder="${hint}"></textarea>`
+    : `<label for="message">Tell us about the project <span class="hint">${hint}</span></label>
+          <textarea id="message" name="message" rows="6"></textarea>`;
+  const submit = compact
+    ? `<p class="form__error" id="form-error" hidden role="alert"></p>
+        <button class="btn btn--solid" type="submit">Request My Free Estimate</button>
+        <p class="form__note"><abbr class="req" title="required">*</abbr> Required. We reply to every request, usually the same day &mdash; we never share your details.</p>`
+    : `<p class="form__note"><abbr class="req" title="required">*</abbr> Required &mdash; everything else is optional.</p>
+        <p class="form__error" id="form-error" hidden role="alert"></p>
+        <button class="btn btn--solid" type="submit" style="justify-self:start;padding-inline:2rem">Request My Free Estimate</button>
+        <p class="form__note">We reply to every request, usually the same day. We never share your details.</p>`;
+  const ph = (text) => compact ? ` placeholder="${text}"` : '';
 
-<section class="pagehead">
-  <div class="wrap">
-    <p class="eyebrow">Request</p>
-    <h1 class="h-display" style="max-width:20ch">Want to create something great together?</h1>
-    <p class="lede">Tell us what you have in mind and we will come out, look at the site, and give you a written estimate. Free, itemized, and no obligation.</p>
-  </div>
-</section>
-
-<section class="section section--tight">
-  <div class="wrap contact-grid">
-    <div>
-      <div class="formdone" id="form-done" hidden tabindex="-1" role="status" aria-live="polite">
+  return `<div class="formdone" id="form-done" hidden tabindex="-1" role="status" aria-live="polite">
         <p class="formdone__mark" aria-hidden="true">&check;</p>
         <p class="formdone__head">Submitted</p>
         <p class="formdone__sub">Thanks &mdash; we have your request and will be in touch, usually the same day. If it is urgent, call <a class="tel" href="${BIZ.phoneHref}">${BIZ.phone}</a>.</p>
       </div>
-      <form class="form" id="estimate-form" method="POST"${action ? ` action="${action}"` : ''}>
+      <form class="form${compact ? ' form--compact' : ''}" id="estimate-form" method="POST"${action ? ` action="${action}"` : ''}>
         <input type="hidden" name="_subject" value="New estimate request — onyxhomeimprovementllc.com">
         <input type="hidden" name="_next" value="${BIZ.origin}/thank-you/">
         <div class="hp" aria-hidden="true">
@@ -1836,17 +1844,17 @@ function buildContact() {
         <div class="field-row">
           <div class="field">
             <label for="name">Name <abbr class="req" title="required">*</abbr></label>
-            <input id="name" name="name" type="text" autocomplete="name" required>
+            <input id="name" name="name" type="text" autocomplete="name" required${ph('Your name')}>
           </div>
           <div class="field">
             <label for="phone">Phone <abbr class="req" title="required">*</abbr></label>
-            <input id="phone" name="phone" type="tel" autocomplete="tel" required>
+            <input id="phone" name="phone" type="tel" autocomplete="tel" required${ph('(571) 000-0000')}>
           </div>
         </div>
 
         <div class="field">
           <label for="email">Email <abbr class="req" title="required">*</abbr></label>
-          <input id="email" name="email" type="email" autocomplete="email" required>
+          <input id="email" name="email" type="email" autocomplete="email" required${ph('you@email.com')}>
         </div>
 
         <div class="field-row">
@@ -1869,15 +1877,33 @@ function buildContact() {
         </div>
 
         <div class="field">
-          <label for="message">Tell us about the project <span class="hint">Size, condition, timing — whatever you know so far.</span></label>
-          <textarea id="message" name="message" rows="6"></textarea>
+          ${messageLabel}
         </div>
 
-        <p class="form__note"><abbr class="req" title="required">*</abbr> Required &mdash; everything else is optional.</p>
-        <p class="form__error" id="form-error" hidden role="alert"></p>
-        <button class="btn btn--solid" type="submit" style="justify-self:start;padding-inline:2rem">Request My Free Estimate</button>
-        <p class="form__note">We reply to every request, usually the same day. We never share your details.</p>
-      </form>
+        ${submit}
+      </form>`;
+}
+
+function buildContact() {
+  if (!BIZ.formspreeId) {
+    warnings.push('BIZ.formspreeId is empty — the estimate form will not submit until you set it in content.mjs. See README.');
+  }
+
+  const trail = [{ label: 'Home', href: '/' }, { label: 'Free Estimate' }];
+  const body = `${crumbs(trail)}
+
+<section class="pagehead">
+  <div class="wrap">
+    <p class="eyebrow">Request</p>
+    <h1 class="h-display" style="max-width:20ch">Want to create something great together?</h1>
+    <p class="lede">Tell us what you have in mind and we will come out, look at the site, and give you a written estimate. Free, itemized, and no obligation.</p>
+  </div>
+</section>
+
+<section class="section section--tight">
+  <div class="wrap contact-grid">
+    <div>
+      ${estimateForm()}
     </div>
 
     <aside class="contact-block">
@@ -1991,6 +2017,252 @@ const AREA_META = {
   },
 };
 
+/* --- Service-area landing pages ------------------------------------------ */
+/* Line icons for the benefit cards. Drawn on a 24px grid, stroked in
+   currentColor so they follow the card's ink. */
+const AREA_ICONS = {
+  home:   '<path d="M3 10.5 12 3l9 7.5"/><path d="M5 9v11h14V9"/><path d="M10 20v-6h4v6"/>',
+  light:  '<circle cx="12" cy="10" r="3.5"/><path d="M12 2.5v1.5M4.5 10H3M21 10h-1.5M6.7 4.7l1 1M17.3 4.7l-1 1"/><path d="M5 17h14M8 20.5h8"/>',
+  shield: '<path d="M12 3 4.5 6v5.5c0 4.6 3.1 8.2 7.5 9.5 4.4-1.3 7.5-4.9 7.5-9.5V6L12 3Z"/><path d="m8.8 12 2.2 2.2 4.2-4.4"/>',
+  repair: '<path d="M4 10.5 12 4l8 6.5V20H4v-9.5Z"/><path d="M12 10.5v3.5l-1.5 1.5 1.5 1.5v1"/>',
+  route:  '<path d="M5 19 19 5"/><path d="M10 5h9v9"/><circle cx="5" cy="19" r="1.6"/>',
+  layers: '<path d="m12 3 9 5-9 5-9-5 9-5Z"/><path d="m3 12.5 9 5 9-5"/><path d="m3 17 9 5 9-5"/>',
+};
+const areaIcon = name => `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${AREA_ICONS[name] || AREA_ICONS.home}</svg>`;
+const CHECK = '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="m2.5 8.5 3.5 3.5 7.5-8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+const ARROW_LEFT = ARROW.replace('<svg ', '<svg style="transform:scaleX(-1)" ');
+
+/* Review slider: a native scroll-snap row, so it scrolls by touch or
+   trackpad with no JavaScript. The script only wires the arrow buttons and
+   the page counter, and hides both when everything already fits. */
+const SLIDER_SCRIPT = `(function(){
+document.querySelectorAll('[data-slider]').forEach(function(root){
+var track=root.querySelector('.rslider__track'),prev=root.querySelector('[data-prev]'),next=root.querySelector('[data-next]'),count=root.querySelector('[data-count]'),nav=root.querySelector('.rslider__nav');
+if(!track||!prev||!next)return;
+function pages(){return Math.max(1,Math.round(track.scrollWidth/track.clientWidth))}
+function page(){return Math.min(pages(),Math.round(track.scrollLeft/track.clientWidth)+1)}
+function sync(){var n=pages(),p=page();if(nav)nav.hidden=n<2;if(count)count.textContent=p+' / '+n;prev.disabled=p<=1;next.disabled=p>=n}
+prev.addEventListener('click',function(){track.scrollBy({left:-track.clientWidth,behavior:'smooth'})});
+next.addEventListener('click',function(){track.scrollBy({left:track.clientWidth,behavior:'smooth'})});
+track.addEventListener('scroll',function(){window.requestAnimationFrame(sync)},{passive:true});
+window.addEventListener('resize',sync);
+sync();
+});
+})();`;
+
+function areaReviews() {
+  const cards = REVIEWS.filter(r => !r.hide).slice(0, 6).map(r => `<li class="rcard">
+        <p class="stars" aria-label="5 out of 5 stars">★★★★★</p>
+        <blockquote><p>${esc(smart(r.text))}</p></blockquote>
+        <cite>${esc(r.name)}${r.source ? ` <span>via ${esc(r.source)}</span>` : ''}</cite>
+      </li>`).join('\n      ');
+  return `<section class="section section--dark area-reviews">
+  <div class="wrap">
+    <div class="area-head area-head--center">
+      <p class="eyebrow">Reviews</p>
+      <h2 class="h-section reveal">What customers say</h2>
+      <p class="lede reveal">Onyx has ${BIZ.reviewCount} five-star reviews on ${BIZ.ratingSource} &mdash; a straight ${BIZ.rating} on both. A selection is reproduced below, as written by the customers who left them.</p>
+      <div class="hero__actions area-actions">
+        <a class="btn btn--light" href="${BIZ.googleProfileUrl}" rel="noopener">Read our reviews on Google</a>
+        <a class="btn btn--on-photo" href="${BIZ.ratingUrl}" rel="noopener">Verify on HomeAdvisor</a>
+      </div>
+    </div>
+    <div class="rslider" data-slider>
+      <ul class="rslider__track" tabindex="0" aria-label="Customer reviews">
+      ${cards}
+      </ul>
+      <div class="rslider__nav" hidden>
+        <button class="rslider__btn" type="button" data-prev aria-label="Previous reviews">${ARROW_LEFT}</button>
+        <span class="rslider__count" data-count aria-live="polite"></span>
+        <button class="rslider__btn" type="button" data-next aria-label="Next reviews">${ARROW}</button>
+      </div>
+    </div>
+  </div>
+</section>`;
+}
+
+function buildAreaPage(a, slug, page) {
+  const city = a.split(',')[0];
+  const img = { ...AREA_PAGE_IMAGES, ...(page.images || {}) };
+  const trail = [
+    { label: 'Home', href: '/' },
+    { label: 'Service Areas', href: '/service-areas/' },
+    { label: a },
+  ];
+  const paras = list => list.map(p => `<p>${esc(smart(p))}</p>`).join('\n        ');
+
+  const services = page.services.items.map(([title, text]) => {
+    const card = AREA_SERVICE_CARDS[title];
+    if (!card) warnings.push(`${slug}: service "${title}" has no entry in AREA_SERVICE_CARDS — shown without an image or link`);
+    const heading = card?.href ? `<a href="${card.href}">${esc(title)}</a>` : esc(title);
+    return `<article class="area-svc reveal">
+        ${card ? `<div class="area-svc__media">${mediaFor(card.image, { sizes: '(max-width:720px) 92vw, 45vw' })}</div>` : ''}
+        <h3>${heading}</h3>
+        <p>${esc(smart(text))}</p>
+      </article>`;
+  }).join('\n      ');
+
+  const faq = page.faq.map((f, i) => `<details${i === 0 ? ' open' : ''}>
+        <summary>${i + 1}. ${esc(f.q)}</summary>
+        <div>${f.a.map(p => `<p>${esc(smart(p))}</p>`).join('')}</div>
+      </details>`).join('\n      ');
+
+  const body = `<section class="hero area-hero">
+  <div class="hero__media">${picture(img.hero, { sizes: '100vw', lazy: false, altOverride: `Exterior home improvement work by Onyx Home Improvement in ${a}` })}</div>
+  <div class="wrap area-hero__inner">
+    <div class="area-hero__copy">
+      <ul class="crumbs area-hero__crumbs">
+        ${trail.map((t, i) => i === trail.length - 1 ? `<li aria-current="page">${esc(t.label)}</li>` : `<li><a href="${t.href}">${esc(t.label)}</a></li>`).join('\n        ')}
+      </ul>
+      <h1 class="h-display">${esc(page.h1)}</h1>
+      <ul class="area-hero__ticks">
+        ${page.highlights.map(h => `<li>${CHECK}${esc(h)}</li>`).join('\n        ')}
+      </ul>
+      <div class="hero__actions">
+        <a class="btn btn--solid" href="/get-your-free-estimate/">Get a Free Estimate</a>
+        <a class="btn btn--on-photo tel" href="${BIZ.phoneHref}">${BIZ.phone}</a>
+      </div>
+    </div>
+    <div class="area-hero__form">
+      <p class="eyebrow">Request</p>
+      <h2 class="area-hero__form-head">Want to create something great together?</h2>
+      <p class="area-hero__form-sub">Tell us what you have in mind and we will come out and give you a free, itemized written estimate.</p>
+      ${estimateForm({ area: a, compact: true })}
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap area-split">
+    <div class="area-split__media reveal">${picture(img.intro, { sizes: '(max-width:820px) 92vw, 40vw' })}</div>
+    <div class="area-split__copy">
+      <h2 class="h-section reveal">${esc(page.intro.h)}</h2>
+      <div class="area-copy">
+        ${paras(page.intro.p)}
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section section--sunk">
+  <div class="wrap">
+    <div class="area-head area-head--center">
+      <h2 class="h-section reveal">${esc(page.benefits.h)}</h2>
+    </div>
+    <div class="area-benefits">
+      ${page.benefits.items.map(b => `<div class="area-benefit reveal">
+        <span class="area-benefit__icon">${areaIcon(b.icon)}</span>
+        <h3>${esc(b.h)}</h3>
+        <p>${esc(smart(b.p))}</p>
+      </div>`).join('\n      ')}
+    </div>
+    <p class="area-center"><a class="btn btn--solid" href="/get-your-free-estimate/">Get a Free Estimate ${ARROW}</a></p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <div class="area-head area-head--split">
+      <h2 class="h-section reveal">${esc(page.services.h)}</h2>
+      <p class="lede reveal">${esc(smart(page.services.p))}</p>
+    </div>
+    <div class="area-svcs">
+      ${services}
+    </div>
+  </div>
+</section>
+
+${areaReviews()}
+
+<section class="section section--sunk">
+  <div class="wrap area-split">
+    <div class="area-split__media area-split__media--tall reveal">${picture(img.contractor, { sizes: '(max-width:820px) 92vw, 45vw' })}</div>
+    <div class="area-split__copy">
+      <h2 class="h-section reveal">${esc(page.contractor.h)}</h2>
+      <div class="area-copy">
+        ${paras(page.contractor.p)}
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <div class="area-head area-head--center">
+      <h2 class="h-section reveal">${esc(page.process.h)}</h2>
+    </div>
+    <ol class="area-steps">
+      ${page.process.steps.map(([h, d], i) => `<li class="reveal">
+        <span class="area-steps__n" aria-hidden="true">${i + 1}</span>
+        <h3>${esc(h)}</h3>
+        <p>${esc(smart(d))}</p>
+      </li>`).join('\n      ')}
+    </ol>
+  </div>
+</section>
+
+<section class="section section--sunk">
+  <div class="wrap area-split area-split--cta">
+    <div class="area-split__copy">
+      <p class="eyebrow">Free, itemized, no obligation</p>
+      <h2 class="h-section reveal">${esc(page.cta.h)}</h2>
+      <div class="area-copy">
+        ${paras(page.cta.p.slice(0, -1))}
+        <p class="area-copy__em">${esc(smart(page.cta.p[page.cta.p.length - 1]))}</p>
+      </div>
+      <div class="hero__actions">
+        <a class="btn btn--solid" href="/get-your-free-estimate/">Get a Free Estimate</a>
+        <a class="btn btn--ghost tel" href="${BIZ.phoneHref}">${BIZ.phone}</a>
+      </div>
+    </div>
+    <div class="area-split__media reveal">${picture(img.cta, { sizes: '(max-width:820px) 92vw, 45vw' })}</div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap area-faq">
+    <div class="area-head area-head--center">
+      <h2 class="h-section reveal">Frequently Asked Questions</h2>
+    </div>
+    <div class="faq faq--plus">
+      ${faq}
+    </div>
+  </div>
+</section>`;
+
+  const areaMeta = AREA_META[slug];
+  write(`service-areas/${slug}/index.html`, layout({
+    title: areaMeta?.title ?? `${page.h1} | ${BIZ.legal}`,
+    desc: areaMeta?.desc ?? metaDesc(`${page.h1}. Driveways, patios, walkways, masonry, brick, and stonework.`, 'Free estimates.'),
+    url: `/service-areas/${slug}/`,
+    current: '',
+    trail,
+    heroImage: img.hero,
+    body,
+    script: FORM_SCRIPT + '\n' + SLIDER_SCRIPT,
+    jsonld: [
+      ...TOP.map(s => ({
+        '@context': 'https://schema.org',
+        '@type': 'Service',
+        name: `${s.title} in ${a}`,
+        serviceType: s.title,
+        url: BIZ.origin + s.href,
+        provider: { '@id': BIZ.origin + '/#business' },
+        areaServed: { '@type': 'Place', name: a },
+      })),
+      {
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        mainEntity: page.faq.map(f => ({
+          '@type': 'Question',
+          name: f.q,
+          acceptedAnswer: { '@type': 'Answer', text: f.a.join(' ') },
+        })),
+      },
+    ],
+  }));
+}
+
 function buildAreas() {
   const trail = [{ label: 'Home', href: '/' }, { label: 'Service Areas' }];
   const body = `${crumbs(trail)}
@@ -2053,6 +2325,7 @@ ${ctaBand()}`;
   const slugFor = a => a.toLowerCase().replace(/,/g, '').replace(/\s+/g, '-').replace(/-va$/, '-va').replace(/-dc$/, '-dc');
   for (const a of AREAS) {
     const slug = slugFor(a);
+    if (AREA_PAGES[slug]) { buildAreaPage(a, slug, AREA_PAGES[slug]); continue; }
     const city = a.split(',')[0];
     const areaMeta = AREA_META[slug];
     const trail = [

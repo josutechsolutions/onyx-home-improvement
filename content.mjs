@@ -1219,6 +1219,346 @@ export const AREAS = [
   'Annandale, VA', 'Clifton, VA', 'Washington, DC',
 ];
 
+/* --- Service-area landing pages -------------------------------------------
+   Full city pages, keyed by the slug under /service-areas/. A city listed in
+   AREAS without an entry here keeps the short stub page; adding an entry
+   switches that URL to the full layout on the next build.
+
+   Copy comes from the approved content documents and is kept word for word —
+   headings carry the target keywords, so do not "tidy" them.
+
+   Section images default to AREA_PAGE_IMAGES below; set `images` on a city to
+   override any of them. Each service card is matched to its image and
+   service page by title through AREA_SERVICE_CARDS, so a city only supplies
+   the copy. Benefit icons are one of: home, light, shield, repair, route,
+   layers. */
+export const AREA_PAGE_IMAGES = {
+  hero: 'hero-driveway',
+  intro: 'veneer-siding',
+  contractor: 'walkway-bluestone',
+  cta: 'walkway-crew',
+};
+
+export const AREA_SERVICE_CARDS = {
+  'Paving Services':   { image: 'driveway-paver-grey',                    href: '/masonry/driveway-paving/' },
+  'Masonry Work':      { image: 'wall-curved',                            href: '/masonry/retaining-walls/' },
+  'Brickwork':         { image: 'walkway-brick',                          href: '/masonry/brickwork/' },
+  'Stone Work':        { image: 'steps-stone',                            href: '/stone-work/stone-veneer/' },
+  'Driveways':         { image: 'stamped-concrete-driveway-annandale-va', href: '/masonry/driveway-paving/' },
+  'Patios':            { image: 'patio-firepit',                          href: '/stone-work/patio-design/' },
+  'Walkways':          { image: 'walkway-steps',                          href: '/stone-work/walkways-steps/' },
+  'Asphalt & Concrete': { image: 'driveway-asphalt-cone',                 href: '/masonry/asphalt-driveways/' },
+};
+
+export const AREA_PAGES = {
+  'vienna-va': {
+    h1: 'Home Remodeling Contractor in Vienna, VA',
+    highlights: [
+      '15+ Years of Hands-On Experience',
+      'Quality Materials and Craftsmanship',
+      'Personalized Project Approach',
+      'Clear Communication',
+    ],
+    intro: {
+      h: 'Exterior Home Remodeling in Vienna Built Around Your Property',
+      p: [
+        "Your home's exterior affects more than curb appeal. The right improvements can make outdoor areas easier to access, more functional, and better suited to the way you use your property.",
+        "Onyx Home Improvement LLC focuses exclusively on exterior work, including paving, masonry, brickwork, stonework, driveways, patios, walkways, asphalt, and concrete. Our home remodeling in Vienna is planned around your property's existing layout, landscape, materials, and practical requirements.",
+        'From creating a defined patio area to improving a driveway or adding durable masonry and stone features, thoughtful exterior improvements can give your property a more cohesive and purposeful appearance.',
+      ],
+    },
+    benefits: {
+      h: 'Why Invest in Professional Exterior Home Remodeling in Vienna?',
+      items: [
+        { icon: 'home',   h: "Refresh Your Property's Exterior", p: "Exterior improvements can give worn or outdated areas a more finished appearance. New paving, masonry, brick, and stone features can complement your home's architecture and surrounding landscape." },
+        { icon: 'light',  h: 'Make Outdoor Areas More Functional', p: 'A well-planned patio, walkway, or driveway can improve how you use different parts of your property. Defined outdoor areas can provide convenient spaces for access, relaxation, and entertaining.' },
+        { icon: 'route',  h: 'Improve Everyday Accessibility', p: 'Properly constructed walkways and driveways can create practical routes around your home. Thoughtful placement and suitable surfaces can make movement between outdoor areas more convenient.' },
+        { icon: 'shield', h: 'Add Long-Lasting Exterior Features', p: 'Outdoor surfaces must withstand regular use and exposure to changing weather. Appropriate materials, careful preparation, and sound installation can contribute to durable exterior improvements.' },
+        { icon: 'repair', h: 'Give Underused Areas a Purpose', p: 'An overlooked section of your property can become a useful outdoor area with the right design. Patios, walkways, paving, and other hardscape features can help make better use of available space.' },
+        { icon: 'layers', h: 'Create a Unified Outdoor Design', p: 'Different exterior features should complement rather than compete with one another. Coordinating materials, textures, layouts, and proportions can help create a more consistent look throughout your property.' },
+      ],
+    },
+    services: {
+      h: 'Exterior Home Remodeling Services in Vienna',
+      p: "Our home remodeling services in Vienna are dedicated to exterior improvements that enhance residential properties. We work with the key surfaces and features that contribute to your home's outdoor appearance, accessibility, and functionality.",
+      items: [
+        ['Paving Services', "Paving can provide a practical and finished surface for areas that experience regular use. We consider the property's layout, intended application, and surrounding features when planning exterior paving work."],
+        ['Masonry Work', "Masonry can add definition and structural character to an exterior. Carefully constructed masonry features can complement the home's existing architecture while providing a durable addition to the property."],
+        ['Brickwork', 'Brick offers a distinctive appearance that works well across many exterior styles. Properly planned brickwork can add visual interest and create a cohesive connection between your home and its outdoor features.'],
+        ['Stone Work', 'Stonework brings natural texture and depth to exterior areas. Material selection and placement can be coordinated with existing surfaces and landscaping to create an outdoor design that feels balanced.'],
+        ['Driveways', "A driveway needs to provide dependable vehicle access while fitting naturally within the property's exterior. We plan driveway improvements around available space, traffic requirements, surrounding features, and overall appearance."],
+        ['Patios', 'A patio can transform an open section of your yard into a dedicated outdoor area. The layout and materials can be selected according to the available space and how you intend to use the area.'],
+        ['Walkways', 'Walkways can connect your driveway, entrance, patio, and other areas of the property. A carefully designed path can improve accessibility while adding structure to the surrounding landscape.'],
+        ['Asphalt & Concrete', 'Asphalt and concrete provide versatile solutions for exterior surfaces that require stability and durability. Depending on the project, these materials can be used for driveways, walkways, and other hardscape applications.'],
+      ],
+    },
+    contractor: {
+      h: 'A Dedicated Home Remodeling Contractor in Vienna, VA',
+      p: [
+        'When selecting a home remodeling contractor in Vienna, VA, it is important to choose a team that understands exterior construction and the specific demands of outdoor projects. Surface preparation, material selection, drainage, site conditions, and installation all influence the finished result.',
+        'Onyx Home Improvement LLC works exclusively on exterior improvements, including paving, masonry, brick, stonework, driveways, patios, walkways, asphalt, and concrete. We consider the existing characteristics of your property when developing an approach for each project.',
+        'From improving vehicle access with a new driveway to creating a dedicated patio or enhancing outdoor pathways, our goal is to deliver exterior improvements that work naturally with your home and landscape.',
+      ],
+    },
+    process: {
+      h: 'Our Exterior Remodeling Process',
+      steps: [
+        ['Understand Your Project', "We start by learning what you want to improve and how you intend to use the area. The existing property, available space, access points, and surrounding features help establish the project's requirements."],
+        ['Plan the Exterior Details', "Materials, dimensions, layout, surface requirements, and construction considerations are reviewed before work begins. This helps create an approach suited to the property's conditions and your intended use."],
+        ['Complete the Improvements', 'The planned exterior work is carried out with attention to preparation, installation, surface quality, and finishing details. Careful execution helps create a cohesive result designed for regular outdoor use.'],
+      ],
+    },
+    cta: {
+      h: 'Give Your Vienna Property a Stronger Exterior',
+      p: [
+        'Onyx Home Improvement LLC provides home remodeling in Vienna with a clear focus on exterior construction and outdoor improvements. From paving and masonry to brick, stonework, driveways, patios, walkways, asphalt, and concrete, our services can help improve the way your property looks and functions.',
+        "If you are considering home renovation in Vienna, VA for your property's exterior, our team can help you plan improvements around your existing space and priorities.",
+      ],
+    },
+    faq: [
+      { q: 'Does Onyx Home Improvement handle interior home remodeling?', a: ['No. Onyx Home Improvement specializes in exterior projects rather than interior renovations. Our services focus on paving, masonry, brickwork, stonework, driveways, patios, walkways, asphalt, and concrete.'] },
+      { q: 'What exterior projects are available for Vienna homeowners?', a: ["Vienna homeowners can consider improvements such as new or upgraded driveways, patios, walkways, paved areas, masonry features, brickwork, stonework, asphalt surfaces, and concrete applications. The appropriate project depends on the property's layout and requirements."] },
+      { q: 'What should I consider before starting home remodeling in Vienna?', a: ['Start by identifying which exterior areas need improvement and how you want to use them. Available space, existing surfaces, drainage, material selection, access, and the relationship between new and existing features should also be considered.'] },
+      { q: 'How can a new driveway improve my property?', a: ['A well-planned driveway can provide a more reliable surface for everyday vehicle access while creating a defined entrance to your home. Its design can also be coordinated with nearby walkways, landscaping, and other exterior features.'] },
+      { q: 'Are patios suitable for smaller outdoor areas?', a: ['Yes. A patio does not need to occupy a large portion of the yard to be useful. A carefully planned layout can create a comfortable area for sitting, dining, or entertaining while leaving room for other outdoor features.'] },
+      { q: 'What should I look for when comparing remodeling contractors in Vienna?', a: ['Consider their experience with exterior projects, the types of materials and surfaces they work with, their approach to preparation and installation, and how clearly they communicate about the project. It is also useful to confirm that their services match your specific requirements.'] },
+      { q: 'Can brick and stonework be incorporated into the same exterior project?', a: ['Yes. Brick and stone can be used in different areas of a property while maintaining a coordinated exterior design. Their textures, colors, placement, and relationship with existing materials should be considered together.'] },
+      { q: 'When should I consider professional remodeling in Vienna, VA?', a: ['Consider professional assistance when an exterior project involves substantial paving, masonry, structural preparation, surface installation, or multiple connected features. Proper planning can help ensure the improvements suit the property and perform as intended.'] },
+    ],
+  },
+
+  'falls-church-va': {
+    images: { hero: 'driveway-circle', intro: 'chimney-home', contractor: 'walkway-brick', cta: 'driveway-crew' },
+    h1: 'Exterior Home Remodeling in Falls Church, VA',
+    highlights: [
+      '15+ Years of Hands-On Experience',
+      'Quality Materials and Craftsmanship',
+      'Personalized Project Approach',
+      'Clear Communication',
+    ],
+    intro: {
+      h: 'Exterior Remodeling in Falls Church, VA Built Around Your Property',
+      p: [
+        "Onyx Home Improvement LLC focuses on improving the exterior of your home, from functional paving and masonry work to attractive outdoor living features. Our services are designed for homeowners looking to upgrade the appearance, usability, and condition of their property's outdoor areas.",
+        "Our remodeling in Falls Church, VA includes practical exterior solutions such as brickwork, stonework, driveways, patios, walkways, retaining walls, asphalt, concrete, and exterior repairs. Each project is approached with attention to the property's existing structure, landscape, materials, and intended use.",
+        'Whether you want to refresh an entrance, create a more inviting patio, improve a walkway, or address deteriorating masonry, our exterior-focused approach helps ensure the new work fits naturally with the rest of your property.',
+      ],
+    },
+    benefits: {
+      h: 'Benefits of Professional Exterior Home Remodeling in Falls Church',
+      items: [
+        { icon: 'home',   h: "Improve Your Property's Curb Appeal", p: 'Exterior upgrades can give your property a cleaner and more finished appearance. Updated masonry, paving, stonework, and other features can create a stronger visual connection between your home and landscape.' },
+        { icon: 'light',  h: 'Create More Functional Outdoor Areas', p: 'Thoughtfully planned patios, walkways, and driveways can make your exterior easier to navigate and use. These improvements can also create dedicated areas for relaxing, entertaining, and everyday activities.' },
+        { icon: 'shield', h: 'Strengthen Exterior Features', p: 'Quality construction can improve the performance of frequently used or weather-exposed areas. Proper materials and installation can help exterior features remain functional through changing conditions.' },
+        { icon: 'repair', h: 'Address Deteriorating Structures', p: 'Cracked masonry, damaged chimneys, and foundation concerns can affect the condition of your property. Timely exterior repairs can help address these issues before they require more extensive attention.' },
+        { icon: 'route',  h: 'Improve Access Around Your Property', p: 'A well-designed driveway or walkway can provide a more convenient route around your home. Paving and hardscape improvements can also bring greater structure to your outdoor layout.' },
+        { icon: 'layers', h: 'Create a More Cohesive Exterior', p: "Combining complementary materials, textures, and features can help your property's exterior feel more unified. New additions can be planned around existing architecture, landscaping, and hardscape elements." },
+      ],
+    },
+    services: {
+      h: 'Exterior Home Improvement Services in Falls Church',
+      p: 'Onyx Home Improvement LLC focuses exclusively on improving the exterior of residential properties. Our services are designed to enhance the function, appearance, and usability of outdoor spaces.',
+      items: [
+        ['Paving Services', "A properly planned paved surface can improve access to your property while creating a clean, finished appearance. We provide exterior paving solutions designed around your property's layout, surface requirements, and everyday use."],
+        ['Masonry Work', "Masonry can add structure, definition, and visual character to your home's exterior. Our masonry work is suited to outdoor applications where careful construction and durable materials are important for both appearance and performance."],
+        ['Brickwork', "Brick can bring a timeless appearance to exterior areas while providing a durable surface for everyday exposure. Thoughtful brickwork can complement your home's architecture and create a cohesive look across your outdoor spaces."],
+        ['Stone Work', "Stonework can introduce natural texture, depth, and character to an exterior. From decorative applications to functional outdoor features, the right stone selection can complement your home's existing materials and surrounding landscape."],
+        ['Driveways', "A driveway is an important part of your property's exterior, providing everyday vehicle access while contributing to curb appeal. We create driveway solutions that are planned around the property's available space, layout, and practical requirements."],
+        ['Patios', "A well-designed patio can turn an underused part of your yard into a dedicated area for relaxing, dining, or entertaining. Patio layouts and materials can be selected to work naturally with your home's exterior and surrounding landscape."],
+        ['Walkways', 'Walkways provide practical connections between driveways, entrances, patios, and other outdoor areas. Carefully planned paths can improve movement around your property while adding structure and visual continuity to the landscape.'],
+        ['Asphalt & Concrete', 'Asphalt and concrete provide dependable options for a variety of exterior surfaces. Their durability and versatility make them suitable for areas that experience regular foot or vehicle traffic while supporting a clean, functional property layout.'],
+      ],
+    },
+    contractor: {
+      h: 'An Exterior Remodeling Contractor in Falls Church, VA',
+      p: [
+        'When choosing a remodeling contractor in Falls Church, VA, it is important to find a team that understands exterior construction and the demands placed on outdoor features. Proper preparation, material selection, drainage, structural support, and installation all contribute to a successful exterior project.',
+        'Onyx Home Improvement LLC works with homeowners on projects involving masonry, brick, stone, paving, driveways, patios, walkways, retaining walls, asphalt, concrete, and exterior repairs. We consider the existing property and the intended use of each area when planning the work.',
+        'From improving a driveway to creating a new patio or restoring exterior masonry, our goal is to deliver practical improvements that complement your property and provide dependable performance.',
+      ],
+    },
+    process: {
+      h: 'Our Remodeling Process',
+      steps: [
+        ['Assess Your Exterior Project', "We begin by understanding the areas you want to improve and examining the existing exterior features involved. Your priorities, property layout, materials, and intended use help establish the project's direction."],
+        ['Plan the Materials and Design', "The project is shaped around suitable materials, dimensions, site conditions, and construction requirements. Careful planning helps ensure the new work fits with your home's exterior and surrounding landscape."],
+        ['Complete the Exterior Work', 'The planned improvements are carried out with attention to preparation, installation, drainage, structural requirements, and finishing. Each detail contributes to a durable and cohesive exterior result.'],
+      ],
+    },
+    cta: {
+      h: "Upgrade Your Falls Church Home's Exterior",
+      p: [
+        'Onyx Home Improvement LLC provides home remodeling in Falls Church with a focus on exterior construction and improvements. From masonry, brick, and stonework to driveways, patios, walkways, paving, asphalt, and concrete, our services can help you create a more functional and attractive property exterior.',
+        'Ready to start your exterior project? Contact Onyx Home Improvement LLC today for a free estimate.',
+      ],
+    },
+    faq: [
+      { q: 'Does Onyx Home Improvement provide interior remodeling services?', a: ['Onyx Home Improvement focuses on exterior projects, including masonry, brickwork, stonework, paving, driveways, patios, walkways, retaining walls, asphalt, concrete, foundation repair, and chimney repair.'] },
+      { q: 'What exterior projects can you complete for Falls Church homeowners?', a: ["Services include masonry and brickwork, driveway paving, retaining walls, stone veneer, patio design, outdoor fireplaces, walkways, and exterior structural repairs. Projects can be tailored to the property's existing features and layout."] },
+      { q: 'What should I consider when planning home remodeling in Falls Church, VA?', a: ['Start by identifying the exterior areas that need improvement and consider how the project will affect access, drainage, appearance, and outdoor use. Material selection and compatibility with existing features are also important.'] },
+      { q: 'Can exterior remodeling improve the appearance of an older property?', a: ["Yes. Updated paving, masonry, stonework, brick features, patios, and walkways can refresh the exterior while maintaining the property's existing character. The design can be coordinated with the home's architecture and landscape."] },
+      { q: 'Do you provide asphalt and concrete work?', a: ['Yes. Asphalt and concrete can be used for exterior applications such as driveways, walkways, and other hardscape areas where a durable surface is required.'] },
+      { q: 'What makes a good remodeling contractor in Falls Church, VA for an exterior project?', a: ['Look for experience with the specific type of exterior work you need, knowledge of appropriate materials, careful preparation, and clear communication. It is also helpful to choose a contractor who considers how new features will interact with the existing property.'] },
+      { q: 'Can you combine several exterior improvements into one project?', a: ['Multiple exterior features can be planned together to create a more cohesive result. For example, a driveway, walkway, patio, and stonework can be designed to complement one another in materials, layout, and appearance.'] },
+      { q: 'How can I make my outdoor space more useful?', a: ['Consider how you want to use the area and then plan features around those activities. A combination of patios, walkways, retaining walls, stonework, or an outdoor fireplace can give different sections of the property a clear purpose.'] },
+    ],
+  },
+
+  'fairfax-va': {
+    images: { hero: 'patio-firepit', intro: 'wall-closeup', contractor: 'walkway-banded', cta: 'driveway-roller' },
+    h1: 'Fairfax Home Improvement for Better Outdoor Living',
+    highlights: [
+      '15+ Years of Hands-On Experience',
+      'Quality Materials and Craftsmanship',
+      'Personalized Project Approach',
+      'Clear Communication',
+    ],
+    intro: {
+      h: 'Exterior Home Improvement in Fairfax, VA for Functional Outdoor Spaces',
+      p: [
+        "Your property's exterior plays an important role in its appearance, accessibility, and everyday use. Well-planned improvements can refresh worn surfaces, improve outdoor areas, and create a more cohesive connection between your home and landscape.",
+        "Onyx Home Improvement LLC focuses on exterior projects, including paving, masonry, brickwork, stonework, driveways, patios, walkways, asphalt, and concrete. Our home improvement in Fairfax is centered on practical solutions that suit the property's existing layout, materials, and outdoor requirements.",
+        'From improving the surface of a driveway to creating a more inviting patio or adding structure with masonry and stonework, exterior improvements can make your property more functional while enhancing its overall appearance.',
+      ],
+    },
+    benefits: {
+      h: 'Benefits of Professional Exterior Remodeling in Fairfax',
+      items: [
+        { icon: 'home',   h: 'Give Your Exterior a More Refined Appearance', p: 'Exterior improvements can refresh areas that have become worn or outdated. Coordinated paving, masonry, brick, and stone features can give your property a more polished and connected appearance.' },
+        { icon: 'light',  h: 'Make Outdoor Areas Easier to Use', p: 'Well-positioned patios, walkways, and driveways can improve how people move through and use the property. Thoughtful planning can make outdoor areas more convenient for everyday activities and gatherings.' },
+        { icon: 'shield', h: 'Improve Surface Durability', p: 'Exterior surfaces are exposed to regular foot traffic, vehicles, and changing weather. Suitable materials and proper installation can help create surfaces that are built to handle these demands.' },
+        { icon: 'route',  h: 'Enhance Property Access', p: 'A functional driveway and clearly planned walkways can make it easier to reach different parts of your home. Well-constructed surfaces can also create a more organised route from one outdoor area to another.' },
+        { icon: 'repair', h: 'Add Purpose to Unused Areas', p: 'Open or overlooked sections of a yard can become useful outdoor spaces with the right improvements. Patios, paved areas, and walkways can create designated areas for relaxing, entertaining, or accessing the property.' },
+        { icon: 'layers', h: 'Coordinate Your Exterior Features', p: 'Combining complementary materials and designs can make separate outdoor features feel like part of one cohesive property. Paving, brick, stone, concrete, and other surfaces can be selected to work naturally with the existing exterior.' },
+      ],
+    },
+    services: {
+      h: 'Exterior Home Improvement Services in Fairfax',
+      p: 'Onyx Home Improvement LLC provides exterior-focused solutions for homeowners looking to improve the appearance and functionality of their properties. Our services cover key outdoor features, from hard surfaces and access areas to masonry and outdoor living spaces.',
+      items: [
+        ['Paving Services', "Quality paving can provide a durable and visually consistent surface for exterior areas. We plan paving work around the property's layout, intended use, and the practical demands placed on the finished surface."],
+        ['Masonry Work', "Masonry can bring strength, structure, and character to outdoor areas. Carefully constructed masonry features can complement the home's architecture while creating durable additions that work within the surrounding landscape."],
+        ['Brickwork', "Brick offers a distinctive exterior finish that can complement both traditional and contemporary property styles. Well-planned brickwork can add definition to outdoor features while creating a durable surface suited to exterior conditions."],
+        ['Stone Work', "Stonework can introduce natural texture and visual interest to your property's exterior. The choice of stone, placement, and overall design can be coordinated with existing materials to create a balanced outdoor appearance."],
+        ['Driveways', "A driveway needs to provide reliable vehicle access while fitting naturally into the property's exterior design. Proper planning can help create a practical surface that complements the home's entrance and surrounding features."],
+        ['Patios', 'A patio can give an open yard a dedicated purpose for outdoor activities. Its dimensions, placement, and materials can be selected around the available space and how you plan to use the area.'],
+        ['Walkways', 'Walkways can connect entrances, driveways, patios, and other outdoor areas while making movement around the property more convenient. A carefully planned path can also add structure and definition to the landscape.'],
+        ['Asphalt & Concrete', 'Asphalt and concrete provide versatile options for exterior surfaces that need to withstand regular use. They can be incorporated into driveways, walkways, and other outdoor applications where a stable and durable surface is required.'],
+      ],
+    },
+    contractor: {
+      h: 'A Trusted Exterior Remodeling Contractor in Fairfax',
+      p: [
+        'Finding the right contractor for home improvement in Fairfax, VA means considering more than the visual result. Exterior projects require attention to site conditions, surface preparation, material selection, drainage, dimensions, and installation methods.',
+        'Onyx Home Improvement LLC works exclusively on exterior improvements, helping homeowners address specific outdoor needs with practical solutions. Our work covers paving, masonry, brick, stone, driveways, patios, walkways, asphalt, and concrete.',
+        "Whether you are updating an existing driveway, creating a new patio, improving a walkway, or adding masonry and stone features, we focus on making each improvement work naturally with your property's existing design and layout.",
+      ],
+    },
+    process: {
+      h: 'Our Exterior Improvement Process',
+      steps: [
+        ['Review Your Property and Priorities', "We begin by understanding what you want to improve and how you plan to use the space. The property's current surfaces, layout, access points, and surrounding features help establish the project's requirements."],
+        ['Select the Right Approach', 'The next stage involves considering suitable materials, dimensions, design elements, and construction requirements. This helps ensure the planned improvement is appropriate for both the property and its intended purpose.'],
+        ['Complete the Exterior Upgrade', 'The project then moves into construction with careful attention to preparation, installation, surface details, and finishing. Each stage is handled with the goal of creating a durable and visually consistent exterior improvement.'],
+      ],
+    },
+    cta: {
+      h: "Enhance Your Fairfax Property's Exterior",
+      p: [
+        'Onyx Home Improvement LLC provides Fairfax home improvement solutions with a clear focus on exterior construction and outdoor spaces. From paving and masonry to brick, stone, driveways, patios, walkways, asphalt, and concrete, our services can help give your property greater functionality and visual appeal.',
+        "If you're looking for home improvement services in Virginia with an exterior focus, contact Onyx Home Improvement LLC today for a free estimate.",
+      ],
+    },
+    faq: [
+      { q: 'What exterior improvements can I make to my Fairfax property?', a: ["Common options include updating driveways, adding patios, improving walkways, installing paving, and incorporating masonry, brick, stone, asphalt, or concrete features. The best choice depends on the property's layout and your intended use of the space."] },
+      { q: 'Does Onyx Home Improvement handle interior remodeling?', a: ['No. Onyx Home Improvement focuses on exterior projects and outdoor improvements rather than interior renovations. Our services are centred on paving, masonry, brick, stonework, driveways, patios, walkways, asphalt, and concrete.'] },
+      { q: 'How can home remodeling in Fairfax, VA improve an outdoor area?', a: ['Exterior-focused remodeling can give an outdoor space clearer functions and improve how different areas connect. Features such as patios, walkways, driveways, and hardscape surfaces can make the property more practical and visually organised.'] },
+      { q: 'What should I consider before installing a new driveway?', a: ['Consider the available space, access requirements, surrounding landscape, surface material, drainage, and how frequently the driveway will be used. These factors can influence the appropriate design and construction approach.'] },
+      { q: 'Are asphalt and concrete suitable for residential exterior projects?', a: ['Both materials can be used for various residential exterior applications where a stable, durable surface is needed. The appropriate option depends on the project, expected use, design preferences, and site conditions.'] },
+      { q: 'How can a patio make better use of my yard?', a: ['A patio can establish a dedicated area for dining, relaxing, or entertaining instead of leaving an open section of the yard without a defined purpose. Its design can be adapted to the available space and surrounding features.'] },
+      { q: 'What should I look for when choosing home improvement services in Virginia?', a: ["Consider whether the provider specialises in the type of exterior work you require and whether they understand materials, surface preparation, site conditions, and installation. Clear communication about the project's scope is also important."] },
+      { q: 'Can different exterior materials be used together?', a: ['Yes. Brick, stone, concrete, asphalt, and other exterior materials can be incorporated into different areas of a property. Coordinating their colours, textures, placement, and proportions can help create a more unified overall design.'] },
+    ],
+  },
+
+  'arlington-va': {
+    images: { hero: 'steps-stone', intro: 'brick-flooring', contractor: 'veneer-walkway', cta: 'walkway-crew' },
+    h1: 'Home Improvement in Arlington, VA',
+    highlights: [
+      '15+ Years of Hands-On Experience',
+      'Quality Materials and Craftsmanship',
+      'Personalized Project Approach',
+      'Clear Communication',
+    ],
+    intro: {
+      h: 'Exterior Home Improvement in Arlington, VA Built for Your Property',
+      p: [
+        "A home's exterior contributes to its appearance, accessibility, and everyday functionality. Well-planned improvements can refresh aging surfaces, create more useful outdoor areas, and help different features work together as part of one cohesive property.",
+        "Onyx Home Improvement LLC focuses exclusively on exterior projects, including paving, masonry, brickwork, stonework, driveways, patios, walkways, asphalt, and concrete. Our home improvement in Arlington is planned around your property's existing layout, landscape, materials, and intended use.",
+        'From improving a driveway to creating a comfortable patio or adding definition through brick and stonework, the right exterior improvements can give your property greater function and visual appeal.',
+      ],
+    },
+    benefits: {
+      h: 'Benefits of Professional Exterior Home Improvement in Arlington',
+      items: [
+        { icon: 'home',   h: "Enhance Your Property's Exterior Appearance", p: 'Updated paving, masonry, brick, and stone features can give worn areas a refreshed look. Coordinated exterior improvements can also create a stronger connection between your home, hardscape, and landscape.' },
+        { icon: 'light',  h: 'Make Better Use of Outdoor Areas', p: 'A thoughtfully designed patio, walkway, or paved area can give an underused part of your property a clear purpose. These additions can support outdoor dining, relaxation, entertaining, and everyday access.' },
+        { icon: 'route',  h: 'Improve Movement Around Your Property', p: 'Well-positioned driveways and walkways can create more convenient routes between key areas of your home. Proper planning can help make entrances and outdoor spaces easier to navigate.' },
+        { icon: 'shield', h: 'Support Durable Exterior Surfaces', p: 'Driveways, patios, walkways, and other outdoor surfaces experience regular traffic and weather exposure. Suitable materials and careful installation can help them withstand everyday demands.' },
+        { icon: 'repair', h: 'Add Definition to Your Landscape', p: 'Masonry, brick, stonework, and paved surfaces can introduce structure to an open outdoor setting. Combining these elements thoughtfully can help separate and define different areas of the property.' },
+        { icon: 'layers', h: 'Create Exterior Improvements That Fit', p: "Every property has its own architecture, dimensions, landscaping, and existing materials. Considering these characteristics allows new features to blend naturally with the home's established exterior." },
+      ],
+    },
+    services: {
+      h: 'Exterior Home Improvement Services in Arlington',
+      p: 'Our home improvement in Arlington, VA focuses on practical exterior solutions for residential properties. From hard surfaces and access areas to outdoor living spaces and masonry features, each service is designed to address a specific exterior need.',
+      items: [
+        ['Paving Services', "Paving can create a stable, finished surface for areas that experience frequent use. We consider the property's layout, intended purpose, surrounding features, and surface requirements when planning exterior paving work."],
+        ['Masonry Work', "Masonry can add strength, structure, and visual definition to outdoor areas. Carefully constructed masonry features can complement your home's existing architecture while providing a durable exterior element."],
+        ['Brickwork', "Brick brings texture and character to exterior spaces while offering a durable material for outdoor applications. Well-planned brickwork can complement the home's style and coordinate with nearby hardscape features."],
+        ['Stone Work', "Stonework can introduce natural tones, texture, and depth to your property's exterior. The material and design can be selected to work with existing architectural details, landscaping, and other outdoor surfaces."],
+        ['Driveways', "A driveway serves as an essential access point while also forming a significant part of your home's exterior. We plan driveway improvements around available space, vehicle access, surrounding features, and the property's overall design."],
+        ['Patios', "A patio can provide a defined outdoor setting for relaxing, dining, or entertaining. Its placement, dimensions, and materials can be planned around the yard's existing layout and the way you want to use the space."],
+        ['Walkways', 'Walkways help connect entrances, driveways, patios, and other outdoor areas. A carefully planned pathway can make movement around your property more convenient while adding visual structure to the landscape.'],
+        ['Asphalt & Concrete', 'Asphalt and concrete offer practical options for exterior surfaces that require stability and regular-use durability. Depending on the project, they can be incorporated into driveways, walkways, and other outdoor applications.'],
+      ],
+    },
+    contractor: {
+      h: 'Home Construction Services in Arlington, VA for Exterior Projects',
+      p: [
+        "When considering home construction services in Arlington, VA, understanding the contractor's specific area of expertise is important. Exterior projects require careful attention to site conditions, surface preparation, materials, drainage, measurements, and installation.",
+        "Onyx Home Improvement LLC focuses on exterior construction and improvement work, including paving, masonry, brick, stonework, driveways, patios, walkways, asphalt, and concrete. We consider the property's existing characteristics and the purpose of each area when planning the work.",
+        'From a new paved surface to a redesigned patio or improved walkway, our exterior-focused approach helps create practical additions that work naturally with your property.',
+      ],
+    },
+    process: {
+      h: 'Our Exterior Improvement Process',
+      steps: [
+        ['Evaluate Your Exterior Needs', 'We begin by discussing the areas you want to change and understanding how you use your outdoor space. Existing surfaces, property dimensions, access, and surrounding features help define the project.'],
+        ['Establish the Project Plan', 'The next stage involves selecting appropriate materials and determining the layout, dimensions, and construction requirements. Planning these details in advance helps create an exterior solution suited to your property.'],
+        ['Carry Out the Improvements', 'Once the approach is established, the exterior work is completed with attention to preparation, installation, surface details, and finishing. Each part of the project is handled with the overall property in mind.'],
+      ],
+    },
+    cta: {
+      h: "Refresh Your Arlington Property's Exterior",
+      p: [
+        'Onyx Home Improvement LLC provides home remodeling in Arlington, VA with a dedicated focus on exterior improvements. From paving and masonry to brick, stonework, driveways, patios, walkways, asphalt, and concrete, our services can help make your outdoor areas more functional and visually cohesive.',
+        "If you are considering home renovation in Arlington, VA for your property's exterior, we can help you identify improvements that suit your space, priorities, and existing features.",
+      ],
+    },
+    faq: [
+      { q: 'Does Onyx Home Improvement provide interior remodeling?', a: ['No. Onyx Home Improvement specializes in exterior construction and improvement projects. Our services include paving, masonry, brickwork, stonework, driveways, patios, walkways, asphalt, and concrete.'] },
+      { q: 'What exterior projects can Arlington homeowners consider?', a: ["Projects can include driveway improvements, patio construction, walkway installation, paving, masonry, brickwork, stonework, asphalt, and concrete applications. The right option depends on the property's layout and your intended use of the space."] },
+      { q: 'What should I consider when planning home remodeling in Arlington, VA?', a: ['Consider which exterior areas require improvement, how you want to use them, and how new features will interact with existing surfaces and landscaping. Materials, access, drainage, dimensions, and maintenance requirements are also worth reviewing.'] },
+      { q: 'How can a new walkway benefit my property?', a: ['A well-planned walkway can provide a clear connection between areas such as the driveway, entrance, patio, and yard. It can also improve accessibility while giving the landscape greater structure.'] },
+      { q: 'What is important when planning a new patio?', a: ["Consider the patio's location, available space, intended use, surrounding features, and material selection. Planning these elements together can help create an outdoor area that feels comfortable and works naturally with the property."] },
+      { q: 'What should I look for in home construction services in Arlington, VA?', a: ["Look for experience with the type of exterior work you need and an understanding of materials, site preparation, drainage, and installation. Clear communication about the project's scope and requirements is also important."] },
+      { q: 'Can asphalt and concrete be used for residential exterior improvements?', a: ['Yes. Both materials can be suitable for exterior applications where a stable, durable surface is needed. Their use depends on the specific project, site conditions, expected traffic, and desired finish.'] },
+      { q: 'How can brick and stone improve an exterior?', a: ['Brick and stone can add texture, definition, and visual interest to outdoor areas. They can also be coordinated with existing architectural elements and other hardscape features to create a more unified exterior design.'] },
+    ],
+  },
+};
+
 /* --- Portfolio ----------------------------------------------------------- */
 /* Order matters — this is the sequence on the portfolio page. */
 export const PORTFOLIO = [
