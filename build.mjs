@@ -2114,7 +2114,7 @@ function buildAreaPage(a, slug, page) {
       <ul class="crumbs area-hero__crumbs">
         ${trail.map((t, i) => i === trail.length - 1 ? `<li aria-current="page">${esc(t.label)}</li>` : `<li><a href="${t.href}">${esc(t.label)}</a></li>`).join('\n        ')}
       </ul>
-      <h1 class="h-display">${esc(page.h1)}</h1>
+      <h1 class="h-display${page.h1.length > 52 ? ' is-long' : ''}">${esc(page.h1)}</h1>
       <ul class="area-hero__ticks">
         ${page.highlights.map(h => `<li>${CHECK}${esc(h)}</li>`).join('\n        ')}
       </ul>

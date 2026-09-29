@@ -1864,6 +1864,8 @@ a { color: inherit; }
 .area-hero__crumbs { padding-top: 0; margin-bottom: 1.5rem; color: rgba(255,255,255,.7); }
 .area-hero__crumbs [aria-current] { color: #fff; }
 .area-hero h1 { max-width: 16ch; font-size: clamp(2.25rem, 5.4vw, 4.1rem); }
+/* Some documents carry a much longer H1; keep it to about three lines. */
+.area-hero h1.is-long { max-width: 20ch; font-size: clamp(2rem, 4.2vw, 3.2rem); }
 .area-hero__ticks { list-style: none; display: grid; gap: 0.7rem; margin-top: 2rem; font-size: 1.05rem; color: rgba(255,255,255,.9); }
 .area-hero__ticks li { display: flex; align-items: center; gap: 0.75rem; }
 .area-hero__ticks svg { flex: none; color: rgba(255,255,255,.8); }
