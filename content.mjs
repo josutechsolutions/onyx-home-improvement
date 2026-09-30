@@ -1252,6 +1252,37 @@ export const AREA_SERVICE_CARDS = {
   'Paving':            { image: 'driveway-paver-grey',                    href: '/masonry/driveway-paving/' },
   'Masonry':           { image: 'wall-curved',                            href: '/masonry/retaining-walls/' },
   'Stonework':         { image: 'steps-stone',                            href: '/stone-work/stone-veneer/' },
+
+  // Later documents name the services the way the service pages do, and
+  // split the driveway materials out. Each one points at the page it
+  // describes, so a city page links into the service tree rather than
+  // repeating it.
+  'Driveway Paving':              { image: 'driveway-paver-grey',                         href: '/masonry/driveway-paving/' },
+  'Asphalt Driveway Installation': { image: 'driveway-asphalt-cone',                      href: '/masonry/asphalt-driveways/' },
+  'Asphalt & Concrete Driveways': { image: 'driveway-asphalt-new',                        href: '/masonry/asphalt-driveways/' },
+  'Concrete Driveways & Surfaces': { image: 'stamped-concrete-driveway-annandale-va',     href: '/masonry/concrete-driveways/' },
+  'Concrete & Paver Driveways':   { image: 'concrete-driveway-paver-border-springfield-va', href: '/masonry/concrete-driveways/' },
+  'Paver Driveways & Hardscaping': { image: 'driveway-paver-band',                        href: '/masonry/paver-driveways/' },
+  'Paver Driveways & Hardscapes': { image: 'driveway-paver-wide',                         href: '/masonry/paver-driveways/' },
+  'Brick Construction & Repairs': { image: 'walkway-brick',                               href: '/masonry/brickwork/' },
+  'Brickwork & Masonry':          { image: 'steps-brick',                                 href: '/masonry/brickwork/' },
+  'Masonry & Brickwork':          { image: 'brick-flooring',                              href: '/masonry/brickwork/' },
+  'Retaining Walls':              { image: 'wall-steps',                                  href: '/masonry/retaining-walls/' },
+  'Retaining Wall Construction':  { image: 'wall-curved',                                 href: '/masonry/retaining-walls/' },
+  'Retaining Wall Installation':  { image: 'wall-build',                                  href: '/masonry/retaining-walls/' },
+  'Foundation Repairs':           { image: 'foundation-exterior',                         href: '/masonry/foundation-repair/' },
+  'Patio Installation & Design':  { image: 'patio-firepit',                               href: '/stone-work/patio-design/' },
+  'Patio Design & Installation':  { image: 'patio-stone',                                 href: '/stone-work/patio-design/' },
+  'Patio Construction':           { image: 'patio-backyard',                              href: '/stone-work/patio-design/' },
+  'Patio Construction & Design':  { image: 'patio-cobble',                                href: '/stone-work/patio-design/' },
+  'Walkways & Steps':             { image: 'walkway-steps',                               href: '/stone-work/walkways-steps/' },
+  'Walkways & Exterior Steps':    { image: 'steps-landing',                               href: '/stone-work/walkways-steps/' },
+  'Stonework & Veneer':           { image: 'veneer-siding',                               href: '/stone-work/stone-veneer/' },
+  'Stonework & Stone Veneer':     { image: 'veneer-drive',                                href: '/stone-work/stone-veneer/' },
+  'Stone Veneer & Stone Features': { image: 'veneer-walkway',                             href: '/stone-work/stone-veneer/' },
+  'Stonework & Outdoor Features': { image: 'fireplace-bbq',                               href: '/stone-work/outdoor-fireplaces/' },
+  'Outdoor Fireplaces & Fire Pits': { image: 'fireplace-stone',                           href: '/stone-work/outdoor-fireplaces/' },
+  'Drainage & Water Management':  { image: 'driveway-prep',                               href: '/drainage/' },
 };
 
 export const AREA_PAGES = {
@@ -1867,6 +1898,314 @@ export const AREA_PAGES = {
       { q: 'Does exterior remodeling require consideration of drainage?', a: ['Yes. Water management is an important consideration for many exterior projects. Site grading, drainage conditions, and the position of paved or masonry features should be evaluated during project planning.'] },
       { q: 'Can Onyx repair existing exterior masonry?', a: ['Yes. Exterior repair work can address areas of damaged or deteriorating masonry. The appropriate approach depends on the condition and type of the existing feature.'] },
       { q: 'Why choose an exterior-focused contractor for my McLean property?', a: ['An exterior-focused contractor understands the specific considerations involved with outdoor construction, including paving, drainage, weather exposure, material selection, site preparation, and integration with existing landscape features.'] },
+    ],
+  },
+
+  'tysons-va': {
+    images: { hero: 'driveway-paver-wide', intro: 'patio-covered', contractor: 'walkway-crew', cta: 'driveway-roller' },
+    h1: 'Home Improvement in Tysons, VA for Driveways, Patios & Masonry',
+    highlights: [
+      'Family-operated in Northern Virginia since 2010',
+      'Free written estimates',
+      'Licensed & insured',
+      '3–5-year workmanship warranty',
+    ],
+    intro: {
+      h: 'Exterior Improvements Built Around Your Tysons Property',
+      p: [
+        "Your property's exterior has to handle weather, water, vehicles, foot traffic, and everyday use. Our approach to home improvement starts with understanding the existing surface, site conditions, drainage, and the result you want before work begins.",
+        'Onyx Home Improvement LLC works directly with Tysons homeowners on outdoor construction and masonry projects. From replacing a deteriorated driveway to creating a new patio or repairing masonry, our team handles the work with attention to the foundation beneath the finished surface.',
+        "As an exterior-focused home improvement contractor, we do not provide interior remodeling. Our work stays focused on the outdoor areas that contribute to your property's function, appearance, access, and long-term condition.",
+      ],
+    },
+    benefits: {
+      h: 'Why Tysons Homeowners Invest in Exterior Upgrades',
+      items: [
+        { icon: 'home',   h: 'Improve the First Impression of Your Property', p: 'A worn driveway, damaged steps, or outdated walkway can affect the appearance of an otherwise well-maintained home. New paving, brickwork, stone, or masonry can create a cleaner connection between the street, entrance, and surrounding landscape.' },
+        { icon: 'light',  h: 'Make Outdoor Areas More Usable', p: 'A properly planned patio or walkway can make better use of the space around your home. Our home improvement services can help create outdoor areas for entertaining, relaxing, accessing different parts of the property, or simply moving around more comfortably.' },
+        { icon: 'shield', h: 'Address Water Before It Causes Damage', p: 'Drainage plays an important role in the performance of paving and masonry. We consider grading, runoff, drainage paths, and water movement as part of the project so the finished installation is supported by the right site preparation.' },
+        { icon: 'repair', h: 'Restore Damaged Masonry', p: 'Cracked, deteriorated, or displaced masonry can affect both appearance and function. Depending on the condition, our team can repair or rebuild brick, stone, retaining walls, foundations, and other exterior masonry elements.' },
+        { icon: 'route',  h: 'Choose Materials That Suit the Property', p: 'Every exterior project has different requirements. Asphalt, concrete, pavers, brick, bluestone, natural stone, and other materials each offer different appearances and performance characteristics. We help you select an approach that fits the property and intended use.' },
+        { icon: 'layers', h: 'Add Lasting Value to Outdoor Spaces', p: 'Thoughtful house improvements do not have to involve major construction. A new driveway, patio, walkway, retaining wall, or masonry feature can make a noticeable difference while keeping the project focused on the exterior of the property.' },
+      ],
+    },
+    services: {
+      h: 'Home Improvement Services for Tysons Exteriors',
+      p: 'Our exterior services cover the surfaces and masonry features that carry the most use around a property, from the driveway at the street to the patio at the back of the house.',
+      items: [
+        ['Driveway Paving', 'We install and replace asphalt, concrete, and paver driveways for Tysons properties. Proper excavation, base preparation, grading, and material installation help create a surface designed for regular vehicle use.'],
+        ['Brick Construction & Repairs', 'Our brickwork includes patios, entryways, steps, facades, and repointing. We can work with existing brickwork to maintain a cohesive appearance while addressing areas that need repair or replacement.'],
+        ['Retaining Wall Construction', "Retaining walls can help manage changes in elevation, control soil movement, and reduce erosion. We install natural stone and segmental block walls based on the site's layout and structural requirements."],
+        ['Foundation Repairs', 'Cracks and other foundation concerns should receive attention before they become more extensive. Our exterior foundation repair work includes crack repair, stabilization, and restoration based on the condition of the affected area.'],
+        ['Patio Installation & Design', 'Create a more functional outdoor gathering area with a patio designed around the available space. We work with pavers, natural stone, bluestone, brick, and stamped concrete for patio installations.'],
+        ['Walkways & Steps', 'A safe, well-built entrance starts with a properly constructed walkway and steps. Our team installs and repairs exterior paths, front entrances, landings, and steps using materials suited to the surrounding property.'],
+        ['Stonework & Veneer', 'Stone can add texture and definition to exterior walls, columns, fireplaces, and accent areas. We install natural stone veneer and other stone features while considering the existing architecture and surrounding hardscape.'],
+        ['Outdoor Fireplaces & Fire Pits', 'An outdoor fireplace or fire pit can give a patio or entertaining area a clear focal point. We build custom exterior features that can incorporate seating walls, storage, and other practical elements where appropriate.'],
+      ],
+    },
+    contractor: {
+      h: 'An Exterior-Focused Home Improvement Contractor in Tysons',
+      p: [
+        'Choosing a home improvement contractor with a defined exterior specialty helps keep your project aligned with the work you actually need. Onyx Home Improvement LLC focuses on paving, hardscaping, masonry, brick, stone, patios, walkways, retaining walls, drainage, and related outdoor improvements.',
+        'Our owners remain directly involved rather than handing the project off to a salesperson. You receive a written estimate before work begins, and our team considers the underlying preparation as carefully as the finished surface.',
+        'For homeowners comparing home improvement contractors in Tysons, this exterior-only approach provides a clear scope from the start. We do not take on interior kitchen, bathroom, bedroom, or general indoor remodeling projects.',
+      ],
+    },
+    process: {
+      h: 'A Clear Process From Site Review to Finished Work',
+      steps: [
+        ['Review the Property', 'We begin by looking at the existing conditions, dimensions, access, materials, drainage, and the areas that need attention. This gives us a practical understanding of what the project requires.'],
+        ['Build the Project Plan', 'Next, we discuss suitable materials, layout, preparation, drainage considerations, and the intended finish. The scope is reflected in a written estimate so you can understand what is included before moving forward.'],
+        ['Complete the Exterior Work', 'Once the project is approved, our team handles the necessary preparation and installation. We focus on building the exterior improvement from the ground up and keeping the work area orderly throughout the project.'],
+      ],
+    },
+    cta: {
+      h: 'Give Your Tysons Exterior a Stronger Finish',
+      p: [
+        'Your driveway, patio, walkway, masonry, and other outdoor features all contribute to how your property looks and functions. Onyx Home Improvement LLC can help you plan and complete exterior home improvement projects with practical materials, proper preparation, and direct owner involvement.',
+        'Planning home improvement services for your Tysons property? Contact Onyx Home Improvement LLC today for a free written estimate.',
+      ],
+    },
+    faq: [
+      { q: 'What types of exterior projects does Onyx handle in Tysons?', a: ['Our exterior services include driveway paving, patios, walkways and steps, brickwork, retaining walls, foundation repair, chimney repair, stone veneer, outdoor fireplaces, and drainage solutions.'] },
+      { q: 'Do you provide interior home remodeling in Tysons?', a: ['No. Onyx specializes in exterior improvements rather than interior remodeling. Our work is focused on paving, masonry, hardscaping, stonework, patios, driveways, walkways, and related outdoor projects.'] },
+      { q: 'How can I choose between asphalt, concrete, and pavers for my driveway?', a: ['The right material depends on factors such as the existing driveway, site conditions, appearance, intended use, and budget. We can review the property and discuss the available options during your estimate.'] },
+      { q: 'Can you improve an existing patio instead of building a completely new one?', a: ["The appropriate solution depends on the patio's current condition. During the site assessment, we can determine whether repair, replacement, or a new installation makes sense for the space."] },
+      { q: 'Do your home improvement services include drainage work?', a: ['Yes. Drainage and water management can be incorporated into exterior projects when runoff or water movement affects the area being improved. Solutions may include grading adjustments, French drains, trench drains, or downspout routing.'] },
+      { q: 'Can Onyx repair existing brick and stonework?', a: ['Yes. Our masonry work includes repairs, repointing, restoration, and replacement where needed. We assess the existing material and condition before determining the appropriate repair approach.'] },
+      { q: 'Are estimates available for homeowners in Tysons?', a: ['Yes. Onyx provides free written estimates throughout its service area. We review the project at the property and explain the proposed scope before you decide to proceed.'] },
+      { q: 'How do I choose among home improvement contractors in Tysons?', a: ['Look for a contractor whose services match the type of work you need. For exterior paving, masonry, hardscape, stonework, patios, driveways, and walkways, Onyx provides a focused approach with owners directly involved in the project.'] },
+    ],
+  },
+
+  'springfield-va': {
+    images: { hero: 'walkway-front', intro: 'driveway-asphalt-curve', contractor: 'fireplace-install', cta: 'driveway-crew' },
+    h1: 'Home Improvement Contracting in Springfield, VA for Exterior Projects',
+    highlights: [
+      'Family-operated in Northern Virginia since 2010',
+      'Free written estimates',
+      'Licensed & insured',
+      '3–5-year workmanship warranty',
+    ],
+    intro: {
+      h: 'Practical Exterior Upgrades for Springfield Homes',
+      p: [
+        'A well-maintained exterior can improve how you access, use, and enjoy your property. Our home improvement contracting services focus on the outdoor features that receive constant exposure to weather, water, vehicles, and daily foot traffic.',
+        'Onyx Home Improvement LLC works directly with Springfield homeowners to plan and complete exterior projects based on the condition of the property. From a new driveway or patio to masonry repairs and retaining walls, we focus on the preparation and construction needed for a durable finished result.',
+        'Our company does not provide interior remodeling. Instead, our home improvement services are dedicated to exterior paving, hardscaping, brickwork, stonework, masonry, drainage, and related outdoor improvements.',
+      ],
+    },
+    benefits: {
+      h: 'Reasons to Upgrade Your Springfield Property Exterior',
+      items: [
+        { icon: 'home',   h: 'Create a More Welcoming Entrance', p: 'Your driveway, front walkway, steps, and surrounding masonry all shape the first impression of your property. Replacing worn surfaces or adding complementary materials can create a more cohesive and inviting entrance.' },
+        { icon: 'light',  h: 'Make Better Use of Outdoor Space', p: 'An unused or poorly planned outdoor area can limit how you enjoy your property. A new patio, walkway, seating area, or other hardscape feature can give the space a clearer purpose while complementing the existing landscape.' },
+        { icon: 'shield', h: 'Protect Areas Affected by Water', p: 'Poor drainage can contribute to erosion, standing water, and deterioration around exterior surfaces. Our team considers water movement and grading when planning paving, hardscape, and masonry projects in Springfield.' },
+        { icon: 'repair', h: 'Repair Exterior Damage', p: 'Cracked concrete, deteriorating brick, unstable retaining walls, and damaged masonry can affect the condition of your property. We identify the affected areas and recommend an exterior repair or replacement approach suited to the project.' },
+        { icon: 'layers', h: 'Coordinate Materials Across the Property', p: 'A driveway does not have to look disconnected from the rest of the exterior. We can help coordinate asphalt, concrete, pavers, brick, and stone with existing exterior features to create a more unified appearance.' },
+        { icon: 'route',  h: 'Support Long-Term Exterior Maintenance', p: 'Well-planned home improvement services can address areas that need attention before they become larger exterior concerns. Improving driveways, patios, walkways, drainage, and masonry can make the property easier to maintain over time.' },
+      ],
+    },
+    services: {
+      h: 'Exterior Home Improvement Services in Springfield',
+      p: 'Each service below covers a different part of the property exterior, from the surfaces vehicles and visitors use daily to the masonry and drainage work that holds them up.',
+      items: [
+        ['Asphalt & Concrete Driveways', "We install and replace asphalt and concrete driveways based on the property's existing conditions and intended use. Proper base preparation, grading, and installation help create a reliable surface for everyday vehicle traffic."],
+        ['Paver Driveways & Hardscaping', 'Pavers offer flexibility in design and can complement other hardscape elements around the property. We install paver driveways and outdoor surfaces with attention to layout, base preparation, edges, and drainage.'],
+        ['Patio Construction', 'A professionally built patio can turn an underused section of your yard into a practical outdoor area. We work with materials such as concrete, stamped concrete, brick, natural stone, bluestone, and pavers.'],
+        ['Brickwork & Masonry', "Our masonry services cover exterior brick construction, repairs, repointing, and related work. We can address damaged sections or create new brick features that work with the property's existing exterior."],
+        ['Retaining Walls', "Retaining walls can provide support across sloped areas while helping manage soil and elevation changes. We build retaining walls using materials such as segmental blocks and natural stone according to the site's requirements."],
+        ['Walkways & Exterior Steps', 'Well-built paths and steps provide a practical route between different areas of your property. We install and repair walkways, entry steps, landings, and other exterior access features.'],
+        ['Stone Veneer & Stone Features', 'Stonework can add definition and texture to exterior walls, columns, fireplaces, and other architectural features. Our team works with natural stone and stone veneer to complement the surrounding exterior.'],
+        ['Drainage & Water Management', 'Water needs to move away from areas where it can damage paving, foundations, or landscaping. Our drainage solutions can include French drains, grading adjustments, and other exterior water-management measures suited to the property.'],
+      ],
+    },
+    contractor: {
+      h: 'Choosing the Right Exterior Contractor in Springfield',
+      p: [
+        'Searching for home remodeling contractors can bring up companies that handle kitchens, bathrooms, additions, and other indoor projects. Onyx Home Improvement LLC takes a different approach by concentrating specifically on the exterior of your property.',
+        'Our work centers on driveways, patios, masonry, brick, stone, retaining walls, walkways, drainage, and paving. Owners remain directly involved, giving homeowners a clear point of contact throughout the project.',
+        "If you are comparing home remodeling contractors for an exterior project, make sure the contractor's actual scope matches the work you need. Onyx is not an interior remodeling company, but we provide focused exterior construction and improvement services throughout Springfield.",
+      ],
+    },
+    process: {
+      h: 'How We Approach Exterior Projects',
+      steps: [
+        ['Examine the Existing Conditions', 'We start by reviewing the project area, existing materials, drainage, access, dimensions, and any visible problems. This helps establish what preparation and construction the property requires.'],
+        ['Determine the Right Materials and Layout', 'After assessing the site, we discuss suitable materials, design considerations, drainage needs, and the intended use of the space. A written estimate outlines the planned scope before work begins.'],
+        ['Build and Finish the Project', 'Our team completes the required preparation before installing the selected exterior features. We pay attention to the details that affect the finished appearance, functionality, and performance of the improvement.'],
+      ],
+    },
+    cta: {
+      h: 'Refresh Your Springfield Property from the Outside',
+      p: [
+        'Exterior improvements can make a significant difference without changing the inside of your home. From a replacement driveway and new patio to masonry repairs, walkways, retaining walls, and drainage solutions, Onyx Home Improvement LLC provides home improvement contracting focused on outdoor spaces.',
+        'Need home improvement services in Springfield? Contact Onyx Home Improvement LLC today to discuss your project and request a free written estimate.',
+      ],
+    },
+    faq: [
+      { q: 'What exterior improvements can Onyx complete in Springfield?', a: ['Onyx handles a range of exterior projects, including asphalt, concrete and paver driveways, patios, walkways, steps, brickwork, stonework, retaining walls, foundation repair, chimney repair, outdoor fireplaces, and drainage solutions.'] },
+      { q: 'Does Onyx offer custom home renovations in Springfield?', a: ['Our work is focused on custom exterior improvements rather than interior renovations. We can tailor driveways, patios, masonry, walkways, retaining walls, and other outdoor features to suit the property.'] },
+      { q: 'Do your home improvement services include driveway replacement?', a: ["Yes. We can replace existing asphalt, concrete, or paver driveways after reviewing the condition of the current surface and the site's preparation requirements."] },
+      { q: 'Can you match new masonry to existing brickwork?', a: ['We assess the existing brick or masonry and consider its material, pattern, and surrounding features when planning repair or replacement work. The goal is to create an exterior result that works cohesively with the property.'] },
+      { q: 'What can be done if water collects around a driveway or patio?', a: ['The solution depends on the source and movement of the water. We can assess grading and drainage conditions and determine whether measures such as a French drain or other water-management solution may be appropriate.'] },
+      { q: 'Are your services limited to new construction?', a: ['No. Our exterior work includes both new installations and repairs. Depending on the condition of the existing feature, we can address damaged driveways, masonry, walkways, retaining walls, and other outdoor elements.'] },
+      { q: 'How do I choose between concrete, asphalt, and pavers?', a: ["Each material has different characteristics, appearance, maintenance considerations, and installation requirements. We can review your property's conditions and intended use to help identify an appropriate option."] },
+      { q: 'Why choose an exterior specialist instead of general home remodeling contractors?', a: ["An exterior-focused contractor works within the specific requirements of paving, hardscaping, masonry, drainage, and outdoor construction. Onyx concentrates on these areas rather than offering interior remodeling, allowing the project scope to remain focused on the property's exterior."] },
+    ],
+  },
+
+  'reston-va': {
+    images: { hero: 'wall-curved', intro: 'patio-red', contractor: 'walkway-side', cta: 'patio-build' },
+    h1: 'Home Improvement Company in Reston for Exterior Property Upgrades',
+    highlights: [
+      'Family-operated in Northern Virginia since 2010',
+      'Free written estimates',
+      'Licensed & insured',
+      '3–5-year workmanship warranty',
+    ],
+    intro: {
+      h: 'Exterior Home Improvements Designed for Reston Properties',
+      p: [
+        "The condition of your property's exterior affects how you enter, move around, and use your outdoor space. As a home improvement company in Reston, Onyx Home Improvement LLC focuses on improving these areas through quality paving, hardscaping, masonry, and drainage work.",
+        "We work with homeowners to understand the existing site before recommending an approach. Driveway replacement, patio construction, walkway installation, retaining walls, brick repairs, and other exterior projects all require careful consideration of the property's layout and surface conditions.",
+        'Our company specializes in exterior improvements only. We do not take on interior kitchen, bathroom, bedroom, or general indoor remodeling projects. Instead, our team concentrates on the outdoor features that add function and character to your property.',
+      ],
+    },
+    benefits: {
+      h: 'What Reston Homeowners Can Gain From Exterior Improvements',
+      items: [
+        { icon: 'home',   h: 'Give Driveways a Cleaner, More Finished Appearance', p: "The driveway is one of the largest visible surfaces around many homes. Replacing an aging surface with asphalt, concrete, or pavers can improve the property's appearance while providing a more dependable area for everyday vehicle use." },
+        { icon: 'light',  h: 'Create More Functional Outdoor Areas', p: 'A thoughtfully designed patio can turn an underused part of your property into a comfortable gathering area. Our exterior projects can connect patios with walkways, steps, driveways, and other hardscape features for a more practical outdoor layout.' },
+        { icon: 'route',  h: 'Improve Access Around the Property', p: 'Uneven paths, worn steps, and deteriorated walkways can make movement around a property difficult. New or repaired walkways and steps can provide clearer routes between entrances, driveways, patios, and other outdoor areas.' },
+        { icon: 'shield', h: 'Manage Slopes and Soil Movement', p: "Properties with changes in elevation may require retaining walls to support soil and organize the landscape. We build retaining walls using suitable materials while considering the site's grade, drainage, and surrounding exterior features." },
+        { icon: 'repair', h: 'Restore Aging Masonry Features', p: 'Brick and stone can deteriorate over time due to weather exposure and moisture. Repairing damaged masonry, replacing deteriorated sections, or repointing joints can help maintain the condition of important exterior structures.' },
+        { icon: 'layers', h: 'Build Improvements Around Existing Features', p: 'Exterior upgrades should work with what is already on the property. We consider existing paving, landscaping, masonry, entrances, and drainage when planning home improvement and remodeling projects for Reston homes.' },
+      ],
+    },
+    services: {
+      h: 'Exterior Services From a Home Improvement Company in Reston',
+      p: 'From the driveway to the drainage beneath it, these are the exterior services we plan around the existing property and the way each area is used.',
+      items: [
+        ['Asphalt Driveway Installation', "A properly prepared asphalt driveway provides a practical surface for regular vehicle traffic. We handle the preparation and installation process with attention to grading, base conditions, drainage, and the property's existing layout."],
+        ['Concrete & Paver Driveways', 'Concrete and pavers offer additional options for homeowners looking to change the appearance or construction of a driveway. We install these surfaces based on the space available, desired design, and site requirements.'],
+        ['Patio Design & Installation', "We create patios using materials such as pavers, natural stone, bluestone, brick, stamped concrete, and other suitable exterior surfaces. The layout can be planned around the home's access points and the way you intend to use the space."],
+        ['Brickwork & Masonry', 'Our brick and masonry services include new exterior construction, repairs, repointing, and restoration. We work on features such as walkways, steps, patios, walls, and other masonry elements around the property.'],
+        ['Retaining Walls', "A retaining wall can help organize sloped sections of a property while supporting soil and reducing erosion. Our team works with segmental block and natural stone options based on the site's conditions."],
+        ['Walkways & Steps', 'Exterior paths should provide both practical access and a natural connection between different areas of the property. We install and repair walkways, front steps, landings, and other outdoor access features.'],
+        ['Stonework & Stone Veneer', 'Natural stone and stone veneer can add texture to exterior walls, fireplaces, columns, and other architectural features. We select and install stone solutions that complement the surrounding hardscape and exterior design.'],
+        ['Drainage & Water Management', "Water can affect driveways, patios, foundations, and landscaping when it is not directed properly. Our drainage work may include French drains, grading solutions, and other exterior water-management measures based on the property's needs."],
+      ],
+    },
+    contractor: {
+      h: 'A Focused Approach to Home Improvement Remodeling',
+      p: [
+        'Some homeowners searching for home improvement remodeling may be looking for a company that handles every part of an indoor renovation. Onyx Home Improvement LLC takes a more specialized approach by concentrating on the exterior of the property.',
+        'Our team handles paving, driveways, patios, masonry, brick, stone, retaining walls, walkways, drainage, and other outdoor improvements. The owners remain directly involved, helping maintain clear communication from the initial estimate through project completion.',
+        'For homeowners comparing home improvement contractors in Reston, it is important to choose a company whose actual services match the project. Onyx does not perform interior remodeling, but our exterior specialization allows us to focus specifically on outdoor construction and improvements.',
+      ],
+    },
+    process: {
+      h: 'From Initial Assessment to Completed Exterior Work',
+      steps: [
+        ['Assess the Project Area', 'We begin by examining the existing surface, property layout, access, grading, drainage, and any visible deterioration. This helps establish the preparation and construction requirements for the project.'],
+        ['Select the Project Approach', 'Once the site has been reviewed, we discuss material choices, layout, design considerations, drainage, and the intended use of the space. You receive a written estimate outlining the proposed work.'],
+        ['Complete the Exterior Installation', 'Our team carries out the required preparation before installing the new or repaired exterior feature. We focus on the construction details that contribute to a finished, functional result.'],
+      ],
+    },
+    cta: {
+      h: 'Give Your Reston Exterior a Fresh Start',
+      p: [
+        'A well-planned exterior upgrade can improve the way your Reston property looks, functions, and connects from one outdoor area to another. Onyx Home Improvement LLC can help with driveways, patios, walkways, masonry, retaining walls, stonework, and drainage solutions tailored to your property.',
+        "Planning home improvement remodeling for your home's exterior? Get in touch with Onyx Home Improvement LLC to discuss your project and request a free written estimate.",
+      ],
+    },
+    faq: [
+      { q: 'What does a home improvement company in Reston typically handle?', a: ['Exterior-focused companies can work on features such as driveways, patios, walkways, retaining walls, masonry, brickwork, stonework, and drainage. Onyx specializes in these types of outdoor improvements rather than interior remodeling.'] },
+      { q: 'Can Onyx replace an outdated driveway in Reston?', a: ['Yes. We install asphalt, concrete, and paver driveways and can assess the existing surface to determine the appropriate replacement approach, materials, and preparation requirements.'] },
+      { q: 'How can I improve an existing outdoor living area?', a: ['A new patio, walkway, seating feature, or masonry element can make an outdoor space more useful. We can evaluate the available area and help develop an exterior improvement that suits its layout and intended purpose.'] },
+      { q: 'Do you repair damaged retaining walls?', a: ['We can assess existing retaining walls to determine their condition and the appropriate exterior repair or replacement approach. Material selection and site conditions are considered as part of the evaluation.'] },
+      { q: 'Can home improvement contractors in Reston work with my existing exterior features?', a: ['Yes. Existing driveways, walkways, patios, masonry, landscaping, and drainage conditions can all influence a new project. We review these elements before planning the work so the improvement fits the property.'] },
+      { q: 'Does Onyx provide interior home remodeling?', a: ['No. Onyx Home Improvement LLC is dedicated to exterior construction and improvements. Our services focus on paving, hardscaping, masonry, stonework, patios, driveways, walkways, retaining walls, and drainage.'] },
+      { q: "How can I make my property's exterior more cohesive?", a: ['Using complementary materials and coordinating features such as the driveway, walkway, patio, steps, and masonry can create a more connected exterior. We can discuss material and layout options based on your existing property.'] },
+      { q: 'What should I discuss with home improvement builders in Reston before starting a project?', a: ['Ask about the proposed scope, materials, site preparation, drainage considerations, project process, estimate, licensing and insurance, and workmanship warranty. These details can help you understand what the exterior project will involve before work begins.'] },
+    ],
+  },
+
+  'burke-va': {
+    images: { hero: 'hero-steps', intro: 'patio-firepit', contractor: 'walkway-bluestone', cta: 'veneer-drive-build' },
+    h1: 'Home Improvement Company in Burke, VA for Exterior Upgrades',
+    highlights: [
+      'Family-operated in Northern Virginia since 2010',
+      'Free written estimates',
+      'Licensed & insured',
+      '3–5-year workmanship warranty',
+    ],
+    intro: {
+      h: 'Exterior Improvements That Work for Burke Properties',
+      p: [
+        "Your property's outdoor features face constant exposure to rain, changing temperatures, vehicles, foot traffic, and moisture. As a home improvement company in Burke, Onyx Home Improvement LLC focuses on building and restoring exterior surfaces that support the way you use your property.",
+        'Our team evaluates the existing conditions before beginning an exterior project. Driveway replacements, patio installations, masonry repairs, walkways, retaining walls, and drainage work each require an approach suited to the property and its surroundings.',
+        'Onyx is an exterior-only contractor. We do not perform indoor renovations such as kitchens, bathrooms, bedrooms, or general interior remodeling. Our home improvement and remodeling work is limited to outdoor construction, paving, masonry, and related exterior improvements.',
+      ],
+    },
+    benefits: {
+      h: 'Benefits of Improving Your Burke Home Exterior',
+      items: [
+        { icon: 'home',   h: 'Create a Stronger Property Entrance', p: 'Driveways, steps, walkways, and front masonry contribute to the overall appearance of your home. Replacing worn surfaces or coordinating new materials can create a more defined and welcoming approach to the property.' },
+        { icon: 'light',  h: 'Make Outdoor Areas More Practical', p: 'A well-planned patio can provide a dedicated area for outdoor meals, gatherings, or relaxation. We can design and install exterior surfaces that make better use of available space while connecting naturally with existing outdoor features.' },
+        { icon: 'shield', h: 'Reduce Problems Caused by Runoff', p: 'Water that collects around hardscaped areas can contribute to erosion, surface deterioration, and other property concerns. We account for grading and drainage during exterior projects to help direct water where it needs to go.' },
+        { icon: 'route',  h: 'Reinforce Sloped Areas', p: "Changes in elevation can create challenges for soil stability and landscape organization. Retaining walls can help manage these transitions while adding structure to the property's exterior." },
+        { icon: 'repair', h: 'Refresh Aging Masonry', p: 'Exterior brick and stone features can show signs of wear over time. Repairs, repointing, and selective replacement can restore deteriorated areas while maintaining the character of the surrounding property.' },
+        { icon: 'layers', h: 'Coordinate Multiple Exterior Features', p: 'A driveway, patio, walkway, and retaining wall can each serve a different purpose, but they should still work together visually and functionally. Our home improvement services can be planned around the existing exterior so new work feels integrated rather than disconnected.' },
+      ],
+    },
+    services: {
+      h: 'Home Improvement Services Available in Burke',
+      p: 'Each service covers a different part of the exterior, and several can be planned together when a project involves more than one connected feature.',
+      items: [
+        ['Asphalt Driveway Installation', 'We install and replace asphalt driveways for properties that need a durable, practical surface. Site preparation, grading, base conditions, and drainage are considered before the new pavement is installed.'],
+        ['Concrete Driveways & Surfaces', "Concrete provides a versatile option for driveways and other exterior applications. We prepare and install concrete surfaces with attention to the property's layout, intended use, and surrounding features."],
+        ['Paver Driveways & Hardscapes', 'Pavers can introduce patterns, borders, and design details to an exterior project. We install paver driveways and hardscape surfaces with proper preparation and layout to create a finished outdoor space.'],
+        ['Patio Construction & Design', 'A new patio can extend the usable area of your home into the outdoors. We work with concrete, stamped concrete, pavers, brick, natural stone, and bluestone for a range of patio applications.'],
+        ['Masonry & Brickwork', 'Our exterior masonry services include construction, repairs, repointing, and restoration. We work on brick walls, walkways, patios, steps, and other masonry elements around Burke properties.'],
+        ['Retaining Wall Installation', "Retaining walls can help stabilize soil and define areas across properties with elevation changes. We build segmental block and natural stone retaining walls based on the site's layout and requirements."],
+        ['Walkways & Steps', 'A properly constructed walkway can improve movement between your driveway, entrance, patio, and other outdoor areas. We install and repair exterior paths, steps, landings, and related access features.'],
+        ['Stonework & Outdoor Features', 'Natural stone and stone veneer can add texture and architectural detail to exterior spaces. Our work can include stone walls, veneer, fireplaces, and other outdoor features designed to complement the surrounding property.'],
+      ],
+    },
+    contractor: {
+      h: 'A Different Approach to Home Improvement Remodeling in Burke',
+      p: [
+        'Homeowners searching for home improvement contractors in Burke may encounter companies that specialize in broad indoor renovation work. Onyx Home Improvement LLC has a more defined scope, concentrating on exterior construction and improvements.',
+        'Our services cover paving, driveways, patios, masonry, brick, stone, retaining walls, walkways, drainage, and other outdoor features. The owners remain involved in the work, providing homeowners with direct communication throughout the project.',
+        'If you are considering home improvement remodeling, make sure the contractor you choose specializes in the type of work you need. Onyx does not provide interior renovations, but our exterior focus allows us to concentrate on the outdoor areas of Burke properties.',
+      ],
+    },
+    process: {
+      h: 'Our Three-Step Exterior Project Method',
+      steps: [
+        ['Evaluate the Existing Space', "We begin by reviewing the project area, existing materials, drainage, grading, access, and visible concerns. This gives us a clearer understanding of the property's preparation and construction needs."],
+        ['Develop the Scope', 'Next, we consider appropriate materials, layout, functionality, drainage requirements, and the desired finish. We provide a written estimate so you can review the proposed exterior work before moving forward.'],
+        ['Complete the Improvement', 'After approval, our team prepares the area and carries out the installation or repair work. We focus on the underlying preparation as well as the finished exterior surface.'],
+      ],
+    },
+    cta: {
+      h: 'Bring New Function to Your Burke Exterior',
+      p: [
+        'The right outdoor improvements can make your property easier to use while giving aging exterior features a refreshed appearance. From driveways and patios to masonry, retaining walls, walkways, and drainage, Onyx Home Improvement LLC provides focused solutions for Burke homeowners.',
+        "Looking for home improvement builders in Burke for an exterior project? Contact Onyx Home Improvement LLC today for a free written estimate and discuss your property's improvement needs.",
+      ],
+    },
+    faq: [
+      { q: "What can a home improvement company in Burke do for my property's exterior?", a: ['Onyx provides exterior services such as driveway paving, patio installation, brickwork, masonry, stonework, retaining walls, walkways, steps, drainage, foundation repair, chimney repair, and outdoor fireplaces.'] },
+      { q: 'Does Onyx handle both small and larger exterior projects?', a: ['Project size can vary depending on the work involved. We handle individual exterior improvements as well as projects involving multiple connected features such as a driveway, walkway, patio, or masonry elements.'] },
+      { q: 'Can you replace a cracked concrete driveway?', a: ['Yes. We can assess the existing concrete, site conditions, drainage, and preparation requirements to determine the appropriate approach for replacement.'] },
+      { q: 'What options are available for a new patio?', a: ['Depending on the project, patio materials can include pavers, brick, natural stone, bluestone, concrete, and stamped concrete. The best option depends on the desired appearance, use, site, and existing exterior.'] },
+      { q: 'Can you improve drainage around an existing hardscape?', a: ['We can evaluate how water moves across the property and identify exterior drainage measures that may address the issue. Solutions can include grading adjustments, French drains, and other water-management approaches.'] },
+      { q: 'Do home improvement contractors in Burke need to understand existing masonry?', a: ['Existing brick and stone can affect how new exterior work should be planned. Our team assesses surrounding masonry when completing repairs, replacements, patios, walkways, and other connected exterior projects.'] },
+      { q: 'Does home improvement and remodeling at Onyx include interior renovations?', a: ['No. Onyx specializes in exterior improvements rather than indoor remodeling. Our services focus on outdoor construction, including paving, masonry, hardscaping, patios, driveways, walkways, retaining walls, and drainage.'] },
+      { q: 'What should I ask home improvement builders in Burke before hiring them?', a: ['Ask about their service scope, experience with your type of exterior project, materials, preparation process, written estimate, licensing and insurance, and workmanship warranty. These details can help you choose a contractor suited to the work you want completed.'] },
     ],
   },
 };
