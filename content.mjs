@@ -119,6 +119,31 @@ export const BLOG_POSTS = [
       height: 1024,
     },
   },
+  {
+    source: 'blog-content/chimney-repair-signs.source',
+    date: '2026-10-20',
+    author: 'Onyx Home Improvement LLC',
+    image: 'chimney-home',
+  },
+  {
+    source: 'blog-content/masonry-waterproofing.source',
+    date: '2026-10-20',
+    author: 'Onyx Home Improvement LLC',
+    image: {
+      src: '/assets/img/blog/masonry-waterproofing.png',
+      width: 1536,
+      height: 1024,
+    },
+  },
+  {
+    source: 'blog-content/outdoor-fireplace-vs-fire-pit.source',
+    date: '2026-10-20',
+    author: 'Onyx Home Improvement LLC',
+    image: 'fireplace-install',
+    inlineImages: {
+      '/uploads/documents/editor-1791460822786-540178705.png': '/assets/img/blog/outdoor-fireplace-vs-fire-pit.png',
+    },
+  },
 ];
 
 /* --- Services ------------------------------------------------------------
