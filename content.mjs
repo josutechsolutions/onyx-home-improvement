@@ -81,7 +81,7 @@ export const NAV = [
    No generated HTML needs to be edited manually.
    ------------------------------------------------------------------------ */
 export const BLOG_SETTINGS = {
-  noindex: true,
+  noindex: false,
   title: 'Blogs',
   eyebrow: 'Ideas & guidance',
   heading: 'Practical home improvement tips and project inspiration.',
@@ -127,7 +127,8 @@ export const BLOG_POSTS = [
   },
   {
     source: 'blog-content/masonry-waterproofing.source',
-    date: '2026-10-20',
+    date: '2026-10-23',
+    published: false,
     author: 'Onyx Home Improvement LLC',
     image: {
       src: '/assets/img/blog/masonry-waterproofing.png',
@@ -137,9 +138,12 @@ export const BLOG_POSTS = [
   },
   {
     source: 'blog-content/outdoor-fireplace-vs-fire-pit.source',
-    date: '2026-10-20',
+    date: '2026-10-29',
+    published: false,
     author: 'Onyx Home Improvement LLC',
     image: 'fireplace-install',
+    // The supplied document repeats the featured photo before the article title.
+    showSupplementalImages: false,
     inlineImages: {
       '/uploads/documents/editor-1791460822786-540178705.png': '/assets/img/blog/outdoor-fireplace-vs-fire-pit.png',
     },

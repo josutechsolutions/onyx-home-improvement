@@ -1364,7 +1364,7 @@ function loadBlogPost(seed) {
   }
   if (!leadingImages.length) throw new Error(`Missing featured image in blog source: ${seed.source}`);
   const imageTag = leadingImages[0];
-  const supplementalImages = leadingImages.slice(1).map(tag => {
+  const supplementalImages = seed.showSupplementalImages === false ? [] : leadingImages.slice(1).map(tag => {
     return Object.entries(seed.inlineImages || {}).reduce((localized, [source, local]) => {
       return localized.replace(`src="${source}"`, `src="${local}"`);
     }, tag);
@@ -1410,7 +1410,11 @@ function loadBlogPost(seed) {
   return { ...seed, slug, title, excerpt, alt, sourceImage, bodyHtml, headings, faq };
 }
 
-const BLOGS = BLOG_POSTS.map(loadBlogPost);
+// Draft records stay in source control for scheduled releases but do not get
+// a listing card, article URL, sidebar link, schema entry, or sitemap entry.
+const BLOGS = BLOG_POSTS
+  .map(loadBlogPost)
+  .filter(post => post.published !== false);
 const blogUrl = post => `/blog/${post.slug}/`;
 const BLOG_PAGE_SIZE = 9;
 const blogPageCount = () => Math.max(1, Math.ceil(BLOGS.length / BLOG_PAGE_SIZE));
