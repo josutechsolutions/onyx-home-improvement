@@ -81,7 +81,7 @@ export const NAV = [
    No generated HTML needs to be edited manually.
    ------------------------------------------------------------------------ */
 export const BLOG_SETTINGS = {
-  noindex: true,
+  noindex: false,
   title: 'Blogs',
   eyebrow: 'Ideas & guidance',
   heading: 'Practical home improvement tips and project inspiration.',
