@@ -1333,33 +1333,65 @@ function loadBlogPost(seed) {
   const documentBody = raw.match(/<body>([\s\S]*?)<\/body>/i)?.[1];
   if (!documentBody) throw new Error(`Missing <body> in blog source: ${seed.source}`);
 
-  const metadata = documentBody.match(/^<p>([\s\S]*?)<\/p>/i)?.[0];
-  if (!metadata) throw new Error(`Missing metadata block in blog source: ${seed.source}`);
-  const excerpt = blogPlainText(metadata.match(/<strong>Meta Description:<\/strong>\s*([\s\S]*?)<br/i)?.[1]);
-  const slug = blogPlainText(metadata.match(/<strong>URL Slug:<\/strong>\s*<code>([\s\S]*?)<\/code>/i)?.[1]);
+  const excerptMatch = documentBody.match(
+    /<strong>Meta Description:\s*<\/strong>\s*([\s\S]*?)(?=<br\s*\/?>|<\/p>)/i,
+  );
+  const slugMatch = documentBody.match(
+    /<strong>URL Slug:\s*<\/strong>\s*<code>([\s\S]*?)<\/code>/i,
+  );
+  const excerpt = blogPlainText(excerptMatch?.[1]);
+  const slug = blogPlainText(slugMatch?.[1]);
   if (!excerpt || !slug) throw new Error(`Incomplete metadata in blog source: ${seed.source}`);
 
-  let content = documentBody.slice(metadata.length);
-  const imageTag = content.match(/^<img\b[^>]*>/i)?.[0];
-  if (!imageTag) throw new Error(`Missing featured image in blog source: ${seed.source}`);
+  const metadataEnd = documentBody.indexOf('</p>', slugMatch.index + slugMatch[0].length);
+  if (metadataEnd === -1) throw new Error(`Incomplete metadata block in blog source: ${seed.source}`);
+
+  let content = documentBody.slice(metadataEnd + 4);
+  const leadingImages = [];
+  while (content) {
+    const imageMatch = content.match(/^\s*(<img\b[^>]*>)/i);
+    if (imageMatch) {
+      leadingImages.push(imageMatch[1]);
+      content = content.slice(imageMatch[0].length);
+      continue;
+    }
+    const emptyHeading = content.match(/^\s*<h1>([\s\S]*?)<\/h1>/i);
+    if (emptyHeading && !blogPlainText(emptyHeading[1])) {
+      content = content.slice(emptyHeading[0].length);
+      continue;
+    }
+    break;
+  }
+  if (!leadingImages.length) throw new Error(`Missing featured image in blog source: ${seed.source}`);
+  const imageTag = leadingImages[0];
+  const supplementalImages = leadingImages.slice(1).map(tag => {
+    return Object.entries(seed.inlineImages || {}).reduce((localized, [source, local]) => {
+      return localized.replace(`src="${source}"`, `src="${local}"`);
+    }, tag);
+  });
   const sourceImage = imageTag.match(/\bsrc="([^"]+)"/i)?.[1] || '';
   const alt = decodeBlogEntities(imageTag.match(/\balt="([^"]*)"/i)?.[1] || '');
-  content = content.slice(imageTag.length);
 
-  const h1 = content.match(/^<h1>([\s\S]*?)<\/h1>/i);
+  const h1 = content.match(/^\s*<h1>([\s\S]*?)<\/h1>/i);
   if (!h1) throw new Error(`Missing article heading in blog source: ${seed.source}`);
   const title = blogPlainText(h1[1]);
   content = content.slice(h1[0].length);
 
-  const faqMarker = /<h2>\s*Frequently Asked Questions\s*<\/h2>/i;
+  const faqMarker = /<(h2|h3)>\s*(?:Frequently Asked Questions|FAQs)\s*<\/\1>/i;
   const faqMatch = faqMarker.exec(content);
   if (!faqMatch) throw new Error(`Missing FAQ section in blog source: ${seed.source}`);
-  let bodyHtml = content.slice(0, faqMatch.index);
+  let bodyHtml = [...supplementalImages, content.slice(0, faqMatch.index)]
+    .filter(Boolean)
+    .join('\n');
   const faqHtml = content.slice(faqMatch.index + faqMatch[0].length);
-  const faq = [...faqHtml.matchAll(/<h3>([\s\S]*?)<\/h3>\s*<p>([\s\S]*?)<\/p>/gi)]
+  const headingFaq = [...faqHtml.matchAll(/<h3>([\s\S]*?)<\/h3>\s*<p>([\s\S]*?)<\/p>/gi)]
     .map(match => ({ q: blogPlainText(match[1]), a: [blogPlainText(match[2])] }));
+  const paragraphFaq = [...faqHtml.matchAll(/<p>\s*<strong>([\s\S]*?)<\/strong>\s*<br\s*\/?>\s*([\s\S]*?)<\/p>/gi)]
+    .map(match => ({ q: blogPlainText(match[1]), a: [blogPlainText(match[2])] }));
+  const faq = headingFaq.length ? headingFaq : paragraphFaq;
   const faqRemainder = faqHtml
     .replace(/<h3>[\s\S]*?<\/h3>\s*<p>[\s\S]*?<\/p>/gi, '')
+    .replace(/<p>\s*<strong>[\s\S]*?<\/strong>\s*<br\s*\/?>\s*[\s\S]*?<\/p>/gi, '')
     .replace(/<p>\s*<\/p>/gi, '')
     .trim();
   if (!faq.length || faqRemainder) throw new Error(`Unparsed FAQ content in blog source: ${seed.source}`);
