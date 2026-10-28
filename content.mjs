@@ -128,7 +128,7 @@ export const BLOG_POSTS = [
   {
     source: 'blog-content/masonry-waterproofing.source',
     date: '2026-10-23',
-    published: false,
+    published: true,
     author: 'Onyx Home Improvement LLC',
     image: {
       src: '/assets/img/blog/masonry-waterproofing.png',
