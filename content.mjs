@@ -138,8 +138,8 @@ export const BLOG_POSTS = [
   },
   {
     source: 'blog-content/outdoor-fireplace-vs-fire-pit.source',
-    date: '2026-10-29',
-    published: false,
+    date: '2026-10-28',
+    published: true,
     author: 'Onyx Home Improvement LLC',
     image: 'fireplace-install',
     // The supplied document repeats the featured photo before the article title.
