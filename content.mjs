@@ -2658,4 +2658,14 @@ export const REDIRECTS = [
   ['/service-areas/manassas-va/',        '/service-areas/'],
   ['/service-areas/manassas-park-va/',   '/service-areas/'],
   ['/service-areas/fredericksburg-va/',  '/service-areas/'],
+
+  // Legacy service and service-area URLs reported as 404s.
+  ['/service-areas/tysons/',              '/service-areas/tysons-va/'],
+  ['/hardscapes/outdoor-fireplaces/',     '/stone-work/outdoor-fireplaces/'],
+  ['/paving/',                            '/masonry/driveway-paving/'],
+  ['/walkways/',                          '/stone-work/walkways-steps/'],
+  ['/service-areas/manassas/',            '/service-areas/'],
+  ['/service-areas/reston/',              '/service-areas/reston-va/'],
+  ['/masonry/',                           '/masonry/driveway-paving/'],
+  ['/stone-work/',                        '/stone-work/patio-design/'],
 ];
